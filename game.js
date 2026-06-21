@@ -1181,7 +1181,7 @@ function updateHintButtonUI() {
 
   const bonusCount = gameState.bonusCount || 0;
   const used = gameState.hintsUsed || 0;
-  const maxHints = Math.min(1 + bonusCount, getUnfoundWordCount() + used);
+  const maxHints = 1 + bonusCount;
   const left = Math.max(0, maxHints - used);
   btnHint.textContent = `GET HINT (${left} left)`;
 
@@ -1212,7 +1212,7 @@ function updateFriendsUI() {
 
   const bonusCount = gameState.bonusCount || 0;
   const used = gameState.hintsUsed || 0;
-  const maxHints = Math.min(1 + bonusCount, getUnfoundWordCount() + used);
+  const maxHints = 1 + bonusCount;
 
   const friendsList = [
     { el: roxy, minHints: 1 },
@@ -1225,12 +1225,14 @@ function updateFriendsUI() {
 
   friendsList.forEach((item) => {
     if (maxHints >= item.minHints) {
-      item.el.style.display = '';
-      item.el.classList.remove('hidden-friend');
       if (used >= item.minHints) {
+        item.el.style.display = 'none';
         item.el.classList.add('leaving');
+        item.el.classList.remove('hidden-friend');
       } else {
+        item.el.style.display = '';
         item.el.classList.remove('leaving');
+        item.el.classList.remove('hidden-friend');
       }
     } else {
       item.el.style.display = 'none';
@@ -1246,7 +1248,7 @@ function purchaseHint() {
 
   const bonusCount = gameState.bonusCount || 0;
   const used = gameState.hintsUsed || 0;
-  const maxHints = Math.min(1 + bonusCount, getUnfoundWordCount() + used);
+  const maxHints = 1 + bonusCount;
   const left = Math.max(0, maxHints - used);
 
   if (left <= 0) {
@@ -1489,6 +1491,7 @@ function resetGame() {
   gameState.level = 4;
   gameState.foundWords = [];
   gameState.hintsRevealed = {};
+  gameState.hintsUsed = 0;
   gameState.currentWordObj = null;
   gameState.isLevelUnlocked = false;
   gameState.timeLeft = 120;
