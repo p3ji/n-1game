@@ -1,23 +1,59 @@
 // Curated word data for the N-1 Cardboard Word Game
 // Source: seven_letter_words.xlsx
-// Generated on 2026-06-21T09:38:23.097415
+// Generated on 2026-06-21T09:43:40.776502
 const WORDS_DATA = {
   "4": [
     {
-      "word": "guff",
+      "word": "thee",
       "subwords": [
-        "fug",
-        "guff"
+        "eth",
+        "het",
+        "tee",
+        "the"
       ]
     },
     {
-      "word": "worm",
+      "word": "vial",
       "subwords": [
-        "mor",
-        "mow",
-        "rom",
-        "row",
-        "worm"
+        "ail",
+        "lav",
+        "via",
+        "vail"
+      ]
+    },
+    {
+      "word": "fade",
+      "subwords": [
+        "fad",
+        "fed",
+        "deaf"
+      ]
+    },
+    {
+      "word": "bird",
+      "subwords": [
+        "bid",
+        "dib",
+        "rib",
+        "rid",
+        "drib"
+      ]
+    },
+    {
+      "word": "lobe",
+      "subwords": [
+        "bel",
+        "lob",
+        "obe",
+        "ole",
+        "bole"
+      ]
+    },
+    {
+      "word": "fans",
+      "subwords": [
+        "fan",
+        "fas"
       ]
     },
     {
@@ -31,147 +67,111 @@ const WORDS_DATA = {
         "fer",
         "ref",
         "fare",
-        "fear",
         "frae"
       ]
     },
     {
-      "word": "rode",
+      "word": "zany",
       "subwords": [
-        "doe",
-        "dor",
-        "ode",
-        "ore",
-        "red",
-        "rod",
-        "roe",
-        "doer",
-        "dore",
-        "redo",
-        "rode"
+        "any",
+        "nay"
       ]
     },
     {
-      "word": "icon",
+      "word": "aunt",
       "subwords": [
-        "con",
+        "ant",
+        "nut",
+        "tan",
+        "tau",
+        "tun",
+        "uta",
+        "tuna"
+      ]
+    },
+    {
+      "word": "wash",
+      "subwords": [
+        "ash",
+        "has",
+        "haw",
+        "saw",
+        "sha",
+        "was",
+        "wha",
+        "haws",
+        "shaw"
+      ]
+    },
+    {
+      "word": "meth",
+      "subwords": [
+        "eth",
+        "hem",
+        "het",
+        "met",
+        "the",
+        "them"
+      ]
+    },
+    {
+      "word": "nada",
+      "subwords": [
+        "ana",
+        "and"
+      ]
+    },
+    {
+      "word": "brim",
+      "subwords": [
+        "mib",
+        "mir",
+        "rib",
+        "rim"
+      ]
+    },
+    {
+      "word": "ciao",
+      "subwords": [
+        "oca"
+      ]
+    },
+    {
+      "word": "sign",
+      "subwords": [
+        "gin",
+        "ins",
+        "sin",
+        "gins",
+        "sing"
+      ]
+    },
+    {
+      "word": "cost",
+      "subwords": [
+        "cos",
+        "cot",
+        "sot",
+        "cots",
+        "scot"
+      ]
+    },
+    {
+      "word": "blob",
+      "subwords": [
+        "bob",
+        "lob"
+      ]
+    },
+    {
+      "word": "oink",
+      "subwords": [
+        "ink",
         "ion",
-        "cion",
-        "coin",
-        "coni",
-        "icon"
-      ]
-    },
-    {
-      "word": "grew",
-      "subwords": [
-        "erg",
-        "reg",
-        "grew"
-      ]
-    },
-    {
-      "word": "bays",
-      "subwords": [
-        "abs",
-        "aby",
-        "ays",
-        "bas",
-        "bay",
-        "bys",
-        "sab",
-        "say",
-        "abys",
-        "bays"
-      ]
-    },
-    {
-      "word": "thus",
-      "subwords": [
-        "hut",
-        "uts",
-        "huts",
-        "shut",
-        "thus",
-        "tush"
-      ]
-    },
-    {
-      "word": "menu",
-      "subwords": [
-        "emu",
-        "men",
-        "mun",
-        "menu",
-        "neum"
-      ]
-    },
-    {
-      "word": "joes",
-      "subwords": [
-        "joe",
-        "oes",
-        "ose",
-        "joes"
-      ]
-    },
-    {
-      "word": "tiki",
-      "subwords": [
-        "kit",
-        "tiki"
-      ]
-    },
-    {
-      "word": "exam",
-      "subwords": [
-        "axe",
-        "mae",
-        "max",
-        "exam"
-      ]
-    },
-    {
-      "word": "stew",
-      "subwords": [
-        "set",
-        "sew",
-        "tew",
-        "wet",
-        "stew",
-        "tews",
-        "west",
-        "wets"
-      ]
-    },
-    {
-      "word": "tend",
-      "subwords": [
-        "den",
-        "end",
-        "net",
-        "ted",
-        "ten",
-        "dent",
-        "tend"
-      ]
-    },
-    {
-      "word": "butt",
-      "subwords": [
-        "but",
-        "tub",
-        "tut",
-        "butt"
-      ]
-    },
-    {
-      "word": "pork",
-      "subwords": [
-        "kop",
-        "kor",
-        "pro",
-        "pork"
+        "kin",
+        "koi",
+        "ikon",
+        "kino"
       ]
     },
     {
@@ -183,7 +183,6 @@ const WORDS_DATA = {
         "men",
         "nae",
         "nam",
-        "amen",
         "mane",
         "mean",
         "name",
@@ -191,43 +190,225 @@ const WORDS_DATA = {
       ]
     },
     {
-      "word": "bird",
+      "word": "spun",
       "subwords": [
-        "bid",
-        "dib",
-        "rib",
-        "rid",
-        "bird",
-        "drib"
-      ]
-    },
-    {
-      "word": "done",
-      "subwords": [
-        "den",
-        "doe",
-        "don",
-        "end",
-        "eon",
-        "nod",
-        "ode",
-        "one",
-        "done",
-        "node"
-      ]
-    },
-    {
-      "word": "bony",
-      "subwords": [
-        "boy",
-        "nob",
-        "yob",
-        "yon",
-        "bony"
+        "nus",
+        "pun",
+        "pus",
+        "sun",
+        "sup",
+        "uns",
+        "ups",
+        "puns"
       ]
     }
   ],
   "5": [
+    {
+      "word": "burbs",
+      "subwords": [
+        "bub",
+        "bur",
+        "bus",
+        "rub",
+        "sub",
+        "urb",
+        "bubs",
+        "burs",
+        "rubs",
+        "urbs"
+      ]
+    },
+    {
+      "word": "cluck",
+      "subwords": [
+        "luck"
+      ]
+    },
+    {
+      "word": "roomy",
+      "subwords": [
+        "moo",
+        "mor",
+        "rom",
+        "yom",
+        "moor",
+        "room",
+        "moory"
+      ]
+    },
+    {
+      "word": "rhino",
+      "subwords": [
+        "hin",
+        "hon",
+        "ion",
+        "noh",
+        "nor",
+        "rho",
+        "rin",
+        "horn",
+        "inro",
+        "iron",
+        "noir",
+        "nori"
+      ]
+    },
+    {
+      "word": "shell",
+      "subwords": [
+        "ell",
+        "els",
+        "hes",
+        "sel",
+        "she",
+        "ells",
+        "hell",
+        "sell",
+        "hells"
+      ]
+    },
+    {
+      "word": "faxed",
+      "subwords": [
+        "axe",
+        "dex",
+        "fad",
+        "fax",
+        "fed",
+        "axed",
+        "deaf",
+        "fade"
+      ]
+    },
+    {
+      "word": "grows",
+      "subwords": [
+        "gor",
+        "ors",
+        "row",
+        "sow",
+        "wog",
+        "wos",
+        "grow",
+        "rows",
+        "wogs"
+      ]
+    },
+    {
+      "word": "rover",
+      "subwords": [
+        "err",
+        "ore",
+        "rev",
+        "roe",
+        "voe",
+        "over",
+        "rove"
+      ]
+    },
+    {
+      "word": "swift",
+      "subwords": [
+        "fit",
+        "ifs",
+        "its",
+        "sit",
+        "tis",
+        "wis",
+        "wit",
+        "fist",
+        "fits",
+        "sift",
+        "wist",
+        "wits"
+      ]
+    },
+    {
+      "word": "stats",
+      "subwords": [
+        "ass",
+        "att",
+        "sat",
+        "tas",
+        "tat",
+        "stat",
+        "tass",
+        "tats"
+      ]
+    },
+    {
+      "word": "jeeps",
+      "subwords": [
+        "jee",
+        "pee",
+        "pes",
+        "see",
+        "jeep",
+        "jees",
+        "pees",
+        "seep"
+      ]
+    },
+    {
+      "word": "eking",
+      "subwords": [
+        "eng",
+        "gen",
+        "gie",
+        "gin",
+        "ink",
+        "keg",
+        "ken",
+        "kin",
+        "gien",
+        "gink",
+        "kine",
+        "king"
+      ]
+    },
+    {
+      "word": "lunch",
+      "subwords": [
+        "hun"
+      ]
+    },
+    {
+      "word": "frogs",
+      "subwords": [
+        "fog",
+        "for",
+        "fro",
+        "gor",
+        "ors",
+        "fogs",
+        "frog"
+      ]
+    },
+    {
+      "word": "dwell",
+      "subwords": [
+        "del",
+        "dew",
+        "eld",
+        "ell",
+        "led",
+        "wed",
+        "dell",
+        "lewd",
+        "weld",
+        "well"
+      ]
+    },
+    {
+      "word": "flush",
+      "subwords": [
+        "flu",
+        "flus",
+        "lush",
+        "shul"
+      ]
+    },
     {
       "word": "unzip",
       "subwords": [
@@ -236,34 +417,7 @@ const WORDS_DATA = {
         "piu",
         "pun",
         "zin",
-        "zip",
-        "unzip"
-      ]
-    },
-    {
-      "word": "crick",
-      "subwords": [
-        "ick",
-        "irk",
-        "kir",
-        "rick",
-        "crick"
-      ]
-    },
-    {
-      "word": "funds",
-      "subwords": [
-        "dun",
-        "fud",
-        "fun",
-        "nus",
-        "sun",
-        "uns",
-        "duns",
-        "fuds",
-        "fund",
-        "funs",
-        "funds"
+        "zip"
       ]
     },
     {
@@ -278,304 +432,75 @@ const WORDS_DATA = {
         "son",
         "ions",
         "jins",
-        "join",
-        "joins"
+        "join"
       ]
     },
     {
-      "word": "flush",
+      "word": "chest",
       "subwords": [
-        "flu",
-        "flus",
-        "lush",
-        "shul",
-        "flush"
-      ]
-    },
-    {
-      "word": "skill",
-      "subwords": [
-        "ilk",
-        "ill",
-        "lis",
-        "ski",
-        "ilks",
-        "ills",
-        "kill",
-        "silk",
-        "sill",
-        "kills",
-        "skill"
-      ]
-    },
-    {
-      "word": "stats",
-      "subwords": [
-        "ass",
-        "att",
-        "sat",
-        "tas",
-        "tat",
-        "stat",
-        "tass",
-        "tats",
-        "stats"
-      ]
-    },
-    {
-      "word": "cross",
-      "subwords": [
-        "cor",
-        "cos",
-        "orc",
-        "ors",
-        "roc",
-        "sos",
-        "coss",
-        "orcs",
-        "rocs",
-        "cross"
-      ]
-    },
-    {
-      "word": "scene",
-      "subwords": [
-        "cee",
-        "ens",
-        "nee",
+        "eth",
+        "hes",
+        "het",
         "sec",
-        "see",
-        "sen",
-        "cees",
-        "seen",
-        "sene",
-        "cense",
-        "scene"
+        "set",
+        "she",
+        "the",
+        "etch",
+        "eths",
+        "hest",
+        "hets",
+        "sect"
       ]
     },
     {
-      "word": "fancy",
+      "word": "grass",
       "subwords": [
-        "any",
-        "can",
-        "cay",
-        "fan",
-        "fay",
-        "nay",
-        "cyan",
-        "fancy"
-      ]
-    },
-    {
-      "word": "buggy",
-      "subwords": [
-        "bug",
-        "buy",
-        "guy",
-        "buggy"
-      ]
-    },
-    {
-      "word": "gushy",
-      "subwords": [
-        "guy",
-        "hug",
-        "shy",
-        "ugh",
-        "gush",
-        "guys",
-        "hugs",
-        "sugh",
-        "ughs",
-        "gushy"
-      ]
-    },
-    {
-      "word": "comet",
-      "subwords": [
-        "cot",
-        "met",
-        "moc",
-        "mot",
-        "toe",
-        "tom",
-        "come",
-        "cote",
-        "mote",
-        "tome",
-        "comet",
-        "comte"
-      ]
-    },
-    {
-      "word": "curve",
-      "subwords": [
-        "cue",
-        "cur",
-        "ecu",
-        "rec",
-        "rev",
-        "rue",
-        "cure",
-        "ecru",
-        "curve"
-      ]
-    },
-    {
-      "word": "gamma",
-      "subwords": [
-        "aga",
-        "ama",
-        "gam",
-        "mag",
-        "agma",
-        "gama",
-        "mama",
-        "gamma",
-        "magma"
-      ]
-    },
-    {
-      "word": "fence",
-      "subwords": [
-        "cee",
-        "fee",
-        "fen",
-        "nee",
-        "fence"
-      ]
-    },
-    {
-      "word": "perry",
-      "subwords": [
-        "err",
-        "per",
-        "pry",
-        "pye",
-        "rep",
-        "rye",
-        "yep",
-        "prey",
-        "pyre",
-        "perry",
-        "pryer"
-      ]
-    },
-    {
-      "word": "evict",
-      "subwords": [
-        "ice",
-        "tic",
-        "tie",
-        "vet",
-        "vie",
-        "cite",
-        "etic",
-        "vice",
-        "civet",
-        "evict"
-      ]
-    },
-    {
-      "word": "mocks",
-      "subwords": [
-        "cos",
-        "kos",
-        "moc",
-        "mos",
-        "oms",
-        "mock",
-        "mocs",
-        "mosk",
-        "sock",
-        "mocks",
-        "smock"
-      ]
-    },
-    {
-      "word": "wrong",
-      "subwords": [
-        "gor",
-        "nog",
-        "nor",
-        "now",
-        "own",
-        "row",
-        "wog",
-        "won",
-        "gown",
-        "grow",
-        "worn",
-        "grown",
-        "wrong"
+        "ars",
+        "ass",
+        "gar",
+        "gas",
+        "rag",
+        "ras",
+        "sag",
+        "gars",
+        "rags",
+        "sags"
       ]
     }
   ],
   "6": [
     {
-      "word": "muumuu",
+      "word": "suburb",
       "subwords": [
-        "mum",
-        "umm",
-        "mumu",
-        "muumuu"
+        "bub",
+        "bur",
+        "bus",
+        "rub",
+        "sub",
+        "urb",
+        "bubs",
+        "burs",
+        "rubs",
+        "urbs",
+        "urus",
+        "burbs",
+        "rubus"
       ]
     },
     {
-      "word": "noggin",
+      "word": "peeved",
       "subwords": [
-        "gig",
-        "gin",
-        "inn",
-        "ion",
-        "nog",
-        "gong",
-        "nogg",
-        "going",
-        "noggin"
-      ]
-    },
-    {
-      "word": "humbly",
-      "subwords": [
-        "bum",
-        "buy",
-        "hub",
-        "hum",
-        "lum",
-        "yum",
-        "buhl",
-        "muhly",
-        "humbly"
-      ]
-    },
-    {
-      "word": "choppy",
-      "subwords": [
-        "cop",
-        "coy",
-        "hop",
-        "hoy",
-        "hyp",
-        "poh",
-        "pop",
-        "chop",
-        "copy",
-        "hypo",
-        "hoppy",
-        "choppy"
-      ]
-    },
-    {
-      "word": "squish",
-      "subwords": [
-        "his",
-        "sis",
-        "suq",
-        "hiss",
-        "suqs",
-        "sushi",
-        "squish"
+        "dee",
+        "dev",
+        "eve",
+        "ped",
+        "pee",
+        "vee",
+        "deep",
+        "epee",
+        "peed",
+        "veep",
+        "peeve"
       ]
     },
     {
@@ -592,123 +517,23 @@ const WORDS_DATA = {
         "hoop",
         "koph",
         "ouph",
-        "pooh",
-        "hookup"
+        "pooh"
       ]
     },
     {
-      "word": "peeved",
+      "word": "choppy",
       "subwords": [
-        "dee",
-        "dev",
-        "eve",
-        "ped",
-        "pee",
-        "vee",
-        "deep",
-        "epee",
-        "peed",
-        "veep",
-        "peeve",
-        "peeved"
-      ]
-    },
-    {
-      "word": "knobby",
-      "subwords": [
-        "bob",
-        "boy",
-        "kob",
-        "nob",
-        "yob",
-        "yok",
-        "yon",
-        "bonk",
-        "bony",
-        "knob",
-        "nobby",
-        "knobby"
-      ]
-    },
-    {
-      "word": "rubber",
-      "subwords": [
-        "brr",
-        "bub",
-        "bur",
-        "ebb",
-        "err",
-        "reb",
-        "rub",
-        "rue",
-        "urb",
-        "burr",
-        "rube",
-        "ruer",
-        "rubber"
-      ]
-    },
-    {
-      "word": "hybrid",
-      "subwords": [
-        "bid",
-        "dib",
-        "dry",
-        "hid",
-        "rib",
-        "rid",
-        "yid",
-        "bird",
-        "drib",
-        "yird",
-        "hybrid"
-      ]
-    },
-    {
-      "word": "unsung",
-      "subwords": [
-        "gnu",
-        "gun",
-        "nun",
-        "nus",
-        "sun",
-        "uns",
-        "gnus",
-        "guns",
-        "nuns",
-        "snug",
-        "sung",
-        "sunn",
-        "unsung"
-      ]
-    },
-    {
-      "word": "french",
-      "subwords": [
-        "ern",
-        "feh",
-        "fen",
-        "fer",
-        "hen",
-        "her",
-        "rec",
-        "ref",
-        "chef",
-        "fern",
-        "hern",
-        "french"
-      ]
-    },
-    {
-      "word": "living",
-      "subwords": [
-        "gin",
-        "lin",
-        "nil",
-        "vig",
-        "ling",
-        "vigil",
-        "living"
+        "cop",
+        "coy",
+        "hop",
+        "hoy",
+        "hyp",
+        "poh",
+        "pop",
+        "chop",
+        "copy",
+        "hypo",
+        "hoppy"
       ]
     },
     {
@@ -725,8 +550,7 @@ const WORDS_DATA = {
         "vet",
         "leet",
         "teel",
-        "tele",
-        "velvet"
+        "tele"
       ]
     },
     {
@@ -739,8 +563,63 @@ const WORDS_DATA = {
         "vie",
         "rive",
         "vier",
-        "quire",
-        "quiver"
+        "quire"
+      ]
+    },
+    {
+      "word": "unsung",
+      "subwords": [
+        "gnu",
+        "gun",
+        "nun",
+        "nus",
+        "sun",
+        "uns",
+        "gnus",
+        "guns",
+        "nuns",
+        "snug",
+        "sung",
+        "sunn"
+      ]
+    },
+    {
+      "word": "french",
+      "subwords": [
+        "ern",
+        "feh",
+        "fen",
+        "fer",
+        "hen",
+        "her",
+        "rec",
+        "ref",
+        "chef",
+        "fern",
+        "hern"
+      ]
+    },
+    {
+      "word": "knobby",
+      "subwords": [
+        "bob",
+        "boy",
+        "kob",
+        "nob",
+        "yob",
+        "yok",
+        "yon",
+        "bonk",
+        "bony",
+        "knob",
+        "nobby"
+      ]
+    },
+    {
+      "word": "victim",
+      "subwords": [
+        "tic",
+        "vim"
       ]
     },
     {
@@ -756,25 +635,7 @@ const WORDS_DATA = {
         "made",
         "mama",
         "mead",
-        "madam",
-        "madame"
-      ]
-    },
-    {
-      "word": "petite",
-      "subwords": [
-        "pee",
-        "pet",
-        "pie",
-        "pit",
-        "tee",
-        "tet",
-        "tie",
-        "tip",
-        "tit",
-        "petit",
-        "petti",
-        "petite"
+        "madam"
       ]
     },
     {
@@ -791,16 +652,120 @@ const WORDS_DATA = {
         "rudd",
         "cuddy",
         "curdy",
-        "ruddy",
-        "cruddy"
+        "ruddy"
       ]
     },
     {
-      "word": "victim",
+      "word": "roofer",
       "subwords": [
-        "tic",
-        "vim",
-        "victim"
+        "err",
+        "fer",
+        "foe",
+        "for",
+        "fro",
+        "ore",
+        "ref",
+        "roe",
+        "fore",
+        "froe",
+        "roof",
+        "frore",
+        "reroof"
+      ]
+    },
+    {
+      "word": "muumuu",
+      "subwords": [
+        "mum",
+        "umm",
+        "mumu"
+      ]
+    },
+    {
+      "word": "humbly",
+      "subwords": [
+        "bum",
+        "buy",
+        "hub",
+        "hum",
+        "lum",
+        "yum",
+        "buhl",
+        "muhly"
+      ]
+    },
+    {
+      "word": "living",
+      "subwords": [
+        "gin",
+        "lin",
+        "nil",
+        "vig",
+        "ling",
+        "vigil"
+      ]
+    },
+    {
+      "word": "hybrid",
+      "subwords": [
+        "bid",
+        "dib",
+        "dry",
+        "hid",
+        "rib",
+        "rid",
+        "yid",
+        "bird",
+        "drib",
+        "yird"
+      ]
+    },
+    {
+      "word": "pimply",
+      "subwords": [
+        "imp",
+        "lip",
+        "mil",
+        "pip",
+        "ply",
+        "yip",
+        "limp",
+        "limy",
+        "pily",
+        "pimp",
+        "pipy",
+        "imply",
+        "lippy"
+      ]
+    },
+    {
+      "word": "rubber",
+      "subwords": [
+        "brr",
+        "bub",
+        "bur",
+        "ebb",
+        "err",
+        "reb",
+        "rub",
+        "rue",
+        "urb",
+        "burr",
+        "rube",
+        "ruer"
+      ]
+    },
+    {
+      "word": "noggin",
+      "subwords": [
+        "gig",
+        "gin",
+        "inn",
+        "ion",
+        "nog",
+        "gong",
+        "nogg",
+        "going"
       ]
     }
   ],
@@ -814,8 +779,7 @@ const WORDS_DATA = {
         "inn",
         "nun",
         "unci",
-        "cuing",
-        "cunning"
+        "cuing"
       ]
     },
     {
@@ -832,20 +796,7 @@ const WORDS_DATA = {
         "didie",
         "dived",
         "ivied",
-        "divide",
-        "divided"
-      ]
-    },
-    {
-      "word": "quizzes",
-      "subwords": [
-        "sei",
-        "sue",
-        "suq",
-        "use",
-        "quiz",
-        "size",
-        "quizzes"
+        "divide"
       ]
     },
     {
@@ -859,8 +810,18 @@ const WORDS_DATA = {
         "tux",
         "cete",
         "cute",
-        "exec",
-        "execute"
+        "exec"
+      ]
+    },
+    {
+      "word": "quizzes",
+      "subwords": [
+        "sei",
+        "sue",
+        "suq",
+        "use",
+        "quiz",
+        "size"
       ]
     },
     {
@@ -876,8 +837,7 @@ const WORDS_DATA = {
         "ping",
         "piing",
         "pining",
-        "piping",
-        "nipping"
+        "piping"
       ]
     }
   ]
