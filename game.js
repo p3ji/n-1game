@@ -33,10 +33,21 @@ window.addEventListener('DOMContentLoaded', () => {
   initConfetti();
   
   // Set up event listeners
-  document.getElementById('btn-sound').addEventListener('click', toggleSound);
-  document.getElementById('btn-help').addEventListener('click', showHelp);
+  document.getElementById('btn-settings').addEventListener('click', toggleSettingsDropdown);
+  document.getElementById('btn-sound').addEventListener('click', (e) => {
+    toggleSound();
+    hideSettingsDropdown();
+  });
+  document.getElementById('btn-help').addEventListener('click', (e) => {
+    showHelp();
+    hideSettingsDropdown();
+  });
+  document.getElementById('btn-reset').addEventListener('click', (e) => {
+    showResetConfirm();
+    hideSettingsDropdown();
+  });
+  
   document.getElementById('btn-close-help').addEventListener('click', hideHelp);
-  document.getElementById('btn-reset').addEventListener('click', showResetConfirm);
   document.getElementById('btn-cancel-reset').addEventListener('click', hideResetConfirm);
   document.getElementById('btn-confirm-reset').addEventListener('click', resetGame);
   document.getElementById('btn-clear').addEventListener('click', clearSpelledWord);
@@ -50,6 +61,15 @@ window.addEventListener('DOMContentLoaded', () => {
   document.getElementById('wheel-center-input').addEventListener('click', () => {
     if (gameState.spelledWord.length > 0) {
       submitSpelledWord();
+    }
+  });
+
+  // Close settings menu when clicking outside
+  window.addEventListener('click', (e) => {
+    const dropdown = document.getElementById('settings-dropdown');
+    const btnSettings = document.getElementById('btn-settings');
+    if (!dropdown.classList.contains('hidden') && e.target !== btnSettings && !btnSettings.contains(e.target) && !dropdown.contains(e.target)) {
+      hideSettingsDropdown();
     }
   });
 
@@ -77,6 +97,19 @@ window.addEventListener('DOMContentLoaded', () => {
   // Start mascot idle chatter
   startMascotIdleChatter();
 });
+
+// --- SETTINGS DROPDOWN ---
+function toggleSettingsDropdown(e) {
+  e.stopPropagation();
+  playTapSound();
+  const dropdown = document.getElementById('settings-dropdown');
+  dropdown.classList.toggle('hidden');
+}
+
+function hideSettingsDropdown() {
+  const dropdown = document.getElementById('settings-dropdown');
+  dropdown.classList.add('hidden');
+}
 
 // --- STATE PERSISTENCE ---
 function loadHighScore() {
@@ -223,7 +256,7 @@ function playGulpSound() {
 
   const now = audioCtx.currentTime;
 
-  // 1. Crunch noise (chomp)
+  // Crunch noise
   const bufferSize = audioCtx.sampleRate * 0.06;
   const buffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
   const data = buffer.getChannelData(0);
@@ -245,7 +278,7 @@ function playGulpSound() {
   noiseNode.start(now);
   noiseNode.stop(now + 0.07);
 
-  // 2. Gulp swallow sweep
+  // Swallow sweep
   const osc = audioCtx.createOscillator();
   const gainSwallow = audioCtx.createGain();
   osc.connect(gainSwallow);
@@ -301,7 +334,7 @@ function playLevelUpSound() {
 
   const now = audioCtx.currentTime;
   
-  // Rhythmic taps
+  // Taps
   for (let i = 0; i < 4; i++) {
     const tapTime = now + i * 0.1;
     const osc = audioCtx.createOscillator();
@@ -318,7 +351,7 @@ function playLevelUpSound() {
     osc.stop(tapTime + 0.09);
   }
 
-  // Celebratory chimes sweep
+  // Chime sweep
   const sweepStart = now + 0.4;
   const oscSweep = audioCtx.createOscillator();
   const gainSweep = audioCtx.createGain();
@@ -346,14 +379,13 @@ function toggleSound() {
 }
 
 function updateSoundButtonUI() {
-  const iconOn = document.querySelector('.icon-speaker');
-  const iconOff = document.querySelector('.icon-speaker-muted');
+  const btnSound = document.getElementById('btn-sound');
   if (gameState.soundEnabled) {
-    iconOn.classList.remove('hidden');
-    iconOff.classList.add('hidden');
+    btnSound.textContent = "Sound: ON";
+    btnSound.classList.remove('btn-danger');
   } else {
-    iconOn.classList.add('hidden');
-    iconOff.classList.remove('hidden');
+    btnSound.textContent = "Sound: OFF";
+    btnSound.classList.add('btn-danger');
   }
 }
 
@@ -386,7 +418,6 @@ function setupLevelUI() {
   const wordObj = gameState.currentWordObj;
   if (!wordObj) return;
 
-  // Set starter word indicator
   document.getElementById('current-word-display').textContent = wordObj.word;
 
   // Populate Mini Cardboard Boxes Row
@@ -395,29 +426,35 @@ function setupLevelUI() {
 
   wordObj.subwords.forEach((subword, wordIdx) => {
     const isFound = gameState.foundWords.includes(subword);
+    const revealedIndices = gameState.hintsRevealed[wordIdx] || [];
+    const hasHints = revealedIndices.length > 0;
     
-    // Create mini-box checklist item
+    // Create mini-box item
     const boxItem = document.createElement('div');
-    boxItem.className = `mini-box-item ${isFound ? 'revealed' : ''}`;
+    boxItem.className = 'mini-box-item';
     boxItem.setAttribute('data-word', subword);
     boxItem.setAttribute('data-index', wordIdx);
+
+    if (isFound) {
+      boxItem.classList.add('revealed');
+    } else if (hasHints) {
+      boxItem.classList.add('has-hint');
+    }
 
     // Box graphic
     const boxGraphic = document.createElement('div');
     boxGraphic.className = 'mini-box-graphic';
     boxItem.appendChild(boxGraphic);
 
-    // Text Label showing word or underscores
+    // Text Label showing word OR hint dashes. NO dashes if closed and not hinted!
     const wordLabel = document.createElement('span');
     wordLabel.className = 'found-word-label';
     
     if (isFound) {
       wordLabel.textContent = subword;
-    } else {
-      // Build length dashes with optional hint letters
+    } else if (hasHints) {
+      // Build length dashes with revealed hint letters: e.g. "T _ _ _"
       const lettersArr = [];
-      const revealedIndices = gameState.hintsRevealed[wordIdx] || [];
-      
       for (let i = 0; i < subword.length; i++) {
         if (revealedIndices.includes(i)) {
           lettersArr.push(subword[i].toUpperCase());
@@ -426,6 +463,9 @@ function setupLevelUI() {
         }
       }
       wordLabel.textContent = lettersArr.join(' ');
+    } else {
+      // CLOSED BOX, NOT FOUND: show absolutely no letters/dashes/hints!
+      wordLabel.textContent = '';
     }
     
     boxItem.appendChild(wordLabel);
@@ -441,7 +481,7 @@ function setupLevelUI() {
   const shopPrice = document.getElementById('shop-item-price');
   
   if (nextSize >= 4) {
-    shopTitle.textContent = `${nextSize}-Letter Starter`;
+    shopTitle.textContent = `${nextSize}-Letter Word`;
     shopPrice.textContent = calculateNextLevelPrice();
   } else {
     shopTitle.textContent = `Claim Victory!`;
@@ -454,7 +494,7 @@ function setupLevelUI() {
 
 function renderLetterWheel() {
   const wheel = document.getElementById('letter-wheel');
-  // Clear old letter tiles (keep center input)
+  // Clear old letter tiles
   const tiles = wheel.querySelectorAll('.wheel-letter-tile');
   tiles.forEach(tile => tile.remove());
 
@@ -611,7 +651,6 @@ style.textContent = `
 document.head.appendChild(style);
 
 function animateEatingScrap(word) {
-  // Prevent keyboard inputs during animation
   const typedWord = word;
   gameState.spelledWord = '';
   gameState.selectedTileIndices = [];
@@ -643,7 +682,7 @@ function animateEatingScrap(word) {
   const mouthEl = document.querySelector('#boxy-mascot .box-mouth');
   mouthEl.className = 'box-mouth o-mouth';
 
-  // Fly animation using Web Animations API
+  // Fly animation
   const animation = scrap.animate([
     {
       left: `${startX}px`,
@@ -661,14 +700,13 @@ function animateEatingScrap(word) {
   });
 
   animation.onfinish = () => {
-    // Scrap reached mouth! Remove it
     scrap.remove();
 
     // Boxy gulps
     playGulpSound();
     triggerBoxyEmotion('happy');
     
-    // Add squash/stretch class to body
+    // Squash/stretch
     const body = document.querySelector('#boxy-mascot .boxy-body');
     body.style.transform = 'scale(1.2, 0.8)';
     setTimeout(() => {
@@ -678,10 +716,10 @@ function animateEatingScrap(word) {
       }, 150);
     }, 150);
 
-    // Save word in state
+    // Save word
     gameState.foundWords.push(typedWord);
     
-    // Points addition
+    // Points
     const points = typedWord.length * 100;
     gameState.totalScore += points;
     if (gameState.totalScore > gameState.highScore) {
@@ -693,10 +731,10 @@ function animateEatingScrap(word) {
     const randComp = compliments[Math.floor(Math.random() * compliments.length)];
     boxySpeak(`${randComp} +${points} pts`, 3000);
 
-    // Bounce and reveal corresponding mini-box in the checklist
+    // Reveal mini box
     revealMiniBox(typedWord);
 
-    // Confetti explosion from Boxy shelf
+    // Confetti burst
     triggerConfettiBurst();
 
     updateScoreUI();
@@ -711,14 +749,16 @@ function animateEatingScrap(word) {
 function revealMiniBox(word) {
   const item = document.querySelector(`.mini-box-item[data-word="${word}"]`);
   if (item) {
+    item.classList.remove('has-hint');
     item.classList.add('revealed');
-    // Reveal text
+    
+    // Reveal text label
     const label = item.querySelector('.found-word-label');
     label.textContent = word;
     
-    // Add bounce animation
-    item.style.transform = 'scale(1.2)';
-    item.style.transition = 'transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.5)';
+    // Bounce
+    item.style.transform = 'scale(1.25)';
+    item.style.transition = 'transform 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.6)';
     setTimeout(() => {
       item.style.transform = '';
     }, 300);
@@ -879,7 +919,6 @@ function purchaseNextLevel() {
   gameState.isLevelUnlocked = false;
 
   if (nextLevel < 4) {
-    // Final level cleared, show victory!
     showVictoryModal();
   } else {
     boxySpeak(`Unlocked! Loading ${nextLevel}-letter word!`, 4000);

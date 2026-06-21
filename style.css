@@ -129,6 +129,13 @@ body {
   height: 20px;
   transform: rotate(-4deg);
 }
+.tape-dropdown {
+  top: -9px;
+  left: 15px;
+  width: 75px;
+  height: 15px;
+  transform: rotate(-10deg);
+}
 
 /* --- HEADER --- */
 .cardboard-header {
@@ -140,7 +147,8 @@ body {
   padding: 6px 12px;
   transform: rotate(-0.5deg);
   box-shadow: 3px 3px 0 0 var(--marker-ink);
-  flex-shrink: 0; /* Never shrink header */
+  flex-shrink: 0;
+  z-index: 90;
 }
 .header-content {
   display: flex;
@@ -192,45 +200,52 @@ body {
   padding: 0 4px;
   border-radius: 2px;
 }
-.header-controls {
-  display: flex;
-  align-items: center;
-  gap: 4px;
+
+/* --- SETTINGS MENU DROPDOWN --- */
+.settings-dropdown-container {
+  position: relative;
+  display: inline-block;
 }
+.settings-dropdown-content {
+  position: absolute;
+  right: -5px;
+  top: 36px;
+  background-color: var(--cardboard-base);
+  border: 2.8px solid var(--marker-ink);
+  border-radius: 4px;
+  padding: 10px 8px;
+  z-index: 100;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  width: 110px;
+  box-shadow: 2px 3px 0 0 var(--marker-ink);
+  animation: pop-up 0.15s cubic-bezier(0.175, 0.885, 0.32, 1.1);
+}
+.settings-dropdown-content button {
+  width: 100%;
+  text-align: center;
+}
+
 .btn-icon {
   background-color: var(--notebook-bg);
   border: 1.5px solid var(--marker-ink);
   border-radius: 50%;
-  width: 28px;
-  height: 28px;
+  width: 30px;
+  height: 30px;
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
   font-family: var(--font-fun);
   font-weight: bold;
-  font-size: 0.95rem;
+  font-size: 1rem;
   box-shadow: 1.5px 1.5px 0 0 var(--marker-ink);
   transition: transform 0.1s, box-shadow 0.1s;
 }
 .btn-icon:active {
   transform: translate(1px, 1px);
   box-shadow: 0.5px 0.5px 0 0 var(--marker-ink);
-}
-.btn-icon.text-btn {
-  border-radius: 4px;
-  width: auto;
-  padding: 0 6px;
-  font-size: 0.8rem;
-}
-.icon-speaker {
-  fill: var(--marker-ink);
-}
-.icon-speaker-muted {
-  fill: var(--marker-ink);
-}
-.hidden {
-  display: none !important;
 }
 
 /* --- MAIN LAYOUT COMPACT --- */
@@ -239,7 +254,7 @@ body {
   flex-direction: column;
   gap: 8px;
   flex-grow: 1;
-  height: calc(100% - 60px); /* Fill remaining space */
+  height: calc(100% - 60px);
   justify-content: space-between;
 }
 
@@ -259,7 +274,7 @@ body {
   transform: rotate(-0.5deg);
 }
 
-/* Mascot Compact container */
+/* Mascot container */
 .mascot-container-compact {
   display: flex;
   flex-direction: column;
@@ -281,7 +296,7 @@ body {
   width: 58px;
   height: 52px;
 }
-/* Speech bubble compact */
+/* Speech bubble */
 .boxy-bubble {
   position: absolute;
   bottom: 66px;
@@ -330,7 +345,6 @@ body {
   display: flex;
   flex-direction: column;
   gap: 4px;
-  /* Faint red left margin */
   background-image: 
     linear-gradient(90deg, transparent 8px, var(--notebook-red-rule) 8px, var(--notebook-red-rule) 9px, transparent 9px);
   background-size: 100% 100%;
@@ -403,21 +417,25 @@ body {
   border-radius: 2px;
 }
 
-/* Mini Cardboard Box Item (Checkbox checklist style) */
+/* Mini Cardboard Box Item */
 .mini-box-item {
   display: flex;
   align-items: center;
   gap: 4px;
   background-color: rgba(0, 0, 0, 0.02);
-  border: 1px dashed var(--notebook-rule);
+  border: 1.5px solid var(--notebook-rule);
   border-radius: 3px;
   padding: 1px 4px;
   height: 24px;
 }
 .mini-box-item.revealed {
   background-color: white;
-  border: 1px solid var(--marker-ink);
+  border: 1.5px solid var(--marker-ink);
   box-shadow: 1px 1px 0 rgba(0,0,0,0.1);
+}
+.mini-box-item.has-hint {
+  border: 1.5px dashed var(--marker-ink-faded);
+  background-color: rgba(254, 240, 138, 0.2); /* light yellow tint */
 }
 
 /* Custom CSS Cardboard Box Icon */
@@ -429,13 +447,15 @@ body {
   background-color: var(--cardboard-light);
   border-radius: 2px;
   flex-shrink: 0;
-  transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.5);
 }
 .mini-box-item.revealed .mini-box-graphic {
   background-color: var(--c-paper-green);
-  transform: rotate(360deg) scale(1.1);
+  transform: rotate(360deg) scale(1.15);
 }
-/* Tape checkmark mark inside */
+.mini-box-item.has-hint .mini-box-graphic {
+  background-color: var(--c-paper-yellow);
+}
 .mini-box-graphic::after {
   content: '';
   position: absolute;
@@ -462,7 +482,7 @@ body {
   color: var(--marker-ink);
 }
 
-/* --- MIDDLE SECTION: WHEEL COMPACT --- */
+/* --- MIDDLE SECTION: WHEEL --- */
 .wheel-panel-compact {
   flex-grow: 1;
   display: flex;
@@ -547,7 +567,7 @@ body {
   letter-spacing: 0.5px;
 }
 
-/* Letter Tiles generated in circle */
+/* Letter Tiles - Set Z-INDEX to 10 to place them ABOVE the center input! */
 .wheel-letter-tile {
   position: absolute;
   width: 40px;
@@ -568,7 +588,7 @@ body {
   box-shadow: 1.5px 1.5px 0 var(--marker-ink);
   transform-origin: center;
   transition: transform 0.1s, background-color 0.1s, box-shadow 0.1s;
-  z-index: 3;
+  z-index: 10; /* Guaranteed to be clickable and not blocked! */
 }
 .wheel-letter-tile:hover {
   background-color: var(--cardboard-light);
@@ -800,7 +820,7 @@ body {
   height: 8px;
   border: 1.8px solid var(--marker-ink);
   border-radius: 50%;
-  background-color: var(--marker-ink); /* Filled for eating */
+  background-color: var(--marker-ink);
 }
 .box-mouth.sad-mouth {
   width: 12px;
