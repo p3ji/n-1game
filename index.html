@@ -9,6 +9,11 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@300..700&family=Patrick+Hand&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css">
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#d7a15c">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <link rel="apple-touch-icon" href="icon.svg">
   <!-- Dynamic Favicon SVG -->
   <link id="favicon" rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><rect x=%2210%22 y=%2225%22 width=%2280%22 height=%2265%22 rx=%228%22 fill=%22%23d7a15c%22 stroke=%22%23c68f49%22 stroke-width=%224%22/><path d=%22M 10 25 L 35 10 L 50 25 M 90 25 L 65 10 L 50 25%22 fill=%22none%22 stroke=%22%23c68f49%22 stroke-width=%224%22/><circle cx=%2235%22 cy=%2255%22 r=%226%22 fill=%22%231e293b%22/><circle cx=%2265%22 cy=%2255%22 r=%226%22 fill=%22%231e293b%22/><path d=%22M 42 70 Q 50 78 58 70%22 fill=%22none%22 stroke=%22%231e293b%22 stroke-width=%224%22 stroke-linecap=%22round%22/></svg>">
 </head>
@@ -245,5 +250,14 @@
   <!-- Game Scripts -->
   <script src="words_data.js"></script>
   <script src="game.js"></script>
+  <script>
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('./sw.js')
+          .then(reg => console.log('Service Worker registered!'))
+          .catch(err => console.error('Service Worker registration failed:', err));
+      });
+    }
+  </script>
 </body>
 </html>

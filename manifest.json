@@ -1,0 +1,18 @@
+{
+  "name": "N-1 Word Craft",
+  "short_name": "N-1 Word",
+  "description": "A handcrafted cardboard word game where starter words shrink from 7 to 4 letters.",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#ecdab9",
+  "theme_color": "#d7a15c",
+  "icons": [
+    {
+      "src": "icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}
