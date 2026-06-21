@@ -760,14 +760,15 @@ function setupLevelUI() {
   // Render Letter Wheel
   renderLetterWheel();
 
-  // Update shop/progression text
+  // Update shop/progression text if element exists
   const nextSize = gameState.level + 1;
   const shopTitle = document.getElementById('shop-item-name');
-  
-  if (nextSize <= 7) {
-    shopTitle.textContent = `${nextSize}-Letter Word`;
-  } else {
-    shopTitle.textContent = `Claim Victory!`;
+  if (shopTitle) {
+    if (nextSize <= 7) {
+      shopTitle.textContent = `${nextSize}-Letter Word`;
+    } else {
+      shopTitle.textContent = `Claim Victory!`;
+    }
   }
 
   // Clear typed display
