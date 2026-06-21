@@ -174,7 +174,7 @@
         <p class="modal-tips">
           💡 <strong>Tip:</strong> Click the center of the wheel to submit. Shuffling is free!
         </p>
-        <button id="btn-close-help" class="btn-craft btn-medium">Got it!</button>
+        <button id="btn-close-help" class="btn-craft btn-medium" onclick="document.getElementById('help-modal').classList.add('hidden')">Got it!</button>
       </div>
     </div>
   </div>
@@ -199,7 +199,7 @@
         </div>
 
         <p class="victory-cheer">Boxy is extremely proud of you! 📦💖</p>
-        <button id="btn-play-again" class="btn-craft btn-large btn-primary">PLAY AGAIN</button>
+        <button id="btn-play-again" class="btn-craft btn-large btn-primary" onclick="document.getElementById('victory-modal').classList.add('hidden')">PLAY AGAIN</button>
       </div>
     </div>
   </div>
@@ -212,8 +212,8 @@
         <h2>Reset Game?</h2>
         <p>Are you sure you want to reset your score and start back at Level 1 (7 letters)? This will clear your current progress!</p>
         <div class="reset-actions">
-          <button id="btn-confirm-reset" class="btn-craft btn-danger">Yes, Reset</button>
-          <button id="btn-cancel-reset" class="btn-craft">Cancel</button>
+          <button id="btn-confirm-reset" class="btn-craft btn-danger" onclick="document.getElementById('reset-modal').classList.add('hidden')">Yes, Reset</button>
+          <button id="btn-cancel-reset" class="btn-craft" onclick="document.getElementById('reset-modal').classList.add('hidden')">Cancel</button>
         </div>
       </div>
     </div>
