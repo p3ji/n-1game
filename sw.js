@@ -1,10 +1,10 @@
-const CACHE_NAME = 'n1-word-craft-v26';
+const CACHE_NAME = 'n1-word-craft-v27';
 const ASSETS = [
   './',
   './index.html',
-  './style.css?v=26',
-  './game.js?v=26',
-  './words_data.js?v=26',
+  './style.css?v=27',
+  './game.js?v=27',
+  './words_data.js?v=27',
   './manifest.json',
   './icon.svg'
 ];
@@ -33,6 +33,9 @@ self.addEventListener('activate', (e) => {
 self.addEventListener('fetch', (e) => {
   // Only handle same-origin GET requests
   if (e.request.method !== 'GET') return;
+
+  // Do not intercept Supabase API requests
+  if (e.request.url.includes('supabase.co')) return;
 
   e.respondWith(
     fetch(e.request)
