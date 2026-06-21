@@ -3,7 +3,6 @@ const path = require('path');
 
 // --- Source paths ---
 const enablePath = path.join(__dirname, 'enable1.txt');      // full ENABLE list (172k words)
-const commonPath = 'C:/Users/pushp/.gemini/antigravity/brain/6cbc47ff-60e2-4da7-baa3-bdcbde5b9db8/.system_generated/steps/8/content.md';
 const outputPath = path.join(__dirname, 'words_data.js');
 
 // --- Helpers ---
@@ -38,8 +37,9 @@ console.log('Loading ENABLE dictionary (valid subwords)...');
 const enableWords = parseWordList(enablePath, 7);
 console.log(`  → ${enableWords.size} valid words (length 3-7)`);
 
-console.log('Loading Google 10k list (starter word candidates)...');
-const commonWords = parseWordList(commonPath, 7);
+console.log('Loading curated common words package...');
+const commonWordsJson = require('./node_modules/@skedwards88/word_lists/compiled/commonWords.json');
+const commonWords = new Set(commonWordsJson.map(w => w.toLowerCase()).filter(w => w.length >= 3 && w.length <= 7));
 console.log(`  → ${commonWords.size} common words (length 3-7)`);
 
 // Starter words must come from common words AND be in ENABLE,

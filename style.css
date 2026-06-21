@@ -504,61 +504,121 @@ body {
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
-  background-color: var(--cardboard-base);
-  border: 2px dashed var(--marker-ink);
-  box-shadow: 2px 2px 0 0 var(--marker-ink);
+  gap: 4px;
   font-family: var(--font-handwritten);
   font-weight: bold;
-  padding: 4px;
   transition: opacity 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94), transform 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94);
   z-index: 10;
 }
-.boxy-friend .friend-face {
-  font-size: 0.9rem;
+.boxy-friend .friend-body {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  border: 2.2px solid var(--marker-ink);
+  box-shadow: 2px 2px 0 0 var(--marker-ink);
+  width: 100%;
+  height: 100%;
+}
+.boxy-friend .friend-eyes {
+  display: flex;
+  justify-content: space-around;
+  width: 60%;
   margin-bottom: 2px;
 }
+.boxy-friend .friend-eye {
+  width: 5px;
+  height: 5px;
+  background-color: var(--marker-ink);
+  border-radius: 50%;
+}
+.boxy-friend .friend-mouth {
+  width: 9px;
+  height: 4px;
+  border-bottom: 1.8px solid var(--marker-ink);
+  border-radius: 0 0 5px 5px;
+}
+.boxy-friend .friend-mouth.open {
+  width: 5px;
+  height: 5px;
+  border: 1.8px solid var(--marker-ink);
+  border-radius: 50%;
+  background-color: var(--marker-ink);
+  margin-top: 1px;
+}
+.boxy-friend .friend-mouth.flat {
+  width: 7px;
+  height: 0;
+  border-bottom: 1.8px solid var(--marker-ink);
+  border-radius: 0;
+  margin-top: 2px;
+}
+
 .boxy-friend .friend-label {
   font-size: 0.62rem;
   color: var(--marker-ink);
   text-transform: uppercase;
+  letter-spacing: 0.5px;
 }
 
-/* Roxy: cylindrical mailing tube (tall, rounded) */
+/* Roxy: cylindrical mailing tube (tall, rounded, blue) */
 .boxy-friend.roxy {
   top: 15px;
   left: 20px;
   width: 44px;
   height: 60px;
-  border-radius: 18px;
+}
+.boxy-friend.roxy .friend-body {
+  background-color: #bae6fd; /* Soft Blue */
+  border-radius: 16px;
 }
 
-/* Toxy: triangular shipping box */
+/* Toxy: diamond shipping box (pink, rotated square) */
 .boxy-friend.toxy {
   top: 15px;
   right: 20px;
   width: 50px;
   height: 50px;
-  clip-path: polygon(50% 0%, 0% 100%, 100% 100%);
-  padding-top: 15px; /* Offset face for triangle shape */
 }
-.boxy-friend.toxy .friend-face {
-  margin-top: 5px;
-  font-size: 0.75rem;
+.boxy-friend.toxy .friend-body-diamond {
+  position: relative;
+  width: 32px;
+  height: 32px;
+  background-color: #fbcfe8; /* Soft Pink */
+  border: 2.2px solid var(--marker-ink);
+  box-shadow: 2px 2px 0 0 var(--marker-ink);
+  transform: rotate(45deg);
+  margin: 4px auto 0;
+}
+.boxy-friend.toxy .friend-face-container {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  transform: rotate(-45deg);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
 }
 .boxy-friend.toxy .friend-label {
-  font-size: 0.58rem;
+  margin-top: 4px;
 }
 
-/* Foxy: flat pizza box (wide) */
+/* Foxy: flat pizza box (wide, yellow/orange) */
 .boxy-friend.foxy {
   bottom: 50px;
   left: 20px;
   width: 56px;
   height: 34px;
+}
+.boxy-friend.foxy .friend-body {
+  background-color: #fef08a; /* Soft Yellow */
   border-radius: 4px;
 }
-.boxy-friend.foxy::before {
+.boxy-friend.foxy .friend-body::before {
   content: '';
   position: absolute;
   top: 0;
@@ -568,7 +628,10 @@ body {
   height: 100%;
   background-color: var(--c-tape-brown);
   opacity: 0.35;
-  z-index: -1;
+  z-index: 0;
+}
+.boxy-friend.foxy .friend-eyes, .boxy-friend.foxy .friend-mouth {
+  z-index: 1; /* display above tape */
 }
 
 /* Leaving screen animation when used */

@@ -116,15 +116,35 @@
       <section class="wheel-panel-compact">
         <!-- Boxy's Friends (Hints indicator) -->
         <div id="friend-roxy" class="boxy-friend roxy" title="Roxy (the mailing tube)">
-          <div class="friend-face">👀</div>
+          <div class="friend-body">
+            <div class="friend-eyes">
+              <div class="friend-eye"></div>
+              <div class="friend-eye"></div>
+            </div>
+            <div class="friend-mouth smile"></div>
+          </div>
           <span class="friend-label">Roxy</span>
         </div>
-        <div id="friend-toxy" class="boxy-friend toxy" title="Toxy (the triangular box)">
-          <div class="friend-face">▲.▲</div>
+        <div id="friend-toxy" class="boxy-friend toxy" title="Toxy (the diamond box)">
+          <div class="friend-body-diamond">
+            <div class="friend-face-container">
+              <div class="friend-eyes">
+                <div class="friend-eye"></div>
+                <div class="friend-eye"></div>
+              </div>
+              <div class="friend-mouth open"></div>
+            </div>
+          </div>
           <span class="friend-label">Toxy</span>
         </div>
         <div id="friend-foxy" class="boxy-friend foxy" title="Foxy (the flat pizza box)">
-          <div class="friend-face">■_■</div>
+          <div class="friend-body">
+            <div class="friend-eyes">
+              <div class="friend-eye"></div>
+              <div class="friend-eye"></div>
+            </div>
+            <div class="friend-mouth flat"></div>
+          </div>
           <span class="friend-label">Foxy</span>
         </div>
 
@@ -227,9 +247,9 @@
   <!-- Particle / Confetti Canvas Layer -->
   <canvas id="confetti-canvas"></canvas>
 
-  <!-- Game Scripts (v=11) -->
-  <script src="words_data.js?v=11"></script>
-  <script src="game.js?v=11"></script>
+  <!-- Game Scripts (v=12) -->
+  <script src="words_data.js?v=12"></script>
+  <script src="game.js?v=12"></script>
   <script>
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
