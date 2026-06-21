@@ -111,6 +111,7 @@ window.addEventListener('DOMContentLoaded', () => {
   document.getElementById('btn-submit').addEventListener('click', submitSpelledWord);
   document.getElementById('btn-hint').addEventListener('click', purchaseHint);
   document.getElementById('btn-play-again').addEventListener('click', restartFromScratch);
+  document.getElementById('btn-next-level').addEventListener('click', handleProceedToNextLevel);
 
   // Home screen handlers
   document.getElementById('btn-start-game').addEventListener('click', () => {
@@ -621,6 +622,13 @@ function setupLevelUI() {
   const wordObj = gameState.currentWordObj;
   if (!wordObj) return;
 
+  const nextLevelBtn = document.getElementById('btn-next-level');
+  if (nextLevelBtn) {
+    nextLevelBtn.disabled = false;
+    nextLevelBtn.classList.remove('disabled');
+  }
+  document.getElementById('next-level-btn-container')?.classList.add('hidden');
+
   document.getElementById('level-letter-count-label').textContent = `${gameState.level}-Letter Word`;
   document.getElementById('current-word-display').textContent = wordObj.word.toUpperCase();
 
@@ -936,7 +944,6 @@ function animateEatingScrap(word) {
     if (gameState.bonusWord && typedWord === gameState.bonusWord && !gameState.bonusClaimedCurrentLevel) {
       gameState.bonusClaimedCurrentLevel = true;
       gameState.bonusCount = (gameState.bonusCount || 0) + 1;
-      gameState.totalScore += 1; // bonus +1 word
       isBonus = true;
     }
     
@@ -953,12 +960,12 @@ function animateEatingScrap(word) {
       else if (gameState.bonusCount === 3) friendUnlockedName = "Papy (the paper roll)";
       
       if (friendUnlockedName) {
-        boxySpeak(`🌟 BONUS! +1 Word! Unlocked ${friendUnlockedName}!`, 5000);
+        boxySpeak(`🌟 BONUS! Unlocked ${friendUnlockedName}! +1 Hint!`, 5000);
       } else {
-        boxySpeak(`🌟 BONUS! +1 Word!`, 3000);
+        boxySpeak(`🌟 BONUS! +1 Hint Friend unlocked!`, 4000);
       }
     } else {
-      boxySpeak(`${randComp} +1 word`, 3000);
+      boxySpeak(`${randComp} +1 point`, 3000);
     }
 
     // Reveal mini box
@@ -1087,7 +1094,7 @@ function updateProgressUI() {
   const progressBar = document.getElementById('words-progress-bar');
   progressBar.style.width = `${progressPercent}%`;
   
-  const goalCount = gameState.easyMode ? Math.max(1, W - 2) : Math.max(1, W - 1);
+  const goalCount = Math.max(1, W - 1);
   const goalPercent = (goalCount / W) * 100;
   
   const goalMarker = document.getElementById('goal-marker');
@@ -1140,28 +1147,30 @@ function purchaseNextLevel() {
 }
 
 function checkAutoProceed() {
-  // Don't schedule if already transitioning
   if (gameState.isTransitioning) return;
 
   const W = gameState.currentWordObj.subwords.length;
   const found = gameState.foundWords.length;
-  const goalCount = gameState.easyMode ? Math.max(1, W - 2) : Math.max(1, W - 1);
   
-  if (found >= goalCount) {
-    // Clear any previously scheduled auto-proceed to prevent duplicates
+  // Once they find W - 1 words, show the "GO TO NEXT LEVEL" button
+  if (found >= W - 1) {
+    document.getElementById('next-level-btn-container')?.classList.remove('hidden');
+  }
+
+  // If they find ALL words (W), auto-proceed after 1500ms
+  if (found >= W) {
+    document.getElementById('next-level-btn-container')?.classList.add('hidden');
     if (autoProceedTimeout) {
       clearTimeout(autoProceedTimeout);
       autoProceedTimeout = null;
     }
 
-    // Player reached the goal count! Auto-proceed after a short delay (1000ms)
     autoProceedTimeout = setTimeout(() => {
       autoProceedTimeout = null;
-      // Make sure they haven't reset, time hasn't run out, or already transitioning
-      if (gameState.timeLeft > 0 && !gameState.isTransitioning && gameState.foundWords.length >= goalCount) {
+      if (gameState.timeLeft > 0 && !gameState.isTransitioning && gameState.foundWords.length >= W) {
         purchaseNextLevel();
       }
-    }, 1000);
+    }, 1500);
   }
 }
 
@@ -2037,4 +2046,47 @@ function showLevelTransition(nextLevel) {
   transitionTimeout = setTimeout(() => {
     dismissTransition();
   }, 4000);
+}
+
+function handleProceedToNextLevel() {
+  const nextLevelBtn = document.getElementById('btn-next-level');
+  if (!nextLevelBtn || nextLevelBtn.disabled) return;
+  
+  nextLevelBtn.disabled = true;
+  nextLevelBtn.classList.add('disabled');
+  playTapSound();
+  
+  const subwords = gameState.currentWordObj.subwords || [];
+  const missingWord = subwords.find(w => !gameState.foundWords.includes(w));
+  
+  if (missingWord) {
+    // Reveal the missing word in red in the grid
+    const boxItem = document.querySelector(`.mini-box-item[data-word="${missingWord}"]`);
+    if (boxItem) {
+      boxItem.classList.add('revealed', 'missed');
+      const label = boxItem.querySelector('.found-word-label');
+      if (label) {
+        label.textContent = missingWord.toUpperCase();
+      }
+    }
+    
+    // Create floating non-blocking notification banner in red
+    const notification = document.createElement('div');
+    notification.className = 'missing-word-notification';
+    notification.textContent = `MISSING WORD: ${missingWord.toUpperCase()}`;
+    document.body.appendChild(notification);
+    
+    // Play crinkle/feedback sound
+    playCrinkleSound();
+    
+    // Wait exactly 2 seconds before proceeding
+    setTimeout(() => {
+      notification.remove();
+      // Hide button container
+      document.getElementById('next-level-btn-container')?.classList.add('hidden');
+      purchaseNextLevel();
+    }, 2000);
+  } else {
+    purchaseNextLevel();
+  }
 }

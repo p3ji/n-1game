@@ -2033,3 +2033,49 @@ body {
   100% { transform: rotate(-40deg); }
 }
 
+/* Next Level Button Container */
+.next-level-btn-container {
+  display: flex;
+  justify-content: center;
+  margin-top: 10px;
+  margin-bottom: 5px;
+  animation: pop-up 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+}
+.next-level-btn-container.hidden {
+  display: none !important;
+}
+
+/* Missed word style (revealed in red) */
+.mini-box-item.missed {
+  border-color: #dc2626 !important;
+  box-shadow: 2px 2px 0 #dc2626 !important;
+  background-color: #fef2f2 !important;
+}
+.mini-box-item.missed .found-word-label {
+  color: #dc2626 !important;
+}
+.mini-box-item.missed .mini-box-graphic {
+  border-color: #dc2626 !important;
+}
+
+/* Floating Banner for Missing Word (non-blocking) */
+.missing-word-notification {
+  position: fixed;
+  top: 35%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background-color: rgba(254, 226, 226, 0.96);
+  border: 2.5px solid #dc2626;
+  padding: 12px 24px;
+  font-family: var(--font-fun);
+  font-size: 1.3rem;
+  font-weight: bold;
+  color: #dc2626;
+  border-radius: 6px;
+  box-shadow: 4px 4px 0 #dc2626;
+  z-index: 2100;
+  animation: pop-up 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+  pointer-events: none; /* non-blocking */
+  white-space: nowrap;
+}
+

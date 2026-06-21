@@ -117,6 +117,10 @@
             <div id="goal-marker" class="goal-marker"></div>
           </div>
           
+          <!-- Go To Next Level Button (Visible when target complete) -->
+          <div id="next-level-btn-container" class="next-level-btn-container hidden">
+            <button id="btn-next-level" class="btn-craft btn-medium btn-primary">GO TO NEXT LEVEL ➔</button>
+          </div>
           <!-- Grid of Mini Closed/Open Boxes -->
           <div id="mini-boxes-grid" class="mini-boxes-grid">
             <!-- Dynamically populated in JS -->
@@ -437,7 +441,7 @@
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <!-- Game Scripts (v=29) -->
   <script src="words_data.js?v=29"></script>
-  <script src="game.js?v=35"></script>
+  <script src="game.js?v=36"></script>
   <script>
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
