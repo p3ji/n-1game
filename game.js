@@ -53,6 +53,10 @@ window.addEventListener('DOMContentLoaded', () => {
     showResetConfirm();
     hideSettingsDropdown();
   });
+  document.getElementById('btn-force-update').addEventListener('click', (e) => {
+    e.stopPropagation();
+    forceUpdate();
+  });
   
   document.getElementById('btn-close-help').addEventListener('click', hideHelp);
   document.getElementById('btn-cancel-reset').addEventListener('click', (e) => {
@@ -1095,6 +1099,21 @@ function showResetConfirm() {
 function hideResetConfirm() {
   playTapSound();
   document.getElementById('reset-modal').classList.add('hidden');
+}
+function forceUpdate() {
+  boxySpeak('Refreshing cardboard...', 3000);
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.getRegistrations().then(regs => {
+      Promise.all(regs.map(r => r.unregister())).then(() => {
+        // Clear all caches
+        caches.keys().then(keys =>
+          Promise.all(keys.map(k => caches.delete(k)))
+        ).then(() => window.location.reload(true));
+      });
+    });
+  } else {
+    window.location.reload(true);
+  }
 }
 function resetGame() {
   playCrinkleSound();
