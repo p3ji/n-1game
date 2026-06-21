@@ -1170,8 +1170,8 @@ function updateHintButtonUI() {
   const btnHint = document.getElementById('btn-hint');
   if (!btnHint) return;
 
-  const hasFoundBonus = gameState.bonusWord && gameState.foundWords.includes(gameState.bonusWord);
-  const maxHints = 1 + (hasFoundBonus ? 1 : 0);
+  const bonusCount = gameState.bonusCount || 0;
+  const maxHints = 1 + bonusCount;
   const left = Math.min(getUnfoundWordCount(), Math.max(0, maxHints - (gameState.hintsUsed || 0)));
   btnHint.textContent = `GET HINT (${left} left)`;
 
@@ -1234,8 +1234,8 @@ let isHintAnimating = false;
 function purchaseHint() {
   if (isHintAnimating) return;
 
-  const hasFoundBonus = gameState.bonusWord && gameState.foundWords.includes(gameState.bonusWord);
-  const maxHints = 1 + (hasFoundBonus ? 1 : 0);
+  const bonusCount = gameState.bonusCount || 0;
+  const maxHints = 1 + bonusCount;
   const left = Math.min(getUnfoundWordCount(), Math.max(0, maxHints - (gameState.hintsUsed || 0)));
 
   if (left <= 0) {
