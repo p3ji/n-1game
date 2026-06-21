@@ -106,7 +106,6 @@ window.addEventListener('DOMContentLoaded', () => {
   document.getElementById('btn-shuffle').addEventListener('click', shuffleLetters);
   document.getElementById('btn-submit').addEventListener('click', submitSpelledWord);
   document.getElementById('btn-hint').addEventListener('click', purchaseHint);
-  document.getElementById('btn-purchase').addEventListener('click', purchaseNextLevel);
   document.getElementById('btn-play-again').addEventListener('click', restartFromScratch);
 
   // Home screen handlers
@@ -898,9 +897,9 @@ function animateEatingScrap(word) {
     updateScoreUI();
     updateProgressUI();
     saveGameState();
-
+ 
     // Check level completed
-    checkDirectVictory();
+    checkAutoProceed();
   };
 }
 
@@ -1022,29 +1021,11 @@ function updateProgressUI() {
   goalMarker.style.left = `${goalPercent}%`;
   
   const needed = goalCount - foundCount;
-  const purchaseButton = document.getElementById('btn-purchase');
-
-  if (needed > 0) {
-    purchaseButton.classList.remove('ready');
-    purchaseButton.classList.add('disabled');
-    purchaseButton.disabled = true;
-    purchaseButton.textContent = "LOCKED";
-  } else {
-    purchaseButton.classList.add('ready');
-    purchaseButton.classList.remove('disabled');
-    purchaseButton.disabled = false;
-    
-    if (gameState.level === 7) {
-      purchaseButton.textContent = "WIN";
-    } else {
-      purchaseButton.textContent = "PROCEED";
-    }
-    
-    if (!gameState.isLevelUnlocked) {
-      gameState.isLevelUnlocked = true;
-      triggerBoxyEmotion('happy');
-      boxySpeak("The next word package is unlocked!", 4000);
-    }
+  
+  if (needed <= 0 && !gameState.isLevelUnlocked) {
+    gameState.isLevelUnlocked = true;
+    triggerBoxyEmotion('happy');
+    boxySpeak("The next word package is unlocked!", 4000);
   }
 }
 
@@ -1072,22 +1053,19 @@ function purchaseNextLevel() {
   }
 }
 
-function checkDirectVictory() {
+function checkAutoProceed() {
   const W = gameState.currentWordObj.subwords.length;
   const found = gameState.foundWords.length;
   const goalCount = gameState.easyMode ? Math.max(1, W - 2) : Math.max(1, W - 1);
   
-  if (gameState.level === 7 && found >= goalCount) {
-    const purchaseButton = document.getElementById('btn-purchase');
-    purchaseButton.textContent = "VICTORY";
-    purchaseButton.classList.add('ready');
-    purchaseButton.classList.remove('disabled');
-    purchaseButton.disabled = false;
-    
-    if (found === W) {
-      recordCurrentAttempt(); // Record final 100% completion in history
-      showVictoryModal();
-    }
+  if (found >= goalCount) {
+    // Player reached the goal count! Auto-proceed after a short delay (1000ms)
+    setTimeout(() => {
+      // Make sure they haven't reset or time hasn't run out during the timeout
+      if (gameState.timeLeft > 0 && gameState.foundWords.length >= goalCount) {
+        purchaseNextLevel();
+      }
+    }, 1000);
   }
 }
 
