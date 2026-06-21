@@ -31,6 +31,12 @@ window.addEventListener('DOMContentLoaded', () => {
   loadHighScore();
   loadGameState();
   initConfetti();
+
+  // Always start with all modals/dropdowns closed, regardless of any cached state
+  ['reset-modal', 'help-modal', 'victory-modal'].forEach(id => {
+    document.getElementById(id)?.classList.add('hidden');
+  });
+  document.getElementById('settings-dropdown')?.classList.add('hidden');
   
   // Set up event listeners
   document.getElementById('btn-settings').addEventListener('click', toggleSettingsDropdown);

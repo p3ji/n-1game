@@ -1,4 +1,4 @@
-const CACHE_NAME = 'n1-word-craft-v5';
+const CACHE_NAME = 'n1-word-craft-v6';
 const ASSETS = [
   './',
   './index.html',
