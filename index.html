@@ -222,15 +222,26 @@
   <!-- Particle / Confetti Canvas Layer -->
   <canvas id="confetti-canvas"></canvas>
 
-  <!-- Game Scripts -->
-  <script src="words_data.js"></script>
-  <script src="game.js"></script>
+  <!-- Game Scripts (v=6 forces browser to bypass any stale HTTP cache) -->
+  <script src="words_data.js?v=6"></script>
+  <script src="game.js?v=6"></script>
   <script>
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
-        navigator.serviceWorker.register('./sw.js')
-          .then(reg => console.log('Service Worker registered!'))
-          .catch(err => console.error('Service Worker registration failed:', err));
+        navigator.serviceWorker.register('./sw.js').then(reg => {
+          // Force the browser to check for a newer SW on every page load
+          reg.update();
+
+          // When a new SW takes control (after skipWaiting), reload immediately
+          // so users always get the latest game code
+          let refreshing = false;
+          navigator.serviceWorker.addEventListener('controllerchange', () => {
+            if (!refreshing) {
+              refreshing = true;
+              window.location.reload();
+            }
+          });
+        }).catch(err => console.error('SW error:', err));
       });
     }
   </script>
