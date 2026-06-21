@@ -1435,44 +1435,171 @@ body {
 .hints-friends-container {
   display: flex;
   align-items: flex-end;
-  gap: 6px;
-  height: 48px;
+  gap: 8px;
+  height: 58px;
+  padding-bottom: 2px;
 }
 .hints-friends-container .boxy-friend {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-end;
   position: relative;
   top: auto !important;
   left: auto !important;
   right: auto !important;
   bottom: auto !important;
+  height: 56px;
   flex-shrink: 0;
+  animation: breathing 3s ease-in-out infinite;
 }
 .hints-friends-container .boxy-friend.roxy {
   width: 30px;
-  height: 42px;
+  animation-delay: 0s;
 }
 .hints-friends-container .boxy-friend.roxy .friend-body {
-  border-radius: 10px;
+  width: 26px;
+  height: 36px;
+  border-radius: 8px;
 }
 .hints-friends-container .boxy-friend.toxy {
   width: 34px;
-  height: 34px;
+  animation-delay: 0.5s;
 }
 .hints-friends-container .boxy-friend.toxy .friend-body-diamond {
-  width: 20px;
-  height: 20px;
-  margin: 2px auto 0;
+  width: 18px;
+  height: 18px;
+  margin: 4px auto;
 }
 .hints-friends-container .boxy-friend.toxy .friend-label {
   margin-top: 1px;
 }
 .hints-friends-container .boxy-friend.foxy {
   width: 38px;
-  height: 24px;
+  animation-delay: 1s;
 }
 .hints-friends-container .boxy-friend.foxy .friend-body {
+  width: 32px;
+  height: 20px;
   border-radius: 2px;
 }
 .hints-friends-container .boxy-friend .friend-label {
   font-size: 0.52rem;
   letter-spacing: 0.1px;
 }
+
+/* Flying hint friend flyer */
+.flying-friend-flyer {
+  position: absolute;
+  z-index: 9999;
+  pointer-events: none;
+  transition: all 0.65s cubic-bezier(0.25, 1, 0.5, 1);
+  transform-origin: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.flying-friend-flyer .friend-body,
+.flying-friend-flyer .friend-body-diamond {
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3) !important;
+}
+
+/* --- HOME SCREEN SPECIFIC STYLES --- */
+.home-cardboard {
+  max-width: 380px;
+  background-color: var(--cardboard-base);
+  padding: 12px;
+  animation: pop-up 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+.home-notebook {
+  padding: 15px 15px 15px 25px; /* Notebook margin line spacing */
+}
+.home-title {
+  justify-content: center;
+  margin-bottom: 12px;
+  font-size: 1.7rem;
+  border-bottom: 2px solid var(--marker-ink);
+  padding-bottom: 6px;
+  transform: rotate(-0.5deg);
+}
+.home-mascot-area {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 15px;
+  margin: 15px 0 10px;
+  background-color: rgba(0, 0, 0, 0.03);
+  padding: 8px 12px;
+  border-radius: 4px;
+  border: 1.5px dashed rgba(30, 41, 59, 0.2);
+}
+.home-mascot-area .boxy-mascot {
+  width: 62px;
+  height: 56px;
+  position: relative;
+  flex-shrink: 0;
+}
+.home-speech-bubble {
+  background-color: var(--notebook-bg);
+  border: 2px solid var(--marker-ink);
+  border-radius: 8px;
+  padding: 6px 10px;
+  font-family: var(--font-handwritten);
+  font-size: 0.9rem;
+  line-height: 1.2;
+  box-shadow: 2px 2px 0 var(--marker-ink);
+  position: relative;
+  max-width: 170px;
+  animation: float 2.5s ease-in-out infinite;
+}
+.home-speech-bubble::before {
+  content: '';
+  position: absolute;
+  left: -8px;
+  top: 50%;
+  transform: translateY(-50%) rotate(45deg);
+  width: 10px;
+  height: 10px;
+  background-color: var(--notebook-bg);
+  border-left: 2px solid var(--marker-ink);
+  border-bottom: 2px solid var(--marker-ink);
+}
+.home-rules {
+  margin: 10px 0 15px;
+  font-family: var(--font-fun);
+  font-size: 0.9rem;
+  color: var(--marker-ink);
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  background: rgba(255, 255, 255, 0.45);
+  padding: 10px;
+  border-radius: 4px;
+  border: 1.5px dashed rgba(30, 41, 59, 0.2);
+}
+.rule-item {
+  margin: 0;
+  line-height: 1.35;
+}
+.home-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  width: 100%;
+}
+.home-actions button {
+  width: 100%;
+  text-align: center;
+}
+#btn-start-game {
+  animation: pulse 1.2s infinite;
+}
+@keyframes wave-arm {
+  0% { transform: rotate(20deg); }
+  50% { transform: rotate(60deg); }
+  100% { transform: rotate(20deg); }
+}
+.home-cardboard .arm-left {
+  animation: wave-arm 1.4s ease-in-out infinite;
+}
+

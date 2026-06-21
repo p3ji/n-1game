@@ -39,6 +39,7 @@ window.addEventListener('DOMContentLoaded', () => {
   ['reset-modal', 'help-modal', 'victory-modal', 'history-modal'].forEach(id => {
     document.getElementById(id)?.classList.add('hidden');
   });
+  document.getElementById('home-screen')?.classList.remove('hidden');
   document.getElementById('settings-dropdown')?.classList.add('hidden');
   
   // Set up event listeners
@@ -83,6 +84,15 @@ window.addEventListener('DOMContentLoaded', () => {
   document.getElementById('btn-hint').addEventListener('click', purchaseHint);
   document.getElementById('btn-purchase').addEventListener('click', purchaseNextLevel);
   document.getElementById('btn-play-again').addEventListener('click', restartFromScratch);
+
+  // Home screen handlers
+  document.getElementById('btn-start-game').addEventListener('click', () => {
+    playTapSound();
+    document.getElementById('home-screen').classList.add('hidden');
+  });
+  document.getElementById('home-btn-difficulty').addEventListener('click', () => {
+    toggleDifficulty();
+  });
 
   // Wheel center click to submit
   document.getElementById('wheel-center-input').addEventListener('click', () => {
@@ -420,14 +430,22 @@ function toggleDifficulty() {
 }
 
 function updateDifficultyButtonUI() {
-  const btn = document.getElementById('btn-difficulty');
-  if (btn) {
-    btn.textContent = `Easy Mode: ${gameState.easyMode ? 'ON' : 'OFF'}`;
-    if (gameState.easyMode) {
-      btn.classList.add('btn-danger'); // Use red background to indicate it's active
-    } else {
-      btn.classList.remove('btn-danger');
+  const ids = ['btn-difficulty', 'home-btn-difficulty'];
+  ids.forEach(id => {
+    const btn = document.getElementById(id);
+    if (btn) {
+      btn.textContent = `Easy Mode: ${gameState.easyMode ? 'ON' : 'OFF'}`;
+      if (gameState.easyMode) {
+        btn.classList.add('btn-danger'); // Use red background to indicate it's active
+      } else {
+        btn.classList.remove('btn-danger');
+      }
     }
+  });
+
+  const ruleCount = document.getElementById('home-rule-count');
+  if (ruleCount) {
+    ruleCount.textContent = gameState.easyMode ? '2' : '1';
   }
 }
 
@@ -920,7 +938,7 @@ function updateProgressUI() {
   const progressBar = document.getElementById('words-progress-bar');
   progressBar.style.width = `${progressPercent}%`;
   
-  const goalCount = gameState.easyMode ? Math.max(1, Math.ceil(W / 2)) : Math.max(1, W - 1);
+  const goalCount = gameState.easyMode ? Math.max(1, W - 2) : Math.max(1, W - 1);
   const goalPercent = (goalCount / W) * 100;
   
   const goalMarker = document.getElementById('goal-marker');
@@ -955,7 +973,7 @@ function updateProgressUI() {
 
 function purchaseNextLevel() {
   const W = gameState.currentWordObj.subwords.length;
-  const goalCount = gameState.easyMode ? Math.max(1, Math.ceil(W / 2)) : Math.max(1, W - 1);
+  const goalCount = gameState.easyMode ? Math.max(1, W - 2) : Math.max(1, W - 1);
   if (gameState.foundWords.length < goalCount) {
     playCrinkleSound();
     return;
@@ -981,7 +999,7 @@ function purchaseNextLevel() {
 function checkDirectVictory() {
   const W = gameState.currentWordObj.subwords.length;
   const found = gameState.foundWords.length;
-  const goalCount = gameState.easyMode ? Math.max(1, Math.ceil(W / 2)) : Math.max(1, W - 1);
+  const goalCount = gameState.easyMode ? Math.max(1, W - 2) : Math.max(1, W - 1);
   
   if (gameState.level === 4 && found >= goalCount) {
     const purchaseButton = document.getElementById('btn-purchase');
@@ -1031,7 +1049,10 @@ function updateFriendsUI() {
   else foxy.classList.remove('leaving');
 }
 
+let isHintAnimating = false;
+
 function purchaseHint() {
+  if (isHintAnimating) return;
   if ((gameState.hintsUsed || 0) >= 3) {
     boxySpeak("No more hints for this word!", 3000);
     playCrinkleSound();
@@ -1052,8 +1073,6 @@ function purchaseHint() {
     return;
   }
 
-  playScribbleSound();
-
   const randWordIdx = unfoundIndices[Math.floor(Math.random() * unfoundIndices.length)];
   const targetWord = subwords[randWordIdx];
 
@@ -1072,19 +1091,90 @@ function purchaseHint() {
     }
     gameState.hintsRevealed[randWordIdx].push(randLetterIdx);
 
-    const friends = [
-      "Roxy (the mailing tube)",
-      "Toxy (the triangular box)",
-      "Foxy (the flat pizza box)"
-    ];
-    const helperFriend = friends[gameState.hintsUsed || 0] || "Roxy (the mailing tube)";
-    gameState.hintsUsed = (gameState.hintsUsed || 0) + 1;
+    const friendIds = ['friend-roxy', 'friend-toxy', 'friend-foxy'];
+    const currentFriendId = friendIds[gameState.hintsUsed || 0];
+    const friendEl = document.getElementById(currentFriendId);
+    const targetBox = document.querySelector(`.mini-box-item[data-index="${randWordIdx}"]`);
 
-    setupLevelUI();
-    saveGameState();
-    
-    triggerBoxyEmotion('happy');
-    boxySpeak(`${helperFriend} helped and revealed a letter!`, 4000);
+    if (friendEl && targetBox) {
+      isHintAnimating = true;
+      playScribbleSound();
+
+      // Disable hint button during animation
+      const btnHint = document.getElementById('btn-hint');
+      if (btnHint) {
+        btnHint.disabled = true;
+        btnHint.classList.add('disabled');
+      }
+
+      // Get positions
+      const friendRect = friendEl.getBoundingClientRect();
+      const targetRect = targetBox.getBoundingClientRect();
+
+      // Create flyer
+      const flyer = document.createElement('div');
+      flyer.className = 'flying-friend-flyer boxy-friend ' + currentFriendId.replace('friend-', '');
+      flyer.style.width = `${friendEl.offsetWidth}px`;
+      flyer.style.height = `${friendEl.offsetHeight}px`;
+      flyer.style.left = `${friendRect.left + window.scrollX}px`;
+      flyer.style.top = `${friendRect.top + window.scrollY}px`;
+
+      const bodyClone = friendEl.querySelector('.friend-body, .friend-body-diamond').cloneNode(true);
+      flyer.appendChild(bodyClone);
+      document.body.appendChild(flyer);
+
+      // Hide original friend immediately
+      friendEl.classList.add('leaving');
+
+      // Trigger CSS flyer transition
+      setTimeout(() => {
+        flyer.style.left = `${targetRect.left + window.scrollX + (targetBox.offsetWidth - friendEl.offsetWidth) / 2}px`;
+        flyer.style.top = `${targetRect.top + window.scrollY + (targetBox.offsetHeight - friendEl.offsetHeight) / 2}px`;
+        flyer.style.transform = 'scale(0.3) rotate(360deg)';
+        flyer.style.opacity = '0.3';
+      }, 20);
+
+      // Finish animation
+      const friends = [
+        "Roxy (the mailing tube)",
+        "Toxy (the triangular box)",
+        "Foxy (the flat pizza box)"
+      ];
+      const helperFriend = friends[gameState.hintsUsed || 0] || "Roxy (the mailing tube)";
+
+      setTimeout(() => {
+        flyer.remove();
+        gameState.hintsUsed = (gameState.hintsUsed || 0) + 1;
+
+        setupLevelUI();
+        saveGameState();
+
+        // Bounce and pop the box
+        const newTargetBox = document.querySelector(`.mini-box-item[data-index="${randWordIdx}"]`);
+        if (newTargetBox) {
+          newTargetBox.classList.add('has-hint');
+          newTargetBox.animate([
+            { transform: 'scale(1)' },
+            { transform: 'scale(1.25)', backgroundColor: 'var(--c-paper-yellow)' },
+            { transform: 'scale(1)' }
+          ], {
+            duration: 450,
+            easing: 'ease-out'
+          });
+        }
+
+        isHintAnimating = false;
+        triggerBoxyEmotion('happy');
+        boxySpeak(`${helperFriend} helped and revealed a letter!`, 4000);
+      }, 670);
+
+    } else {
+      // Fallback
+      gameState.hintsUsed = (gameState.hintsUsed || 0) + 1;
+      setupLevelUI();
+      saveGameState();
+      triggerBoxyEmotion('happy');
+    }
   }
 }
 
@@ -1204,6 +1294,7 @@ function resetGame() {
   startNewLevel(7);
   triggerBoxyEmotion('idle');
   boxySpeak("Started fresh cardboard! Level 1!", 4000);
+  document.getElementById('home-screen').classList.remove('hidden');
 }
 function restartFromScratch() {
   playLevelUpSound();

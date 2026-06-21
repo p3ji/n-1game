@@ -8,7 +8,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@300..700&family=Patrick+Hand&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="style.css?v=14">
+  <link rel="stylesheet" href="style.css?v=16">
   <link rel="manifest" href="manifest.json">
   <meta name="theme-color" content="#d7a15c">
   <meta name="apple-mobile-web-app-capable" content="yes">
@@ -237,6 +237,61 @@
     </div>
   </div>
 
+  <!-- Home Screen / Welcome Overlay -->
+  <div id="home-screen" class="modal-overlay">
+    <div class="modal-cardboard home-cardboard">
+      <div class="tape tape-modal-top"></div>
+      <div class="notebook-sheet modal-notebook home-notebook">
+        <!-- Logo/Title -->
+        <h1 class="logo-title home-title">N-1 <span class="logo-sub">Word Craft</span></h1>
+        
+        <!-- Welcome Boxy Mascot -->
+        <div class="home-mascot-area">
+          <div class="boxy-mascot idle">
+            <div class="boxy-arm arm-left"></div>
+            <div class="boxy-body">
+              <div class="box-face">
+                <div class="box-eyes">
+                  <div class="box-eye eye-left">
+                    <div class="pupil"></div>
+                  </div>
+                  <div class="box-eye eye-right">
+                    <div class="pupil"></div>
+                  </div>
+                </div>
+                <div class="box-mouth smile"></div>
+                <div class="box-cheeks"></div>
+              </div>
+              <div class="box-flap flap-left"></div>
+              <div class="box-flap flap-right"></div>
+            </div>
+            <div class="boxy-arm arm-right"></div>
+            <div class="boxy-legs">
+              <div class="boxy-leg leg-left"></div>
+              <div class="boxy-leg leg-right"></div>
+            </div>
+          </div>
+          <!-- Speech Bubble -->
+          <div class="home-speech-bubble">
+            <span>Hi! Let's craft words out of cardboard!</span>
+          </div>
+        </div>
+
+        <!-- Rules list -->
+        <div class="home-rules">
+          <p class="rule-item">1. Find as many words as you can using the letters of the starter word.</p>
+          <p class="rule-item">2. Find all the words but <span id="home-rule-count">1</span> to move to the next level.</p>
+        </div>
+
+        <!-- Action Controls -->
+        <div class="home-actions">
+          <button id="home-btn-difficulty" class="btn-craft btn-medium">Easy Mode: OFF</button>
+          <button id="btn-start-game" class="btn-craft btn-large btn-primary">START CRAFTING</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <!-- Reset Confirmation Modal -->
   <div id="reset-modal" class="modal-overlay hidden">
     <div class="modal-cardboard reset-cardboard">
@@ -272,9 +327,9 @@
   <!-- Particle / Confetti Canvas Layer -->
   <canvas id="confetti-canvas"></canvas>
 
-  <!-- Game Scripts (v=14) -->
-  <script src="words_data.js?v=14"></script>
-  <script src="game.js?v=14"></script>
+  <!-- Game Scripts (v=16) -->
+  <script src="words_data.js?v=16"></script>
+  <script src="game.js?v=16"></script>
   <script>
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
