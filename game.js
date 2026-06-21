@@ -272,6 +272,10 @@ function loadGameState() {
       updateSoundButtonUI();
       updateDifficultyButtonUI();
       updateBonusUI();
+      if (gameState.currentWordObj) {
+        updateFriendsUI();
+        updateHintButtonUI();
+      }
     } catch (e) {
       console.error('Failed to parse saved game state', e);
     }
