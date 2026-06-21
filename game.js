@@ -1121,7 +1121,10 @@ function updateHintButtonUI() {
   const btnHint = document.getElementById('btn-hint');
   if (!btnHint) return;
 
-  const left = Math.max(0, 3 - (gameState.hintsUsed || 0));
+  // Cap hints at number of unfound words (max 3)
+  const unfoundCount = getUnfoundWordCount();
+  const maxHints = Math.min(3, unfoundCount);
+  const left = Math.max(0, maxHints - (gameState.hintsUsed || 0));
   btnHint.textContent = `GET HINT (${left} left)`;
 
   if (left <= 0) {
@@ -1133,28 +1136,62 @@ function updateHintButtonUI() {
   }
 }
 
+// Helper: count unfound words for current level
+function getUnfoundWordCount() {
+  if (!gameState.currentWordObj) return 0;
+  const subwords = gameState.currentWordObj.subwords;
+  return subwords.filter(w => !gameState.foundWords.includes(w)).length;
+}
+
 function updateFriendsUI() {
   const roxy = document.getElementById('friend-roxy');
   const toxy = document.getElementById('friend-toxy');
   const foxy = document.getElementById('friend-foxy');
   if (!roxy || !toxy || !foxy) return;
 
+  // Only show as many friends as there are available hints
+  // Available hints = min(3, unfound words) - hints already used
+  const unfoundCount = getUnfoundWordCount();
+  const maxHints = Math.min(3, unfoundCount);
   const used = gameState.hintsUsed || 0;
-  if (used >= 1) roxy.classList.add('leaving');
-  else roxy.classList.remove('leaving');
 
-  if (used >= 2) toxy.classList.add('leaving');
-  else toxy.classList.remove('leaving');
+  // Friend 1 (Roxy): visible if maxHints >= 1, leaving if used >= 1
+  if (maxHints >= 1) {
+    roxy.style.display = '';
+    if (used >= 1) roxy.classList.add('leaving');
+    else roxy.classList.remove('leaving');
+  } else {
+    roxy.style.display = 'none';
+  }
 
-  if (used >= 3) foxy.classList.add('leaving');
-  else foxy.classList.remove('leaving');
+  // Friend 2 (Toxy): visible if maxHints >= 2, leaving if used >= 2
+  if (maxHints >= 2) {
+    toxy.style.display = '';
+    if (used >= 2) toxy.classList.add('leaving');
+    else toxy.classList.remove('leaving');
+  } else {
+    toxy.style.display = 'none';
+  }
+
+  // Friend 3 (Foxy): visible if maxHints >= 3, leaving if used >= 3
+  if (maxHints >= 3) {
+    foxy.style.display = '';
+    if (used >= 3) foxy.classList.add('leaving');
+    else foxy.classList.remove('leaving');
+  } else {
+    foxy.style.display = 'none';
+  }
 }
 
 let isHintAnimating = false;
 
 function purchaseHint() {
   if (isHintAnimating) return;
-  if ((gameState.hintsUsed || 0) >= 3) {
+
+  const unfoundCount = getUnfoundWordCount();
+  const maxHints = Math.min(3, unfoundCount);
+
+  if ((gameState.hintsUsed || 0) >= maxHints) {
     boxySpeak("No more hints for this word!", 3000);
     playCrinkleSound();
     return;
@@ -1954,6 +1991,18 @@ function showLevelTransition(nextLevel) {
   // Play transition sound (crinkle)
   playCrinkleSound();
   
+  // Helper to cleanly dismiss the transition
+  function dismissTransition() {
+    overlay.classList.add('hidden');
+    overlay.classList.remove('animating');
+    gameState.isTransitioning = false;
+  }
+  
+  // Allow clicking the overlay to dismiss it (fallback for stuck state)
+  overlay.onclick = () => {
+    dismissTransition();
+  };
+  
   // Show overlay (triggers CSS animations)
   overlay.classList.remove('hidden');
   overlay.classList.add('animating');
@@ -1966,18 +2015,13 @@ function showLevelTransition(nextLevel) {
     overlay.classList.remove('animating');
   }, 1500);
   
-  // At 2.0s, hide overlay completely and clear transitioning flag
+  // At 2.5s, hide overlay completely and clear transitioning flag
   setTimeout(() => {
-    overlay.classList.add('hidden');
-    gameState.isTransitioning = false;
-  }, 2000);
+    dismissTransition();
+  }, 2500);
 
-  // Safety fallback: ensure overlay is always cleaned up after 3s max
+  // Safety fallback: ensure overlay is always cleaned up after 4s max
   setTimeout(() => {
-    if (!overlay.classList.contains('hidden')) {
-      overlay.classList.add('hidden');
-      overlay.classList.remove('animating');
-    }
-    gameState.isTransitioning = false;
-  }, 3000);
+    dismissTransition();
+  }, 4000);
 }
