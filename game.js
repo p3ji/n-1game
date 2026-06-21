@@ -1266,9 +1266,8 @@ function checkAutoProceed() {
     document.getElementById('next-level-btn-container')?.classList.add('hidden');
   }
 
-  // If they find ALL words, auto-proceed after 1.5 seconds since there are no more words to guess
-  const totalSubwordsCount = gameState.currentWordObj.subwords.length;
-  if (found >= totalSubwordsCount) {
+  // If they find ALL playable words (fill all boxes), auto-proceed after 1.5 seconds since there are no more slots to guess in
+  if (found >= W) {
     if (autoProceedTimeout) {
       clearTimeout(autoProceedTimeout);
       autoProceedTimeout = null;
@@ -1276,7 +1275,7 @@ function checkAutoProceed() {
 
     autoProceedTimeout = setTimeout(() => {
       autoProceedTimeout = null;
-      if (gameState.timeLeft > 0 && !gameState.isTransitioning && gameState.foundWords.length >= totalSubwordsCount) {
+      if (gameState.timeLeft > 0 && !gameState.isTransitioning && gameState.foundWords.length >= W) {
         handleProceedToNextLevel();
       }
     }, 1500);
@@ -1880,6 +1879,14 @@ function openLeaderboardModal() {
 function hideLeaderboardModal() {
   playTapSound();
   document.getElementById('leaderboard-modal').classList.add('hidden');
+  
+  // If the game session was completed (victory or timeout), show the victory modal again so the player has the Play Again option
+  const victoryModal = document.getElementById('victory-modal');
+  const isTimeUp = gameState.timeLeft <= 0;
+  const isVictory = gameState.level > 7;
+  if (isTimeUp || isVictory) {
+    victoryModal.classList.remove('hidden');
+  }
 }
 
 function switchLeaderboardTab(timeframe) {
@@ -2254,6 +2261,16 @@ function handleProceedToNextLevel() {
   if (autoProceedTimeout) {
     clearTimeout(autoProceedTimeout);
     autoProceedTimeout = null;
+  }
+
+  const W = getPlayableSubwordsCount();
+  const found = gameState.foundWords.length;
+
+  // If they found all playable words (all boxes filled), proceed immediately with no missing words reveal
+  if (found >= W) {
+    document.getElementById('next-level-btn-container')?.classList.add('hidden');
+    purchaseNextLevel();
+    return;
   }
 
   const subwords = gameState.currentWordObj.subwords || [];
