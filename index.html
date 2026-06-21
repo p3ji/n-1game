@@ -8,7 +8,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@300..700&family=Patrick+Hand&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="style.css?v=16">
+  <link rel="stylesheet" href="style.css?v=17">
   <link rel="manifest" href="manifest.json">
   <meta name="theme-color" content="#d7a15c">
   <meta name="apple-mobile-web-app-capable" content="yes">
@@ -98,7 +98,7 @@
         <!-- Mini Cardboard Boxes display (words to find) -->
         <div class="mini-boxes-panel">
           <div class="mini-boxes-header">
-            <h2 class="level-indicator"><span id="level-letter-count-label">7-Letter Word</span>: <span id="current-word-display" class="highlight-word">-------</span></h2>
+            <h2 class="level-indicator"><span id="level-letter-count-label">4-Letter Word</span>: <span id="current-word-display" class="highlight-word">----</span></h2>
             <div class="words-progress">
               <span id="words-found-count" class="progress-numbers">0 / 0</span>
             </div>
@@ -185,7 +185,7 @@
         <div class="shop-tag-compact">
           <div class="tag-body-compact">
             <span class="shop-title-compact">Proceed:</span>
-            <span id="shop-item-name" class="item-name-compact">6-Letter Word</span>
+            <span id="shop-item-name" class="item-name-compact">5-Letter Word</span>
             <button id="btn-purchase" class="btn-purchase-compact disabled" disabled>LOCKED</button>
           </div>
         </div>
@@ -205,8 +205,8 @@
           <li>Typed/clicked letters appear in the <strong>center of the wheel</strong>.</li>
           <li>Find all possible words <strong>except one</strong> to unlock the next level word package.</li>
           <li>When you submit a correct word, Boxy will <strong>eat it</strong> and one of the mini boxes above will pop open!</li>
-          <li><strong>Go to</strong> the next starter word package (which shrinks to 6, then 5, then <strong>4 letters</strong>).</li>
-          <li>Complete the 4-letter level to claim ultimate Victory!</li>
+          <li><strong>Go to</strong> the next starter word package (which grows to 5, then 6, then <strong>7 letters</strong>).</li>
+          <li>Complete the 7-letter level to claim ultimate Victory!</li>
         </ol>
         <p class="modal-tips">
           💡 <strong>Tip:</strong> Click the center of the wheel to submit. Shuffling is free!
@@ -327,9 +327,9 @@
   <!-- Particle / Confetti Canvas Layer -->
   <canvas id="confetti-canvas"></canvas>
 
-  <!-- Game Scripts (v=16) -->
-  <script src="words_data.js?v=16"></script>
-  <script src="game.js?v=16"></script>
+  <!-- Game Scripts (v=17) -->
+  <script src="words_data.js?v=17"></script>
+  <script src="game.js?v=17"></script>
   <script>
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {

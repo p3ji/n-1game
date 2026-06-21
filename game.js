@@ -3,7 +3,7 @@
 // --- GAME STATE ---
 let gameState = {
   totalScore: 0,
-  level: 7, // 7 letters -> 6 letters -> 5 letters -> 4 letters
+  level: 4, // 4 letters -> 5 letters -> 6 letters -> 7 letters
   currentWordObj: null, // { word: 'weather', subwords: [...] }
   wheelLetters: [], // current letters on the wheel (shuffled version of starter word)
   foundWords: [], // List of found words
@@ -155,7 +155,7 @@ function loadGameState() {
     try {
       const parsed = JSON.parse(saved);
       gameState.totalScore = parsed.totalScore || 0;
-      gameState.level = parsed.level || 7;
+      gameState.level = parsed.level || 4;
       gameState.foundWords = parsed.foundWords || [];
       gameState.hintsRevealed = parsed.hintsRevealed || {};
       gameState.soundEnabled = parsed.soundEnabled !== false;
@@ -557,10 +557,10 @@ function setupLevelUI() {
   renderLetterWheel();
 
   // Update shop/progression text
-  const nextSize = gameState.level - 1;
+  const nextSize = gameState.level + 1;
   const shopTitle = document.getElementById('shop-item-name');
   
-  if (nextSize >= 4) {
+  if (nextSize <= 7) {
     shopTitle.textContent = `${nextSize}-Letter Word`;
   } else {
     shopTitle.textContent = `Claim Victory!`;
@@ -957,7 +957,7 @@ function updateProgressUI() {
     purchaseButton.classList.remove('disabled');
     purchaseButton.disabled = false;
     
-    if (gameState.level === 4) {
+    if (gameState.level === 7) {
       purchaseButton.textContent = "WIN";
     } else {
       purchaseButton.textContent = "PROCEED";
@@ -984,10 +984,10 @@ function purchaseNextLevel() {
 
   playLevelUpSound();
   
-  const nextLevel = gameState.level - 1;
+  const nextLevel = gameState.level + 1;
   gameState.isLevelUnlocked = false;
 
-  if (nextLevel < 4) {
+  if (nextLevel > 7) {
     showVictoryModal();
   } else {
     boxySpeak(`Unlocked! Loading ${nextLevel}-letter word!`, 4000);
@@ -1001,7 +1001,7 @@ function checkDirectVictory() {
   const found = gameState.foundWords.length;
   const goalCount = gameState.easyMode ? Math.max(1, W - 2) : Math.max(1, W - 1);
   
-  if (gameState.level === 4 && found >= goalCount) {
+  if (gameState.level === 7 && found >= goalCount) {
     const purchaseButton = document.getElementById('btn-purchase');
     purchaseButton.textContent = "VICTORY";
     purchaseButton.classList.add('ready');
@@ -1285,13 +1285,13 @@ function resetGame() {
   localStorage.removeItem('n1_gameState');
   
   gameState.totalScore = 0;
-  gameState.level = 7;
+  gameState.level = 4;
   gameState.foundWords = [];
   gameState.hintsRevealed = {};
   gameState.currentWordObj = null;
   gameState.isLevelUnlocked = false;
   
-  startNewLevel(7);
+  startNewLevel(4);
   triggerBoxyEmotion('idle');
   boxySpeak("Started fresh cardboard! Level 1!", 4000);
   document.getElementById('home-screen').classList.remove('hidden');
@@ -1478,7 +1478,7 @@ function openHistoryModal() {
       item.innerHTML = `
         <div class="history-item-left">
           <span class="history-word">${att.starterWord.toUpperCase()}</span>
-          <span class="history-level-label">Level ${8 - att.level} (${att.level}L)</span>
+          <span class="history-level-label">Level ${att.level - 3} (${att.level}L)</span>
         </div>
         <div class="history-item-mid">
           <span class="history-words-count">${att.foundCount}/${att.totalCount}</span>
