@@ -57,8 +57,15 @@ window.addEventListener('DOMContentLoaded', () => {
   ['reset-modal', 'help-modal', 'victory-modal', 'history-modal', 'leaderboard-modal'].forEach(id => {
     document.getElementById(id)?.classList.add('hidden');
   });
-  document.getElementById('home-screen')?.classList.remove('hidden');
   document.getElementById('settings-dropdown')?.classList.add('hidden');
+  
+  // If there is an active saved game, don't show the home screen overlay
+  const savedStateExists = localStorage.getItem('n1_gameState') !== null;
+  if (savedStateExists && gameState.timeLeft > 0) {
+    document.getElementById('home-screen')?.classList.add('hidden');
+  } else {
+    document.getElementById('home-screen')?.classList.remove('hidden');
+  }
   
   // Set up event listeners
   document.getElementById('btn-settings').addEventListener('click', toggleSettingsDropdown);
@@ -308,211 +315,248 @@ function saveGameState() {
 
 // --- SOUND SYNTHESIS ENGINE (Web Audio API) ---
 function initAudio() {
-  if (!audioCtx) {
-    audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-  }
-  if (audioCtx.state === 'suspended') {
-    audioCtx.resume();
+  try {
+    if (!audioCtx) {
+      audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    }
+    if (audioCtx && audioCtx.state === 'suspended') {
+      audioCtx.resume().catch(err => {
+        console.warn("Failed to resume AudioContext:", err);
+      });
+    }
+  } catch (err) {
+    console.warn("AudioContext initialization failed:", err);
+    audioCtx = null;
   }
 }
 
 function playTapSound() {
   if (!gameState.soundEnabled) return;
-  initAudio();
-  
-  const osc = audioCtx.createOscillator();
-  const gain = audioCtx.createGain();
-  osc.connect(gain);
-  gain.connect(audioCtx.destination);
-  
-  osc.type = 'triangle';
-  osc.frequency.setValueAtTime(110, audioCtx.currentTime);
-  osc.frequency.exponentialRampToValueAtTime(35, audioCtx.currentTime + 0.12);
-  
-  gain.gain.setValueAtTime(0.4, audioCtx.currentTime);
-  gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.12);
-  
-  osc.start();
-  osc.stop(audioCtx.currentTime + 0.13);
-}
-
-function playChimeSound() {
-  if (!gameState.soundEnabled) return;
-  initAudio();
-
-  const notes = [523.25, 659.25, 783.99]; // C5, E5, G5
-  notes.forEach((freq, idx) => {
-    const osc = audioCtx.createOscillator();
-    const gain = audioCtx.createGain();
+  try {
+    initAudio();
+    if (!audioCtx) return;
     
-    osc.connect(gain);
-    gain.connect(audioCtx.destination);
-    
-    osc.type = 'sine';
-    const delay = idx * 0.04;
-    osc.frequency.setValueAtTime(freq, audioCtx.currentTime + delay);
-    
-    gain.gain.setValueAtTime(0, audioCtx.currentTime);
-    gain.gain.linearRampToValueAtTime(0.25, audioCtx.currentTime + delay + 0.02);
-    gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + delay + 0.5);
-    
-    osc.start(audioCtx.currentTime + delay);
-    osc.stop(audioCtx.currentTime + delay + 0.55);
-  });
-}
-
-function playCrinkleSound() {
-  if (!gameState.soundEnabled) return;
-  initAudio();
-
-  const bufferSize = audioCtx.sampleRate * 0.2;
-  const buffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
-  const data = buffer.getChannelData(0);
-  for (let i = 0; i < bufferSize; i++) {
-    data[i] = Math.random() * 2 - 1;
-  }
-  
-  const noiseNode = audioCtx.createBufferSource();
-  noiseNode.buffer = buffer;
-  
-  const filter = audioCtx.createBiquadFilter();
-  filter.type = 'bandpass';
-  filter.frequency.setValueAtTime(800, audioCtx.currentTime);
-  filter.frequency.linearRampToValueAtTime(300, audioCtx.currentTime + 0.15);
-  filter.Q.value = 3;
-  
-  const gain = audioCtx.createGain();
-  gain.gain.setValueAtTime(0.3, audioCtx.currentTime);
-  gain.gain.linearRampToValueAtTime(0.05, audioCtx.currentTime + 0.04);
-  gain.gain.linearRampToValueAtTime(0.2, audioCtx.currentTime + 0.08);
-  gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.2);
-  
-  noiseNode.connect(filter);
-  filter.connect(gain);
-  gain.connect(audioCtx.destination);
-  
-  noiseNode.start();
-  noiseNode.stop(audioCtx.currentTime + 0.21);
-}
-
-function playGulpSound() {
-  if (!gameState.soundEnabled) return;
-  initAudio();
-
-  const now = audioCtx.currentTime;
-
-  // Crunch noise
-  const bufferSize = audioCtx.sampleRate * 0.06;
-  const buffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
-  const data = buffer.getChannelData(0);
-  for (let i = 0; i < bufferSize; i++) {
-    data[i] = Math.random() * 2 - 1;
-  }
-  const noiseNode = audioCtx.createBufferSource();
-  noiseNode.buffer = buffer;
-  const filter = audioCtx.createBiquadFilter();
-  filter.type = 'bandpass';
-  filter.frequency.setValueAtTime(400, now);
-  const gainNoise = audioCtx.createGain();
-  gainNoise.gain.setValueAtTime(0.25, now);
-  gainNoise.gain.exponentialRampToValueAtTime(0.001, now + 0.06);
-  
-  noiseNode.connect(filter);
-  filter.connect(gainNoise);
-  gainNoise.connect(audioCtx.destination);
-  noiseNode.start(now);
-  noiseNode.stop(now + 0.07);
-
-  // Swallow sweep
-  const osc = audioCtx.createOscillator();
-  const gainSwallow = audioCtx.createGain();
-  osc.connect(gainSwallow);
-  gainSwallow.connect(audioCtx.destination);
-  
-  osc.type = 'triangle';
-  osc.frequency.setValueAtTime(180, now + 0.05);
-  osc.frequency.exponentialRampToValueAtTime(65, now + 0.22);
-  
-  gainSwallow.gain.setValueAtTime(0, now);
-  gainSwallow.gain.linearRampToValueAtTime(0.35, now + 0.07);
-  gainSwallow.gain.exponentialRampToValueAtTime(0.001, now + 0.22);
-  
-  osc.start(now + 0.05);
-  osc.stop(now + 0.23);
-}
-
-function playScribbleSound() {
-  if (!gameState.soundEnabled) return;
-  initAudio();
-  
-  const duration = 0.35;
-  const bufferSize = audioCtx.sampleRate * duration;
-  const buffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
-  const data = buffer.getChannelData(0);
-  for (let i = 0; i < bufferSize; i++) {
-    data[i] = Math.random() * 2 - 1;
-  }
-  const noiseNode = audioCtx.createBufferSource();
-  noiseNode.buffer = buffer;
-  const filter = audioCtx.createBiquadFilter();
-  filter.type = 'highpass';
-  filter.frequency.setValueAtTime(3200, audioCtx.currentTime);
-  
-  const gain = audioCtx.createGain();
-  gain.gain.setValueAtTime(0, audioCtx.currentTime);
-  gain.gain.linearRampToValueAtTime(0.1, audioCtx.currentTime + 0.04);
-  gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.16);
-  gain.gain.linearRampToValueAtTime(0.1, audioCtx.currentTime + 0.2);
-  gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.35);
-  
-  noiseNode.connect(filter);
-  filter.connect(gain);
-  gain.connect(audioCtx.destination);
-  
-  noiseNode.start();
-  noiseNode.stop(audioCtx.currentTime + duration);
-}
-
-function playLevelUpSound() {
-  if (!gameState.soundEnabled) return;
-  initAudio();
-
-  const now = audioCtx.currentTime;
-  
-  // Taps
-  for (let i = 0; i < 4; i++) {
-    const tapTime = now + i * 0.1;
     const osc = audioCtx.createOscillator();
     const gain = audioCtx.createGain();
     osc.connect(gain);
     gain.connect(audioCtx.destination);
     
     osc.type = 'triangle';
-    osc.frequency.setValueAtTime(90 + i * 25, tapTime);
-    gain.gain.setValueAtTime(0.35, tapTime);
-    gain.gain.exponentialRampToValueAtTime(0.01, tapTime + 0.08);
+    osc.frequency.setValueAtTime(110, audioCtx.currentTime);
+    osc.frequency.exponentialRampToValueAtTime(35, audioCtx.currentTime + 0.12);
     
-    osc.start(tapTime);
-    osc.stop(tapTime + 0.09);
+    gain.gain.setValueAtTime(0.4, audioCtx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.12);
+    
+    osc.start();
+    osc.stop(audioCtx.currentTime + 0.13);
+  } catch (err) {
+    console.warn("Error playing tap sound:", err);
   }
+}
 
-  // Chime sweep
-  const sweepStart = now + 0.4;
-  const oscSweep = audioCtx.createOscillator();
-  const gainSweep = audioCtx.createGain();
-  oscSweep.connect(gainSweep);
-  gainSweep.connect(audioCtx.destination);
-  
-  oscSweep.type = 'triangle';
-  oscSweep.frequency.setValueAtTime(250, sweepStart);
-  oscSweep.frequency.exponentialRampToValueAtTime(1000, sweepStart + 0.45);
-  
-  gainSweep.gain.setValueAtTime(0, sweepStart);
-  gainSweep.gain.linearRampToValueAtTime(0.3, sweepStart + 0.08);
-  gainSweep.gain.exponentialRampToValueAtTime(0.001, sweepStart + 0.5);
-  
-  oscSweep.start(sweepStart);
-  oscSweep.stop(sweepStart + 0.55);
+function playChimeSound() {
+  if (!gameState.soundEnabled) return;
+  try {
+    initAudio();
+    if (!audioCtx) return;
+
+    const notes = [523.25, 659.25, 783.99]; // C5, E5, G5
+    notes.forEach((freq, idx) => {
+      const osc = audioCtx.createOscillator();
+      const gain = audioCtx.createGain();
+      
+      osc.connect(gain);
+      gain.connect(audioCtx.destination);
+      
+      osc.type = 'sine';
+      const delay = idx * 0.04;
+      osc.frequency.setValueAtTime(freq, audioCtx.currentTime + delay);
+      
+      gain.gain.setValueAtTime(0, audioCtx.currentTime);
+      gain.gain.linearRampToValueAtTime(0.25, audioCtx.currentTime + delay + 0.02);
+      gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + delay + 0.5);
+      
+      osc.start(audioCtx.currentTime + delay);
+      osc.stop(audioCtx.currentTime + delay + 0.55);
+    });
+  } catch (err) {
+    console.warn("Error playing chime sound:", err);
+  }
+}
+
+function playCrinkleSound() {
+  if (!gameState.soundEnabled) return;
+  try {
+    initAudio();
+    if (!audioCtx) return;
+
+    const bufferSize = audioCtx.sampleRate * 0.2;
+    const buffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
+    const data = buffer.getChannelData(0);
+    for (let i = 0; i < bufferSize; i++) {
+      data[i] = Math.random() * 2 - 1;
+    }
+    
+    const noiseNode = audioCtx.createBufferSource();
+    noiseNode.buffer = buffer;
+    
+    const filter = audioCtx.createBiquadFilter();
+    filter.type = 'bandpass';
+    filter.frequency.setValueAtTime(800, audioCtx.currentTime);
+    filter.frequency.linearRampToValueAtTime(300, audioCtx.currentTime + 0.15);
+    filter.Q.value = 3;
+    
+    const gain = audioCtx.createGain();
+    gain.gain.setValueAtTime(0.3, audioCtx.currentTime);
+    gain.gain.linearRampToValueAtTime(0.05, audioCtx.currentTime + 0.04);
+    gain.gain.linearRampToValueAtTime(0.2, audioCtx.currentTime + 0.08);
+    gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.2);
+    
+    noiseNode.connect(filter);
+    filter.connect(gain);
+    gain.connect(audioCtx.destination);
+    
+    noiseNode.start();
+    noiseNode.stop(audioCtx.currentTime + 0.21);
+  } catch (err) {
+    console.warn("Error playing crinkle sound:", err);
+  }
+}
+
+function playGulpSound() {
+  if (!gameState.soundEnabled) return;
+  try {
+    initAudio();
+    if (!audioCtx) return;
+
+    const now = audioCtx.currentTime;
+
+    // Crunch noise
+    const bufferSize = audioCtx.sampleRate * 0.06;
+    const buffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
+    const data = buffer.getChannelData(0);
+    for (let i = 0; i < bufferSize; i++) {
+      data[i] = Math.random() * 2 - 1;
+    }
+    const noiseNode = audioCtx.createBufferSource();
+    noiseNode.buffer = buffer;
+    const filter = audioCtx.createBiquadFilter();
+    filter.type = 'bandpass';
+    filter.frequency.setValueAtTime(400, now);
+    const gainNoise = audioCtx.createGain();
+    gainNoise.gain.setValueAtTime(0.25, now);
+    gainNoise.gain.exponentialRampToValueAtTime(0.001, now + 0.06);
+    
+    noiseNode.connect(filter);
+    filter.connect(gainNoise);
+    gainNoise.connect(audioCtx.destination);
+    noiseNode.start(now);
+    noiseNode.stop(now + 0.07);
+
+    // Swallow sweep
+    const osc = audioCtx.createOscillator();
+    const gainSwallow = audioCtx.createGain();
+    osc.connect(gainSwallow);
+    gainSwallow.connect(audioCtx.destination);
+    
+    osc.type = 'triangle';
+    osc.frequency.setValueAtTime(180, now + 0.05);
+    osc.frequency.exponentialRampToValueAtTime(65, now + 0.22);
+    
+    gainSwallow.gain.setValueAtTime(0, now);
+    gainSwallow.gain.linearRampToValueAtTime(0.35, now + 0.07);
+    gainSwallow.gain.exponentialRampToValueAtTime(0.001, now + 0.22);
+    
+    osc.start(now + 0.05);
+    osc.stop(now + 0.23);
+  } catch (err) {
+    console.warn("Error playing gulp sound:", err);
+  }
+}
+
+function playScribbleSound() {
+  if (!gameState.soundEnabled) return;
+  try {
+    initAudio();
+    if (!audioCtx) return;
+    
+    const duration = 0.35;
+    const bufferSize = audioCtx.sampleRate * duration;
+    const buffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
+    const data = buffer.getChannelData(0);
+    for (let i = 0; i < bufferSize; i++) {
+      data[i] = Math.random() * 2 - 1;
+    }
+    const noiseNode = audioCtx.createBufferSource();
+    noiseNode.buffer = buffer;
+    const filter = audioCtx.createBiquadFilter();
+    filter.type = 'highpass';
+    filter.frequency.setValueAtTime(3200, audioCtx.currentTime);
+    
+    const gain = audioCtx.createGain();
+    gain.gain.setValueAtTime(0, audioCtx.currentTime);
+    gain.gain.linearRampToValueAtTime(0.1, audioCtx.currentTime + 0.04);
+    gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.16);
+    gain.gain.linearRampToValueAtTime(0.1, audioCtx.currentTime + 0.2);
+    gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.35);
+    
+    noiseNode.connect(filter);
+    filter.connect(gain);
+    gain.connect(audioCtx.destination);
+    
+    noiseNode.start();
+    noiseNode.stop(audioCtx.currentTime + duration);
+  } catch (err) {
+    console.warn("Error playing scribble sound:", err);
+  }
+}
+
+function playLevelUpSound() {
+  if (!gameState.soundEnabled) return;
+  try {
+    initAudio();
+    if (!audioCtx) return;
+
+    const now = audioCtx.currentTime;
+    
+    // Taps
+    for (let i = 0; i < 4; i++) {
+      const tapTime = now + i * 0.1;
+      const osc = audioCtx.createOscillator();
+      const gain = audioCtx.createGain();
+      osc.connect(gain);
+      gain.connect(audioCtx.destination);
+      
+      osc.type = 'triangle';
+      osc.frequency.setValueAtTime(90 + i * 25, tapTime);
+      gain.gain.setValueAtTime(0.35, tapTime);
+      gain.gain.exponentialRampToValueAtTime(0.01, tapTime + 0.08);
+      
+      osc.start(tapTime);
+      osc.stop(tapTime + 0.09);
+    }
+
+    // Chime sweep
+    const sweepStart = now + 0.4;
+    const oscSweep = audioCtx.createOscillator();
+    const gainSweep = audioCtx.createGain();
+    oscSweep.connect(gainSweep);
+    gainSweep.connect(audioCtx.destination);
+    
+    oscSweep.type = 'triangle';
+    oscSweep.frequency.setValueAtTime(250, sweepStart);
+    oscSweep.frequency.exponentialRampToValueAtTime(1000, sweepStart + 0.45);
+    
+    gainSweep.gain.setValueAtTime(0, sweepStart);
+    gainSweep.gain.linearRampToValueAtTime(0.3, sweepStart + 0.08);
+    gainSweep.gain.exponentialRampToValueAtTime(0.001, sweepStart + 0.5);
+    
+    oscSweep.start(sweepStart);
+    oscSweep.stop(sweepStart + 0.55);
+  } catch (err) {
+    console.warn("Error playing level up sound:", err);
+  }
 }
 
 function toggleSound() {
@@ -1573,7 +1617,12 @@ function forceUpdate() {
 }
 function resetGame() {
   playCrinkleSound();
-  document.getElementById('reset-modal').classList.add('hidden');
+  
+  // Hide home screen and all modals/overlays so the player starts immediately on the Level 1 board
+  ['reset-modal', 'home-screen', 'victory-modal', 'level-transition-overlay', 'help-modal', 'leaderboard-modal', 'history-modal'].forEach(id => {
+    document.getElementById(id)?.classList.add('hidden');
+  });
+  
   localStorage.removeItem('n1_gameState');
   
   // Clear transition state and pending timeouts
@@ -1582,10 +1631,9 @@ function resetGame() {
     clearTimeout(autoProceedTimeout);
     autoProceedTimeout = null;
   }
-  // Make sure transition overlay is hidden
+  // Make sure transition overlay is cleared of animations
   const transOverlay = document.getElementById('level-transition-overlay');
   if (transOverlay) {
-    transOverlay.classList.add('hidden');
     transOverlay.classList.remove('animating');
   }
 
@@ -1603,12 +1651,12 @@ function resetGame() {
   startNewLevel(4);
   triggerBoxyEmotion('idle');
   boxySpeak("Started fresh cardboard! Level 1!", 4000);
-  document.getElementById('home-screen').classList.remove('hidden');
 
-  // Start the timer loop
+  // Start the timer loop and update UI immediately
   startTimerLoop();
   updateTimerUI();
   updateBonusUI();
+  saveGameState();
 }
 function restartFromScratch() {
   playLevelUpSound();
