@@ -229,6 +229,7 @@ function loadGameState() {
       gameState.timeLeft = typeof parsed.timeLeft !== 'undefined' ? parsed.timeLeft : 120;
       gameState.bonusCount = parsed.bonusCount || 0;
       gameState.bonusClaimedCurrentLevel = parsed.bonusClaimedCurrentLevel === true;
+      gameState.bonusWord = parsed.bonusWord || null;
       
       if (parsed.currentWord) {
         const wordsList = WORDS_DATA[gameState.level] || [];
@@ -247,6 +248,11 @@ function loadGameState() {
             gameState.wheelLetters = chars;
           }
         }
+      }
+
+      // Re-generate bonus word if missing but currentWordObj is present
+      if (!gameState.bonusWord && gameState.currentWordObj) {
+        selectBonusWordForLevel();
       }
       
       updateSoundButtonUI();
@@ -271,7 +277,8 @@ function saveGameState() {
     easyMode: gameState.easyMode,
     timeLeft: gameState.timeLeft,
     bonusCount: gameState.bonusCount,
-    bonusClaimedCurrentLevel: gameState.bonusClaimedCurrentLevel
+    bonusClaimedCurrentLevel: gameState.bonusClaimedCurrentLevel,
+    bonusWord: gameState.bonusWord
   };
   localStorage.setItem('n1_gameState', JSON.stringify(stateToSave));
 }
@@ -553,6 +560,9 @@ function startNewLevel(n) {
   const randIndex = Math.floor(Math.random() * candidates.length);
   gameState.currentWordObj = candidates[randIndex];
   
+  // Select the bonus word for the level
+  selectBonusWordForLevel();
+  
   // Scramble starter word letters initially to populate wheelLetters
   const chars = gameState.currentWordObj.word.split('');
   for (let i = chars.length - 1; i > 0; i--) {
@@ -565,6 +575,29 @@ function startNewLevel(n) {
   updateScoreUI();
   updateProgressUI();
   saveGameState();
+}
+
+function selectBonusWordForLevel() {
+  if (!gameState.currentWordObj || !gameState.currentWordObj.subwords) {
+    gameState.bonusWord = null;
+    return;
+  }
+  const subwords = gameState.currentWordObj.subwords;
+  const starterWord = gameState.currentWordObj.word.toLowerCase();
+  
+  // Filter subwords that are NOT the starter word itself
+  const filteredSubwords = subwords.filter(w => w.toLowerCase() !== starterWord);
+  
+  if (filteredSubwords.length > 0) {
+    // Find the maximum length among the filtered subwords
+    const maxLength = Math.max(...filteredSubwords.map(w => w.length));
+    // Find all subwords with that maximum length
+    const candidates = filteredSubwords.filter(w => w.length === maxLength);
+    // Randomly select one candidate to be the bonus word
+    gameState.bonusWord = candidates[Math.floor(Math.random() * candidates.length)];
+  } else {
+    gameState.bonusWord = null;
+  }
 }
 
 function setupLevelUI() {
@@ -881,12 +914,9 @@ function animateEatingScrap(word) {
     // Increment total words gotten
     gameState.totalScore += 1;
     
-    // Check if this is the longest word for a bonus
-    const subwords = gameState.currentWordObj.subwords;
-    const maxLen = Math.max(...subwords.map(w => w.length));
+    // Check if this is the chosen bonus word
     let isBonus = false;
-    
-    if (typedWord.length === maxLen && !gameState.bonusClaimedCurrentLevel) {
+    if (gameState.bonusWord && typedWord === gameState.bonusWord && !gameState.bonusClaimedCurrentLevel) {
       gameState.bonusClaimedCurrentLevel = true;
       gameState.bonusCount = (gameState.bonusCount || 0) + 1;
       gameState.totalScore += 1; // bonus +1 word
@@ -898,6 +928,8 @@ function animateEatingScrap(word) {
     
     if (isBonus) {
       updateBonusUI();
+      updateHintButtonUI();
+      updateFriendsUI();
       let friendUnlockedName = "";
       if (gameState.bonusCount === 1) friendUnlockedName = "Boby (the bubble envelope)";
       else if (gameState.bonusCount === 2) friendUnlockedName = "Cuppy (the paper cup)";
@@ -1121,10 +1153,9 @@ function updateHintButtonUI() {
   const btnHint = document.getElementById('btn-hint');
   if (!btnHint) return;
 
-  // Cap hints at number of unfound words (max 3)
-  const unfoundCount = getUnfoundWordCount();
-  const maxHints = Math.min(3, unfoundCount);
-  const left = Math.max(0, maxHints - (gameState.hintsUsed || 0));
+  const hasFoundBonus = gameState.bonusWord && gameState.foundWords.includes(gameState.bonusWord);
+  const maxHints = 1 + (hasFoundBonus ? 1 : 0);
+  const left = Math.min(getUnfoundWordCount(), Math.max(0, maxHints - (gameState.hintsUsed || 0)));
   btnHint.textContent = `GET HINT (${left} left)`;
 
   if (left <= 0) {
@@ -1149,13 +1180,11 @@ function updateFriendsUI() {
   const foxy = document.getElementById('friend-foxy');
   if (!roxy || !toxy || !foxy) return;
 
-  // Only show as many friends as there are available hints
-  // Available hints = min(3, unfound words) - hints already used
-  const unfoundCount = getUnfoundWordCount();
-  const maxHints = Math.min(3, unfoundCount);
+  const hasFoundBonus = gameState.bonusWord && gameState.foundWords.includes(gameState.bonusWord);
+  const maxHints = 1 + (hasFoundBonus ? 1 : 0);
   const used = gameState.hintsUsed || 0;
 
-  // Friend 1 (Roxy): visible if maxHints >= 1, leaving if used >= 1
+  // Friend 1 (Roxy): visible if maxHints >= 1. Leaves if used >= 1
   if (maxHints >= 1) {
     roxy.style.display = '';
     if (used >= 1) roxy.classList.add('leaving');
@@ -1164,7 +1193,7 @@ function updateFriendsUI() {
     roxy.style.display = 'none';
   }
 
-  // Friend 2 (Toxy): visible if maxHints >= 2, leaving if used >= 2
+  // Friend 2 (Toxy): visible if maxHints >= 2. Leaves if used >= 2
   if (maxHints >= 2) {
     toxy.style.display = '';
     if (used >= 2) toxy.classList.add('leaving');
@@ -1173,14 +1202,8 @@ function updateFriendsUI() {
     toxy.style.display = 'none';
   }
 
-  // Friend 3 (Foxy): visible if maxHints >= 3, leaving if used >= 3
-  if (maxHints >= 3) {
-    foxy.style.display = '';
-    if (used >= 3) foxy.classList.add('leaving');
-    else foxy.classList.remove('leaving');
-  } else {
-    foxy.style.display = 'none';
-  }
+  // Friend 3 (Foxy): always hidden
+  foxy.style.display = 'none';
 }
 
 let isHintAnimating = false;
@@ -1188,10 +1211,11 @@ let isHintAnimating = false;
 function purchaseHint() {
   if (isHintAnimating) return;
 
-  const unfoundCount = getUnfoundWordCount();
-  const maxHints = Math.min(3, unfoundCount);
+  const hasFoundBonus = gameState.bonusWord && gameState.foundWords.includes(gameState.bonusWord);
+  const maxHints = 1 + (hasFoundBonus ? 1 : 0);
+  const left = Math.min(getUnfoundWordCount(), Math.max(0, maxHints - (gameState.hintsUsed || 0)));
 
-  if ((gameState.hintsUsed || 0) >= maxHints) {
+  if (left <= 0) {
     boxySpeak("No more hints for this word!", 3000);
     playCrinkleSound();
     return;
@@ -1265,7 +1289,7 @@ function purchaseHint() {
       // Finish animation
       const friends = [
         "Roxy (the mailing tube)",
-        "Toxy (the triangular box)",
+        "Toxy (the diamond box)",
         "Foxy (the flat pizza box)"
       ];
       const helperFriend = friends[gameState.hintsUsed || 0] || "Roxy (the mailing tube)";
@@ -1971,6 +1995,8 @@ function updateBonusUI() {
   }
 }
 
+let transitionTimeout = null;
+
 function showLevelTransition(nextLevel) {
   const overlay = document.getElementById('level-transition-overlay');
   if (!overlay) {
@@ -1984,9 +2010,12 @@ function showLevelTransition(nextLevel) {
   saveGameState();
   updateTimerUI();
   
-  // Set text
-  document.getElementById('transition-title').textContent = `LEVEL ${nextLevel - 4} CLEAR!`;
-  document.getElementById('transition-subtitle').textContent = `Unpacking ${nextLevel}-Letter Word...`;
+  // Set text on the sign
+  const levelNum = nextLevel - 3;
+  const signText = document.getElementById('transition-sign-text');
+  if (signText) {
+    signText.textContent = `LEVEL ${levelNum}`;
+  }
   
   // Play transition sound (crinkle)
   playCrinkleSound();
@@ -1996,9 +2025,13 @@ function showLevelTransition(nextLevel) {
     overlay.classList.add('hidden');
     overlay.classList.remove('animating');
     gameState.isTransitioning = false;
+    if (transitionTimeout) {
+      clearTimeout(transitionTimeout);
+      transitionTimeout = null;
+    }
   }
   
-  // Allow clicking the overlay to dismiss it (fallback for stuck state)
+  // Allow clicking the overlay to dismiss/skip
   overlay.onclick = () => {
     dismissTransition();
   };
@@ -2007,21 +2040,16 @@ function showLevelTransition(nextLevel) {
   overlay.classList.remove('hidden');
   overlay.classList.add('animating');
   
-  // Start the new level in the background so it's loaded when flaps open
+  // Start the new level immediately in the background
   startNewLevel(nextLevel);
   
-  // At 1.5s, trigger exit transition
-  setTimeout(() => {
-    overlay.classList.remove('animating');
-  }, 1500);
+  // Clear any existing timeout
+  if (transitionTimeout) {
+    clearTimeout(transitionTimeout);
+  }
   
-  // At 2.5s, hide overlay completely and clear transitioning flag
-  setTimeout(() => {
-    dismissTransition();
-  }, 2500);
-
-  // Safety fallback: ensure overlay is always cleaned up after 4s max
-  setTimeout(() => {
+  // Wait exactly 4 seconds (4000ms) for Boxy to cross the screen
+  transitionTimeout = setTimeout(() => {
     dismissTransition();
   }, 4000);
 }

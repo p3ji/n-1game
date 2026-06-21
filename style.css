@@ -901,22 +901,21 @@ body {
 }
 .boxy-arm {
   position: absolute;
-  width: 10px;
-  height: 20px;
-  background-color: var(--cardboard-base);
-  border: 1.8px solid var(--marker-ink);
-  border-radius: 3px;
+  width: 3px;
+  height: 16px;
+  background-color: var(--marker-ink);
+  border-radius: 1.5px;
   top: 12px;
   z-index: 1;
 }
 .arm-left {
-  left: -8px;
-  transform-origin: top right;
+  left: -3px;
+  transform-origin: top center;
   transform: rotate(20deg);
 }
 .arm-right {
-  right: -8px;
-  transform-origin: top left;
+  right: -3px;
+  transform-origin: top center;
   transform: rotate(-20deg);
 }
 .boxy-body {
@@ -1039,10 +1038,10 @@ body {
   margin-top: -1px;
 }
 .boxy-leg {
-  width: 5px;
-  height: 8px;
+  width: 3px;
+  height: 10px;
   background-color: var(--marker-ink);
-  border-radius: 1px;
+  border-radius: 1.5px;
 }
 
 /* --- DYNAMIC FLYING WORD SCRAP --- */
@@ -1926,95 +1925,111 @@ body {
   position: fixed;
   top: 0; left: 0;
   width: 100vw; height: 100vh;
-  background-color: rgba(30, 25, 20, 0.65);
+  background-color: transparent;
   z-index: 2000;
   display: flex;
   justify-content: center;
   align-items: center;
   overflow: hidden;
+  pointer-events: auto; /* block interaction during transition */
 }
-.cardboard-transition-box {
-  position: relative;
-  width: 100%;
-  height: 100%;
+
+/* Boxy Carrier & Walk Animation */
+.boxy-carrier {
+  position: absolute;
+  top: 50%;
+  left: 0;
   display: flex;
   flex-direction: column;
-  justify-content: center;
   align-items: center;
+  z-index: 2010;
+  transform: translateY(-50%) translateX(-150px);
 }
-.flap-left, .flap-right {
-  position: absolute;
-  top: 0;
-  width: 50%;
-  height: 100%;
-  background-color: var(--cardboard-base);
-  border: 4px solid var(--marker-ink);
-  box-sizing: border-box;
+
+.transition-overlay.animating .boxy-carrier {
+  animation: boxy-walk-across 4s linear forwards;
+}
+
+@keyframes boxy-walk-across {
+  0% {
+    transform: translateY(-50%) translateX(-150px);
+  }
+  100% {
+    transform: translateY(-50%) translateX(calc(100vw + 150px));
+  }
+}
+
+/* Sign Styles */
+.boxy-sign {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: -5px;
   z-index: 10;
-  transition: transform 0.5s cubic-bezier(0.77, 0, 0.175, 1);
+  animation: sign-bob 0.5s ease-in-out infinite;
 }
-.flap-left {
-  left: 0;
-  transform: translateX(-100%);
-  border-right: 2px dashed rgba(0,0,0,0.2);
-}
-.flap-right {
-  right: 0;
-  transform: translateX(100%);
-  border-left: 2px dashed rgba(0,0,0,0.2);
-}
-.transition-overlay.animating .flap-left {
-  transform: translateX(0);
-}
-.transition-overlay.animating .flap-right {
-  transform: translateX(0);
-}
-
-.transition-card {
-  position: relative;
-  z-index: 20;
+.boxy-sign-board {
   background-color: var(--c-paper-yellow);
-  border: 3px solid var(--marker-ink);
-  padding: 20px;
-  width: 280px;
+  border: 2.5px solid var(--marker-ink);
+  padding: 6px 14px;
+  font-family: var(--font-fun);
+  font-size: 1.4rem;
+  font-weight: bold;
+  color: var(--marker-ink);
   text-align: center;
-  box-shadow: 5px 5px 0 var(--marker-ink);
-  transform: scale(0) rotate(-5deg);
-  transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) 0.3s;
+  border-radius: 4px;
+  box-shadow: 3px 3px 0 var(--marker-ink);
+  white-space: nowrap;
 }
-.transition-overlay.animating .transition-card {
-  transform: scale(1) rotate(-2deg);
+.boxy-sign-stick {
+  width: 5px;
+  height: 25px;
+  background-color: var(--cardboard-dark);
+  border: 1.5px solid var(--marker-ink);
+  border-top: none;
 }
 
-.transition-title {
-  font-family: var(--font-fun);
-  font-size: 1.8rem;
-  color: var(--marker-ink);
-  margin-bottom: 8px;
+@keyframes sign-bob {
+  0%, 100% { transform: rotate(-3deg) translateY(0); }
+  50% { transform: rotate(-5deg) translateY(-2px); }
 }
-.transition-subtitle {
-  font-family: var(--font-handwritten);
-  font-size: 1.1rem;
-  color: var(--marker-ink);
-  margin-bottom: 12px;
+
+/* Walk Cycle Styles for Boxy */
+.boxy-mascot.walking {
+  width: 62px;
+  height: 56px;
+  position: relative;
 }
-.transition-mascot {
-  font-size: 3rem;
-  margin: 10px 0;
-  animation: bounce-mascot 0.5s infinite alternate;
+.boxy-mascot.walking .boxy-body {
+  animation: boxy-bob 0.5s ease-in-out infinite;
 }
-@keyframes bounce-mascot {
-  0% { transform: translateY(0); }
-  100% { transform: translateY(-10px); }
+.boxy-mascot.walking .leg-left {
+  animation: leg-walk-left 0.5s ease-in-out infinite;
 }
-.time-added-bonus {
-  font-family: var(--font-fun);
-  font-size: 1.1rem;
-  color: #b91c1c;
-  background-color: rgba(185, 28, 28, 0.1);
-  border: 2px dashed #b91c1c;
-  padding: 4px 8px;
-  display: inline-block;
-  transform: rotate(2deg);
+.boxy-mascot.walking .leg-right {
+  animation: leg-walk-right 0.5s ease-in-out infinite;
+}
+.boxy-mascot.walking .arm-left {
+  transform: rotate(80deg);
+}
+.boxy-mascot.walking .arm-right {
+  animation: arm-swing-r 0.5s ease-in-out infinite alternate;
+}
+
+@keyframes boxy-bob {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-3px); }
+}
+@keyframes leg-walk-left {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-4px) rotate(15deg); }
+}
+@keyframes leg-walk-right {
+  0%, 100% { transform: translateY(-4px) rotate(-15deg); }
+  50% { transform: translateY(0); }
+}
+@keyframes arm-swing-r {
+  0% { transform: rotate(-10deg); }
+  100% { transform: rotate(-40deg); }
 }
 

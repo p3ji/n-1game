@@ -234,15 +234,37 @@
 
   <!-- Level Transition Overlay -->
   <div id="level-transition-overlay" class="transition-overlay hidden">
-    <div class="cardboard-transition-box">
-      <div class="flap flap-left"></div>
-      <div class="flap flap-right"></div>
-      <div class="transition-card">
-        <div class="tape tape-transition"></div>
-        <h2 id="transition-title" class="transition-title">LEVEL CLEAR!</h2>
-        <p id="transition-subtitle">Unpacking next package...</p>
-        <div class="transition-mascot">📦✨</div>
-        <p class="time-added-bonus">+2:00 TIME BONUS!</p>
+    <div class="boxy-carrier">
+      <!-- The sign -->
+      <div class="boxy-sign">
+        <div class="boxy-sign-board" id="transition-sign-text">LEVEL 2</div>
+        <div class="boxy-sign-stick"></div>
+      </div>
+      
+      <!-- Boxy Mascot -->
+      <div class="boxy-mascot walking">
+        <div class="boxy-arm arm-left"></div>
+        <div class="boxy-body">
+          <div class="box-face">
+            <div class="box-eyes">
+              <div class="box-eye eye-left">
+                <div class="pupil"></div>
+              </div>
+              <div class="box-eye eye-right">
+                <div class="pupil"></div>
+              </div>
+            </div>
+            <div class="box-mouth smile"></div>
+            <div class="box-cheeks"></div>
+          </div>
+          <div class="box-flap flap-left"></div>
+          <div class="box-flap flap-right"></div>
+        </div>
+        <div class="boxy-arm arm-right"></div>
+        <div class="boxy-legs">
+          <div class="boxy-leg leg-left"></div>
+          <div class="boxy-leg leg-right"></div>
+        </div>
       </div>
     </div>
   </div>
@@ -415,7 +437,7 @@
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <!-- Game Scripts (v=29) -->
   <script src="words_data.js?v=29"></script>
-  <script src="game.js?v=30"></script>
+  <script src="game.js?v=31"></script>
   <script>
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
