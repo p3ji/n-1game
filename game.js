@@ -480,6 +480,7 @@ function setupLevelUI() {
   const wordObj = gameState.currentWordObj;
   if (!wordObj) return;
 
+  document.getElementById('level-letter-count-label').textContent = `${gameState.level}-Letter Word`;
   document.getElementById('current-word-display').textContent = wordObj.word.toUpperCase();
 
   // Populate Mini Cardboard Boxes Row

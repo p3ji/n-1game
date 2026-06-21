@@ -8,7 +8,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@300..700&family=Patrick+Hand&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="style.css?v=13">
+  <link rel="stylesheet" href="style.css?v=14">
   <link rel="manifest" href="manifest.json">
   <meta name="theme-color" content="#d7a15c">
   <meta name="apple-mobile-web-app-capable" content="yes">
@@ -98,7 +98,7 @@
         <!-- Mini Cardboard Boxes display (words to find) -->
         <div class="mini-boxes-panel">
           <div class="mini-boxes-header">
-            <h2 class="level-indicator">Level starter: <span id="current-word-display" class="highlight-word">-------</span></h2>
+            <h2 class="level-indicator"><span id="level-letter-count-label">7-Letter Word</span>: <span id="current-word-display" class="highlight-word">-------</span></h2>
             <div class="words-progress">
               <span id="words-found-count" class="progress-numbers">0 / 0</span>
             </div>
@@ -118,38 +118,46 @@
 
       <!-- Middle Section: Spelled Word in Wheel Center -->
       <section class="wheel-panel-compact">
-        <!-- Boxy's Friends (Hints indicator) -->
-        <div id="friend-roxy" class="boxy-friend roxy" title="Roxy (the mailing tube)">
-          <div class="friend-body">
-            <div class="friend-eyes">
-              <div class="friend-eye"></div>
-              <div class="friend-eye"></div>
-            </div>
-            <div class="friend-mouth smile"></div>
-          </div>
-          <span class="friend-label">Roxy</span>
-        </div>
-        <div id="friend-toxy" class="boxy-friend toxy" title="Toxy (the diamond box)">
-          <div class="friend-body-diamond">
-            <div class="friend-face-container">
-              <div class="friend-eyes">
-                <div class="friend-eye"></div>
-                <div class="friend-eye"></div>
+        <!-- Hints layout: GET HINT button on the left, friends on the right -->
+        <div class="hints-row-above-wheel">
+          <button id="btn-hint" class="btn-craft btn-medium btn-accent">
+            <span>GET HINT</span>
+          </button>
+          <div class="hints-friends-container">
+            <!-- Boxy's Friends (Roxy, Toxy, Foxy) -->
+            <div id="friend-roxy" class="boxy-friend roxy" title="Roxy (the mailing tube)">
+              <div class="friend-body">
+                <div class="friend-eyes">
+                  <div class="friend-eye"></div>
+                  <div class="friend-eye"></div>
+                </div>
+                <div class="friend-mouth smile"></div>
               </div>
-              <div class="friend-mouth open"></div>
+              <span class="friend-label">Roxy</span>
+            </div>
+            <div id="friend-toxy" class="boxy-friend toxy" title="Toxy (the diamond box)">
+              <div class="friend-body-diamond">
+                <div class="friend-face-container">
+                  <div class="friend-eyes">
+                    <div class="friend-eye"></div>
+                    <div class="friend-eye"></div>
+                  </div>
+                  <div class="friend-mouth open"></div>
+                </div>
+              </div>
+              <span class="friend-label">Toxy</span>
+            </div>
+            <div id="friend-foxy" class="boxy-friend foxy" title="Foxy (the flat pizza box)">
+              <div class="friend-body">
+                <div class="friend-eyes">
+                  <div class="friend-eye"></div>
+                  <div class="friend-eye"></div>
+                </div>
+                <div class="friend-mouth flat"></div>
+              </div>
+              <span class="friend-label">Foxy</span>
             </div>
           </div>
-          <span class="friend-label">Toxy</span>
-        </div>
-        <div id="friend-foxy" class="boxy-friend foxy" title="Foxy (the flat pizza box)">
-          <div class="friend-body">
-            <div class="friend-eyes">
-              <div class="friend-eye"></div>
-              <div class="friend-eye"></div>
-            </div>
-            <div class="friend-mouth flat"></div>
-          </div>
-          <span class="friend-label">Foxy</span>
         </div>
 
         <div class="wheel-outer-container">
@@ -172,12 +180,8 @@
         </div>
       </section>
 
-      <!-- Bottom Section: Next Word & Hint (Compact Row) -->
+      <!-- Bottom Section: Next Word (Full-width proceed bar) -->
       <section class="shop-and-hint-panel">
-        <button id="btn-hint" class="btn-craft btn-medium btn-accent">
-          <span>GET HINT</span>
-        </button>
-
         <div class="shop-tag-compact">
           <div class="tag-body-compact">
             <span class="shop-title-compact">Proceed:</span>
@@ -268,9 +272,9 @@
   <!-- Particle / Confetti Canvas Layer -->
   <canvas id="confetti-canvas"></canvas>
 
-  <!-- Game Scripts (v=13) -->
-  <script src="words_data.js?v=13"></script>
-  <script src="game.js?v=13"></script>
+  <!-- Game Scripts (v=14) -->
+  <script src="words_data.js?v=14"></script>
+  <script src="game.js?v=14"></script>
   <script>
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
