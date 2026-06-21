@@ -1603,3 +1603,209 @@ body {
   animation: wave-arm 1.4s ease-in-out infinite;
 }
 
+/* --- LEADERBOARD MODAL --- */
+.leaderboard-cardboard {
+  max-width: 400px;
+  background-color: var(--cardboard-base);
+  padding: 12px;
+}
+.leaderboard-tabs {
+  display: flex;
+  justify-content: center;
+  gap: 15px;
+  margin-top: 10px;
+  margin-bottom: 12px;
+  border-bottom: 1.5px solid var(--notebook-rule);
+  padding-bottom: 6px;
+}
+.leaderboard-tabs .tab-btn {
+  background: none;
+  border: none;
+  font-family: var(--font-fun);
+  font-size: 1rem;
+  color: var(--marker-ink-faded);
+  cursor: pointer;
+  padding: 4px 12px;
+  position: relative;
+  transition: color 0.2s ease;
+}
+.leaderboard-tabs .tab-btn:hover {
+  color: var(--marker-ink);
+}
+.leaderboard-tabs .tab-btn.active {
+  color: var(--marker-ink);
+  font-weight: bold;
+}
+.leaderboard-tabs .tab-btn.active::after {
+  content: '';
+  position: absolute;
+  bottom: -8px;
+  left: 0;
+  width: 100%;
+  height: 3px;
+  background-color: var(--marker-ink);
+  border-radius: 2px;
+}
+.leaderboard-list-container {
+  max-height: 240px;
+  overflow-y: auto;
+  margin-bottom: 15px;
+  padding-right: 6px;
+}
+.leaderboard-list-container::-webkit-scrollbar {
+  width: 6px;
+}
+.leaderboard-list-container::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.05);
+  border-radius: 3px;
+}
+.leaderboard-list-container::-webkit-scrollbar-thumb {
+  background: var(--marker-ink);
+  border-radius: 3px;
+}
+.leaderboard-item {
+  display: flex;
+  align-items: center;
+  border-bottom: 1.5px dashed rgba(30, 41, 59, 0.15);
+  padding: 8px 4px;
+  font-family: var(--font-handwritten);
+  font-size: 0.95rem;
+}
+.leaderboard-item:last-child {
+  border-bottom: none;
+}
+.leaderboard-rank {
+  font-family: var(--font-fun);
+  font-weight: bold;
+  font-size: 0.9rem;
+  width: 25px;
+  color: var(--marker-ink-faded);
+}
+.leaderboard-rank-1 { color: #d97706; font-size: 1.1rem; }
+.leaderboard-rank-2 { color: #4b5563; font-size: 1.05rem; }
+.leaderboard-rank-3 { color: #b45309; font-size: 1rem; }
+
+.leaderboard-name {
+  flex-grow: 1;
+  font-weight: bold;
+  color: var(--marker-ink);
+  letter-spacing: 0.5px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.leaderboard-item-meta {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.leaderboard-score {
+  font-family: var(--font-fun);
+  font-weight: bold;
+  font-size: 0.95rem;
+  color: var(--marker-ink);
+  background-color: rgba(0, 0, 0, 0.04);
+  padding: 2px 6px;
+  border-radius: 3px;
+  border: 1px dashed rgba(30, 41, 59, 0.3);
+}
+.leaderboard-badge {
+  font-size: 0.65rem;
+  background-color: #fef08a;
+  color: #854d0e;
+  border: 1px solid #eab308;
+  padding: 1px 4px;
+  border-radius: 3px;
+  text-transform: uppercase;
+  font-family: var(--font-fun);
+}
+.leaderboard-date {
+  font-size: 0.65rem;
+  opacity: 0.6;
+  font-family: var(--font-handwritten);
+  margin-left: 5px;
+}
+.leaderboard-empty-msg, .leaderboard-loading-msg {
+  text-align: center;
+  font-family: var(--font-handwritten);
+  font-size: 1rem;
+  opacity: 0.75;
+  padding: 40px 10px;
+  line-height: 1.4;
+}
+.leaderboard-actions {
+  display: flex;
+  justify-content: center;
+  margin-top: 10px;
+}
+
+/* --- LEADERBOARD SUBMISSION UI IN VICTORY MODAL --- */
+.leaderboard-submission {
+  position: relative;
+  background-color: var(--cardboard-light);
+  border: 2px solid var(--marker-ink);
+  border-radius: 8px;
+  padding: 14px;
+  margin: 18px 0;
+  box-shadow: 2px 3px 0 0 var(--marker-ink);
+}
+.leaderboard-submission h3 {
+  font-family: var(--font-fun);
+  font-size: 1rem;
+  margin-top: 0;
+  margin-bottom: 10px;
+  color: var(--marker-ink);
+  text-align: center;
+}
+.submission-row {
+  display: flex;
+  gap: 8px;
+  justify-content: center;
+}
+#player-name-input {
+  flex-grow: 1;
+  max-width: 180px;
+  font-family: var(--font-handwritten);
+  font-size: 1rem;
+  padding: 6px 10px;
+  border: 2px solid var(--marker-ink);
+  background-color: white;
+  border-radius: 4px;
+  color: var(--marker-ink);
+  outline: none;
+}
+#player-name-input::placeholder {
+  color: rgba(30, 41, 59, 0.4);
+}
+#player-name-input:focus {
+  border-color: var(--c-paper-yellow-edge);
+  box-shadow: 0 0 0 2px rgba(251, 191, 36, 0.2);
+}
+.leaderboard-status {
+  font-family: var(--font-handwritten);
+  font-size: 0.85rem;
+  margin-top: 8px;
+  margin-bottom: 0;
+  text-align: center;
+  color: var(--marker-ink-faded);
+}
+.leaderboard-status.success {
+  color: #166534;
+  font-weight: bold;
+}
+.leaderboard-status.error {
+  color: #991b1b;
+  font-weight: bold;
+}
+.tape-sub {
+  width: 60px;
+  height: 18px;
+  background-color: rgba(215, 161, 92, 0.45);
+  transform: rotate(-3deg);
+  position: absolute;
+  top: -10px;
+  left: 20px;
+  border-left: 1px dashed rgba(0,0,0,0.1);
+  border-right: 1px dashed rgba(0,0,0,0.1);
+}
+

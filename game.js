@@ -1,5 +1,15 @@
 // game.js - Cardboard Word Game Logic (Single-Screen Mobile Edition)
 
+// --- SUPABASE CONFIGURATION ---
+// Please fill in your Supabase credentials here:
+const SUPABASE_URL = "YOUR_SUPABASE_URL";
+const SUPABASE_ANON_KEY = "YOUR_SUPABASE_ANON_KEY";
+
+let supabaseClient = null;
+if (typeof supabase !== 'undefined' && SUPABASE_URL && SUPABASE_URL !== 'YOUR_SUPABASE_URL') {
+  supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+}
+
 // --- GAME STATE ---
 let gameState = {
   totalScore: 0,
@@ -36,7 +46,7 @@ window.addEventListener('DOMContentLoaded', () => {
   initConfetti();
 
   // Always start with all modals/dropdowns closed, regardless of any cached state
-  ['reset-modal', 'help-modal', 'victory-modal', 'history-modal'].forEach(id => {
+  ['reset-modal', 'help-modal', 'victory-modal', 'history-modal', 'leaderboard-modal'].forEach(id => {
     document.getElementById(id)?.classList.add('hidden');
   });
   document.getElementById('home-screen')?.classList.remove('hidden');
@@ -48,6 +58,7 @@ window.addEventListener('DOMContentLoaded', () => {
     toggleSound();
     hideSettingsDropdown();
   });
+  document.getElementById('btn-leaderboard-icon').addEventListener('click', openLeaderboardModal);
   document.getElementById('btn-history-icon').addEventListener('click', openHistoryModal);
   document.getElementById('btn-difficulty').addEventListener('click', (e) => {
     toggleDifficulty();
@@ -70,6 +81,16 @@ window.addEventListener('DOMContentLoaded', () => {
   document.getElementById('btn-close-help').addEventListener('click', hideHelp);
   document.getElementById('btn-close-history').addEventListener('click', hideHistoryModal);
   document.getElementById('btn-clear-history').addEventListener('click', clearAttemptsHistory);
+  document.getElementById('btn-close-leaderboard').addEventListener('click', hideLeaderboardModal);
+  document.getElementById('tab-leaderboard-today').addEventListener('click', () => switchLeaderboardTab('today'));
+  document.getElementById('tab-leaderboard-alltime').addEventListener('click', () => switchLeaderboardTab('alltime'));
+  document.getElementById('btn-submit-score').addEventListener('click', submitHighScore);
+  document.getElementById('player-name-input').addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') {
+      submitHighScore();
+    }
+  });
+
   document.getElementById('btn-cancel-reset').addEventListener('click', (e) => {
     e.stopPropagation();
     hideResetConfirm();
@@ -1311,6 +1332,25 @@ function restartFromScratch() {
 function showVictoryModal() {
   const finalScore = gameState.totalScore;
   document.getElementById('vic-final-score').textContent = finalScore;
+  
+  // Reset leaderboard submission UI
+  const nameInput = document.getElementById('player-name-input');
+  if (nameInput) {
+    nameInput.value = '';
+    nameInput.disabled = false;
+  }
+  const submitBtn = document.getElementById('btn-submit-score');
+  if (submitBtn) {
+    submitBtn.disabled = false;
+    submitBtn.textContent = 'Submit';
+    submitBtn.classList.remove('disabled');
+  }
+  const statusLabel = document.getElementById('leaderboard-status');
+  if (statusLabel) {
+    statusLabel.textContent = '';
+    statusLabel.className = 'leaderboard-status hidden';
+  }
+
   document.getElementById('victory-modal').classList.remove('hidden');
   triggerBoxyEmotion('happy');
   startVictoryConfetti();
@@ -1513,4 +1553,167 @@ function clearAttemptsHistory() {
     saveAttempts();
     openHistoryModal(); // refresh UI
   }
+}
+
+// --- LEADERBOARD & SUPABASE ---
+let currentLeaderboardTimeframe = 'today';
+
+function openLeaderboardModal() {
+  playTapSound();
+  document.getElementById('leaderboard-modal').classList.remove('hidden');
+  switchLeaderboardTab('today');
+}
+
+function hideLeaderboardModal() {
+  playTapSound();
+  document.getElementById('leaderboard-modal').classList.add('hidden');
+}
+
+function switchLeaderboardTab(timeframe) {
+  currentLeaderboardTimeframe = timeframe;
+  
+  const todayTab = document.getElementById('tab-leaderboard-today');
+  const allTimeTab = document.getElementById('tab-leaderboard-alltime');
+  
+  if (timeframe === 'today') {
+    todayTab.classList.add('active');
+    allTimeTab.classList.remove('active');
+  } else {
+    todayTab.classList.remove('active');
+    allTimeTab.classList.add('active');
+  }
+  
+  loadLeaderboard(timeframe);
+}
+
+async function loadLeaderboard(timeframe) {
+  const container = document.getElementById('leaderboard-list-container');
+  container.innerHTML = '<p class="leaderboard-loading-msg">Loading scores...</p>';
+  
+  if (!supabaseClient) {
+    container.innerHTML = '<p class="leaderboard-empty-msg">Supabase is not configured yet. Set your credentials at the top of game.js to activate the leaderboard!</p>';
+    return;
+  }
+  
+  try {
+    let query = supabaseClient
+      .from('high_scores')
+      .select('*');
+      
+    if (timeframe === 'today') {
+      // Scores from the last 24 hours
+      const yesterday = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString();
+      query = query.gte('created_at', yesterday);
+    }
+    
+    const { data, error } = await query
+      .order('score', { ascending: false })
+      .limit(20);
+      
+    if (error) throw error;
+    
+    container.innerHTML = '';
+    
+    if (!data || data.length === 0) {
+      container.innerHTML = '<p class="leaderboard-empty-msg">No high scores recorded for this timeframe yet. Be the first!</p>';
+      return;
+    }
+    
+    data.forEach((item, index) => {
+      const row = document.createElement('div');
+      row.className = 'leaderboard-item';
+      
+      const rank = index + 1;
+      let rankClass = '';
+      if (rank <= 3) {
+        rankClass = ` leaderboard-rank-${rank}`;
+      }
+      
+      const date = new Date(item.created_at);
+      const dateStr = date.toLocaleDateString([], { month: 'short', day: 'numeric' });
+      
+      const badge = item.easy_mode ? '<span class="leaderboard-badge">Easy</span>' : '';
+      
+      row.innerHTML = `
+        <span class="leaderboard-rank${rankClass}">${rank}</span>
+        <span class="leaderboard-name">${escapeHTML(item.player_name)}</span>
+        <div class="leaderboard-item-meta">
+          ${badge}
+          <span class="leaderboard-score">${item.score}</span>
+          <span class="leaderboard-date">${dateStr}</span>
+        </div>
+      `;
+      container.appendChild(row);
+    });
+  } catch (err) {
+    console.error('Failed to load leaderboard:', err);
+    container.innerHTML = '<p class="leaderboard-empty-msg error">Failed to load scores. Check network connection or configuration.</p>';
+  }
+}
+
+async function submitHighScore() {
+  if (!supabaseClient) {
+    showLeaderboardStatus('Supabase credentials not configured at the top of game.js!', 'error');
+    return;
+  }
+  
+  const nameInput = document.getElementById('player-name-input');
+  const name = nameInput.value.trim();
+  if (!name) {
+    showLeaderboardStatus('Please enter a name!', 'error');
+    return;
+  }
+  
+  const submitBtn = document.getElementById('btn-submit-score');
+  submitBtn.disabled = true;
+  submitBtn.textContent = 'Submitting...';
+  submitBtn.classList.add('disabled');
+  nameInput.disabled = true;
+  
+  try {
+    const { error } = await supabaseClient
+      .from('high_scores')
+      .insert([
+        {
+          player_name: name,
+          score: gameState.totalScore,
+          easy_mode: gameState.easyMode === true
+        }
+      ]);
+      
+    if (error) throw error;
+    
+    showLeaderboardStatus('Score submitted successfully!', 'success');
+    
+    setTimeout(() => {
+      document.getElementById('victory-modal').classList.add('hidden');
+      openLeaderboardModal();
+    }, 1200);
+    
+  } catch (err) {
+    console.error('Failed to submit score:', err);
+    showLeaderboardStatus('Error submitting score. Try again.', 'error');
+    submitBtn.disabled = false;
+    submitBtn.textContent = 'Submit';
+    submitBtn.classList.remove('disabled');
+    nameInput.disabled = false;
+  }
+}
+
+function showLeaderboardStatus(msg, type) {
+  const statusLabel = document.getElementById('leaderboard-status');
+  statusLabel.textContent = msg;
+  statusLabel.className = `leaderboard-status ${type}`;
+}
+
+function escapeHTML(str) {
+  return str.replace(/[&<>'"]/g, 
+    tag => ({
+      '&': '&amp;',
+      '<': '&lt;',
+      '>': '&gt;',
+      "'": '&#39;',
+      '"': '&quot;'
+    }[tag] || tag)
+  );
 }

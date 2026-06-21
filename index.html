@@ -37,6 +37,7 @@
 
         <!-- Header Controls Container -->
         <div class="header-controls">
+          <button id="btn-leaderboard-icon" class="btn-icon" aria-label="Daily Leaderboard">🏆</button>
           <button id="btn-history-icon" class="btn-icon" aria-label="Attempt History">📜</button>
           <div class="settings-dropdown-container">
             <button id="btn-settings" class="btn-icon" aria-label="Settings/Menu">⚙️</button>
@@ -231,6 +232,17 @@
           </div>
         </div>
 
+        <!-- Leaderboard Submission -->
+        <div class="leaderboard-submission">
+          <div class="tape tape-sub"></div>
+          <h3>Join the Cardboard Leaderboard</h3>
+          <div class="submission-row">
+            <input type="text" id="player-name-input" maxlength="15" placeholder="Enter name" aria-label="Player Name">
+            <button id="btn-submit-score" class="btn-craft btn-small btn-primary">Submit</button>
+          </div>
+          <p id="leaderboard-status" class="leaderboard-status hidden"></p>
+        </div>
+
         <p class="victory-cheer">Boxy is extremely proud of you! 📦💖</p>
         <button id="btn-play-again" class="btn-craft btn-large btn-primary">PLAY AGAIN</button>
       </div>
@@ -307,6 +319,26 @@
     </div>
   </div>
 
+  <!-- Leaderboard Modal -->
+  <div id="leaderboard-modal" class="modal-overlay hidden">
+    <div class="modal-cardboard leaderboard-cardboard">
+      <div class="tape tape-modal-top"></div>
+      <div class="notebook-sheet modal-notebook">
+        <h2>Cardboard Leaderboard</h2>
+        <div class="leaderboard-tabs">
+          <button id="tab-leaderboard-today" class="tab-btn active">Today</button>
+          <button id="tab-leaderboard-alltime" class="tab-btn">All Time</button>
+        </div>
+        <div id="leaderboard-list-container" class="leaderboard-list-container">
+          <!-- Dynamically populated scores -->
+        </div>
+        <div class="leaderboard-actions">
+          <button id="btn-close-leaderboard" class="btn-craft btn-medium">Close</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <!-- History/Attempts Overlay Modal -->
   <div id="history-modal" class="modal-overlay hidden">
     <div class="modal-cardboard history-cardboard">
@@ -327,9 +359,11 @@
   <!-- Particle / Confetti Canvas Layer -->
   <canvas id="confetti-canvas"></canvas>
 
-  <!-- Game Scripts (v=22) -->
-  <script src="words_data.js?v=22"></script>
-  <script src="game.js?v=22"></script>
+  <!-- Supabase Client CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <!-- Game Scripts (v=23) -->
+  <script src="words_data.js?v=23"></script>
+  <script src="game.js?v=23"></script>
   <script>
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
