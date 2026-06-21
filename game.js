@@ -157,6 +157,13 @@ function loadGameState() {
       gameState.totalScore = parsed.totalScore || 0;
       gameState.level = parsed.level || 4;
       gameState.foundWords = parsed.foundWords || [];
+      
+      // Migration check: If they loaded a level 7 state with no found words,
+      // reset them to start at Level 4 (4-letter starter) since we inverted progression
+      if (gameState.level > 6 && gameState.foundWords.length === 0) {
+        gameState.level = 4;
+        parsed.currentWord = null;
+      }
       gameState.hintsRevealed = parsed.hintsRevealed || {};
       gameState.soundEnabled = parsed.soundEnabled !== false;
       gameState.hintsUsed = parsed.hintsUsed || 0;
