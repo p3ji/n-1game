@@ -25,7 +25,9 @@ let gameState = {
   hintsUsed: 0,
   attempts: [],
   easyMode: false,
-  timeLeft: 300
+  timeLeft: 120,
+  bonusCount: 0,
+  bonusClaimedCurrentLevel: false
 };
 
 // Audio variables
@@ -146,11 +148,13 @@ window.addEventListener('DOMContentLoaded', () => {
     setupLevelUI();
     updateScoreUI();
     updateProgressUI();
+    updateBonusUI();
   }
 
   // Initialize timer loop and update UI
   startTimerLoop();
   updateTimerUI();
+  updateBonusUI();
 
   if (gameState.timeLeft <= 0) {
     // If the session has already expired on load, immediately end it
@@ -199,7 +203,9 @@ function loadGameState() {
       gameState.soundEnabled = parsed.soundEnabled !== false;
       gameState.hintsUsed = parsed.hintsUsed || 0;
       gameState.easyMode = parsed.easyMode === true;
-      gameState.timeLeft = typeof parsed.timeLeft !== 'undefined' ? parsed.timeLeft : 300;
+      gameState.timeLeft = typeof parsed.timeLeft !== 'undefined' ? parsed.timeLeft : 120;
+      gameState.bonusCount = parsed.bonusCount || 0;
+      gameState.bonusClaimedCurrentLevel = parsed.bonusClaimedCurrentLevel === true;
       
       if (parsed.currentWord) {
         const wordsList = WORDS_DATA[gameState.level] || [];
@@ -222,6 +228,7 @@ function loadGameState() {
       
       updateSoundButtonUI();
       updateDifficultyButtonUI();
+      updateBonusUI();
     } catch (e) {
       console.error('Failed to parse saved game state', e);
     }
@@ -239,7 +246,9 @@ function saveGameState() {
     soundEnabled: gameState.soundEnabled,
     hintsUsed: gameState.hintsUsed,
     easyMode: gameState.easyMode,
-    timeLeft: gameState.timeLeft
+    timeLeft: gameState.timeLeft,
+    bonusCount: gameState.bonusCount,
+    bonusClaimedCurrentLevel: gameState.bonusClaimedCurrentLevel
   };
   localStorage.setItem('n1_gameState', JSON.stringify(stateToSave));
 }
@@ -510,6 +519,7 @@ function startNewLevel(n) {
   gameState.selectedTileIndices = [];
   gameState.isLevelUnlocked = false;
   gameState.hintsUsed = 0;
+  gameState.bonusClaimedCurrentLevel = false;
   
   const candidates = WORDS_DATA[n] || [];
   if (candidates.length === 0) {
@@ -848,9 +858,36 @@ function animateEatingScrap(word) {
     // Increment total words gotten
     gameState.totalScore += 1;
     
+    // Check if this is the longest word for a bonus
+    const subwords = gameState.currentWordObj.subwords;
+    const maxLen = Math.max(...subwords.map(w => w.length));
+    let isBonus = false;
+    
+    if (typedWord.length === maxLen && !gameState.bonusClaimedCurrentLevel) {
+      gameState.bonusClaimedCurrentLevel = true;
+      gameState.bonusCount = (gameState.bonusCount || 0) + 1;
+      gameState.totalScore += 1; // bonus +1 word
+      isBonus = true;
+    }
+    
     const compliments = ["Yum! Splendid!", "Gulp! Delicious!", "Tasty spelling!", "Crunchy word!", "Perfect!", "Ate it!"];
     const randComp = compliments[Math.floor(Math.random() * compliments.length)];
-    boxySpeak(`${randComp} +1 word`, 3000);
+    
+    if (isBonus) {
+      updateBonusUI();
+      let friendUnlockedName = "";
+      if (gameState.bonusCount === 1) friendUnlockedName = "Boby (the bubble envelope)";
+      else if (gameState.bonusCount === 2) friendUnlockedName = "Cuppy (the paper cup)";
+      else if (gameState.bonusCount === 3) friendUnlockedName = "Papy (the paper roll)";
+      
+      if (friendUnlockedName) {
+        boxySpeak(`🌟 BONUS! +1 Word! Unlocked ${friendUnlockedName}!`, 5000);
+      } else {
+        boxySpeak(`🌟 BONUS! +1 Word!`, 3000);
+      }
+    } else {
+      boxySpeak(`${randComp} +1 word`, 3000);
+    }
 
     // Reveal mini box
     revealMiniBox(typedWord);
@@ -1030,9 +1067,8 @@ function purchaseNextLevel() {
   if (nextLevel > 7) {
     showVictoryModal();
   } else {
-    boxySpeak(`Unlocked! Loading ${nextLevel}-letter word!`, 4000);
     triggerBoxyEmotion('happy');
-    startNewLevel(nextLevel);
+    showLevelTransition(nextLevel);
   }
 }
 
@@ -1116,20 +1152,10 @@ function purchaseHint() {
   const randWordIdx = unfoundIndices[Math.floor(Math.random() * unfoundIndices.length)];
   const targetWord = subwords[randWordIdx];
 
-  const alreadyRevealed = gameState.hintsRevealed[randWordIdx] || [];
-  let targetLetterIdx = -1;
+  gameState.hintsRevealed[randWordIdx] = [];
   for (let i = 0; i < targetWord.length; i++) {
-    if (!alreadyRevealed.includes(i)) {
-      targetLetterIdx = i;
-      break;
-    }
+    gameState.hintsRevealed[randWordIdx].push(i);
   }
-
-  if (targetLetterIdx !== -1) {
-    if (!gameState.hintsRevealed[randWordIdx]) {
-      gameState.hintsRevealed[randWordIdx] = [];
-    }
-    gameState.hintsRevealed[randWordIdx].push(targetLetterIdx);
 
     const friendIds = ['friend-roxy', 'friend-toxy', 'friend-foxy'];
     const currentFriendId = friendIds[gameState.hintsUsed || 0];
@@ -1205,7 +1231,7 @@ function purchaseHint() {
 
         isHintAnimating = false;
         triggerBoxyEmotion('happy');
-        boxySpeak(`${helperFriend} helped and revealed a letter!`, 4000);
+        boxySpeak(`${helperFriend} helped and revealed a full word!`, 4000);
       }, 670);
 
     } else {
@@ -1215,7 +1241,6 @@ function purchaseHint() {
       saveGameState();
       triggerBoxyEmotion('happy');
     }
-  }
 }
 
 // --- BOXY CHAT & EMOTIONS ---
@@ -1330,7 +1355,9 @@ function resetGame() {
   gameState.hintsRevealed = {};
   gameState.currentWordObj = null;
   gameState.isLevelUnlocked = false;
-  gameState.timeLeft = 300;
+  gameState.timeLeft = 120;
+  gameState.bonusCount = 0;
+  gameState.bonusClaimedCurrentLevel = false;
   
   startNewLevel(4);
   triggerBoxyEmotion('idle');
@@ -1340,6 +1367,7 @@ function resetGame() {
   // Start the timer loop
   startTimerLoop();
   updateTimerUI();
+  updateBonusUI();
 }
 function restartFromScratch() {
   playLevelUpSound();
@@ -1815,4 +1843,89 @@ function endGameSession(isTimeUp) {
     boxySpeak("VICTORY! We cleared it!", 10000);
     startVictoryConfetti();
   }
+}
+
+function updateBonusUI() {
+  const bonusCounter = document.getElementById('bonus-counter');
+  if (bonusCounter) {
+    bonusCounter.textContent = gameState.bonusCount || 0;
+  }
+  
+  const count = gameState.bonusCount || 0;
+  const boby = document.getElementById('friend-boby');
+  const cuppy = document.getElementById('friend-cuppy');
+  const papy = document.getElementById('friend-papy');
+  
+  if (boby) {
+    if (count >= 1) {
+      if (boby.classList.contains('hidden-friend')) {
+        boby.classList.remove('hidden-friend');
+        boby.classList.add('newly-unlocked');
+        setTimeout(() => boby.classList.remove('newly-unlocked'), 1000);
+      }
+    } else {
+      boby.classList.add('hidden-friend');
+    }
+  }
+  
+  if (cuppy) {
+    if (count >= 2) {
+      if (cuppy.classList.contains('hidden-friend')) {
+        cuppy.classList.remove('hidden-friend');
+        cuppy.classList.add('newly-unlocked');
+        setTimeout(() => cuppy.classList.remove('newly-unlocked'), 1000);
+      }
+    } else {
+      cuppy.classList.add('hidden-friend');
+    }
+  }
+  
+  if (papy) {
+    if (count >= 3) {
+      if (papy.classList.contains('hidden-friend')) {
+        papy.classList.remove('hidden-friend');
+        papy.classList.add('newly-unlocked');
+        setTimeout(() => papy.classList.remove('newly-unlocked'), 1000);
+      }
+    } else {
+      papy.classList.add('hidden-friend');
+    }
+  }
+}
+
+function showLevelTransition(nextLevel) {
+  const overlay = document.getElementById('level-transition-overlay');
+  if (!overlay) {
+    startNewLevel(nextLevel);
+    return;
+  }
+  
+  // Add +2 minutes
+  gameState.timeLeft += 120;
+  saveGameState();
+  updateTimerUI();
+  
+  // Set text
+  document.getElementById('transition-title').textContent = `LEVEL ${nextLevel - 4} CLEAR!`;
+  document.getElementById('transition-subtitle').textContent = `Unpacking ${nextLevel}-Letter Word...`;
+  
+  // Play transition sound (crinkle)
+  playCrinkleSound();
+  
+  // Show overlay (triggers CSS animations)
+  overlay.classList.remove('hidden');
+  overlay.classList.add('animating');
+  
+  // Start the new level in the background so it's loaded when flaps open
+  startNewLevel(nextLevel);
+  
+  // At 1.5s, trigger exit transition
+  setTimeout(() => {
+    overlay.classList.remove('animating');
+  }, 1500);
+  
+  // At 2.0s, hide overlay completely
+  setTimeout(() => {
+    overlay.classList.add('hidden');
+  }, 2000);
 }

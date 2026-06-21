@@ -159,7 +159,8 @@ body {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  gap: 8px;
+  gap: 6px 8px;
+  flex-wrap: wrap;
 }
 .logo-title {
   font-family: var(--font-fun);
@@ -172,6 +173,7 @@ body {
   gap: 4px;
   white-space: nowrap;
   flex-shrink: 0;
+  order: 1;
 }
 .logo-sub {
   font-family: var(--font-handwritten);
@@ -186,6 +188,10 @@ body {
 .header-stats {
   display: flex;
   gap: 6px;
+  order: 3;
+  width: 100%;
+  justify-content: center;
+  margin-top: 4px;
 }
 .stat-tag {
   background-color: var(--kraft-paper);
@@ -213,6 +219,7 @@ body {
   display: flex;
   align-items: center;
   gap: 8px;
+  order: 2;
 }
 .settings-dropdown-container {
   position: relative;
@@ -1820,5 +1827,194 @@ body {
 @keyframes pulse-urgent {
   0% { transform: scale(1); }
   100% { transform: scale(1.1); }
+}
+
+/* --- BONUS FRIENDS --- */
+.boxy-friend.hidden-friend {
+  display: none !important;
+}
+
+@keyframes unlock-pop {
+  0% { transform: scale(0); opacity: 0; }
+  50% { transform: scale(1.4); }
+  100% { transform: scale(1); opacity: 1; }
+}
+.boxy-friend.newly-unlocked {
+  animation: unlock-pop 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards !important;
+}
+
+/* Boby: bubble mailer envelope (orange) */
+.hints-friends-container .boxy-friend.boby {
+  width: 32px;
+  animation-delay: 0.2s;
+}
+.hints-friends-container .boxy-friend.boby .friend-body {
+  width: 28px;
+  height: 26px;
+  background-color: #ffedd5; /* Soft orange */
+  border-radius: 4px;
+}
+.hints-friends-container .boxy-friend.boby .envelope-flap {
+  position: absolute;
+  top: 0; left: 0;
+  width: 0; height: 0;
+  border-left: 12px solid transparent;
+  border-right: 12px solid transparent;
+  border-top: 8px solid var(--marker-ink);
+  opacity: 0.55;
+  z-index: 1;
+}
+
+/* Cuppy: paper coffee cup (cream, brown sleeve) */
+.hints-friends-container .boxy-friend.cuppy {
+  width: 32px;
+  animation-delay: 0.4s;
+}
+.hints-friends-container .boxy-friend.cuppy .friend-body-cup {
+  position: relative;
+  background-color: #fef3c7; /* Cream */
+  border: 2.2px solid var(--marker-ink);
+  border-radius: 2px 2px 6px 6px;
+  width: 24px;
+  height: 30px;
+  box-shadow: 2px 2px 0 0 var(--marker-ink);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+.hints-friends-container .boxy-friend.cuppy .cup-sleeve {
+  background-color: #d97706; /* Sleeve */
+  width: 100%;
+  height: 12px;
+  border-top: 1.5px solid var(--marker-ink);
+  border-bottom: 1.5px solid var(--marker-ink);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Papy: purple rolled paper scroll */
+.hints-friends-container .boxy-friend.papy {
+  width: 30px;
+  animation-delay: 0.6s;
+}
+.hints-friends-container .boxy-friend.papy .friend-body-roll {
+  position: relative;
+  background-color: #ddd6fe; /* Purple */
+  border: 2.2px solid var(--marker-ink);
+  border-radius: 6px;
+  width: 22px;
+  height: 34px;
+  box-shadow: 2px 2px 0 0 var(--marker-ink);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+.hints-friends-container .boxy-friend.papy .roll-spiral {
+  position: absolute;
+  top: 3px;
+  width: 100%;
+  height: 4px;
+  border-bottom: 1.5px dashed rgba(0,0,0,0.3);
+}
+
+/* --- LEVEL TRANSITION OVERLAY --- */
+.transition-overlay {
+  position: fixed;
+  top: 0; left: 0;
+  width: 100vw; height: 100vh;
+  background-color: rgba(30, 25, 20, 0.65);
+  z-index: 2000;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden;
+}
+.cardboard-transition-box {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+.flap-left, .flap-right {
+  position: absolute;
+  top: 0;
+  width: 50%;
+  height: 100%;
+  background-color: var(--cardboard-base);
+  border: 4px solid var(--marker-ink);
+  box-sizing: border-box;
+  z-index: 10;
+  transition: transform 0.5s cubic-bezier(0.77, 0, 0.175, 1);
+}
+.flap-left {
+  left: 0;
+  transform: translateX(-100%);
+  border-right: 2px dashed rgba(0,0,0,0.2);
+}
+.flap-right {
+  right: 0;
+  transform: translateX(100%);
+  border-left: 2px dashed rgba(0,0,0,0.2);
+}
+.transition-overlay.animating .flap-left {
+  transform: translateX(0);
+}
+.transition-overlay.animating .flap-right {
+  transform: translateX(0);
+}
+
+.transition-card {
+  position: relative;
+  z-index: 20;
+  background-color: var(--c-paper-yellow);
+  border: 3px solid var(--marker-ink);
+  padding: 20px;
+  width: 280px;
+  text-align: center;
+  box-shadow: 5px 5px 0 var(--marker-ink);
+  transform: scale(0) rotate(-5deg);
+  transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) 0.3s;
+}
+.transition-overlay.animating .transition-card {
+  transform: scale(1) rotate(-2deg);
+}
+
+.transition-title {
+  font-family: var(--font-fun);
+  font-size: 1.8rem;
+  color: var(--marker-ink);
+  margin-bottom: 8px;
+}
+.transition-subtitle {
+  font-family: var(--font-handwritten);
+  font-size: 1.1rem;
+  color: var(--marker-ink);
+  margin-bottom: 12px;
+}
+.transition-mascot {
+  font-size: 3rem;
+  margin: 10px 0;
+  animation: bounce-mascot 0.5s infinite alternate;
+}
+@keyframes bounce-mascot {
+  0% { transform: translateY(0); }
+  100% { transform: translateY(-10px); }
+}
+.time-added-bonus {
+  font-family: var(--font-fun);
+  font-size: 1.1rem;
+  color: #b91c1c;
+  background-color: rgba(185, 28, 28, 0.1);
+  border: 2px dashed #b91c1c;
+  padding: 4px 8px;
+  display: inline-block;
+  transform: rotate(2deg);
 }
 

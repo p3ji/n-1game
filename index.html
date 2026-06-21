@@ -8,7 +8,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@300..700&family=Patrick+Hand&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="style.css?v=25">
+  <link rel="stylesheet" href="style.css?v=26">
   <link rel="manifest" href="manifest.json">
   <meta name="theme-color" content="#d7a15c">
   <meta name="apple-mobile-web-app-capable" content="yes">
@@ -35,7 +35,11 @@
           </div>
           <div class="stat-tag" id="timer-tag">
             <span class="stat-label">Time:</span>
-            <span id="game-timer" class="stat-value">5:00</span>
+            <span id="game-timer" class="stat-value">2:00</span>
+          </div>
+          <div class="stat-tag" id="bonus-tag">
+            <span class="stat-label">Bonus:</span>
+            <span id="bonus-counter" class="stat-value">0</span>
           </div>
         </div>
 
@@ -162,6 +166,44 @@
               </div>
               <span class="friend-label">Foxy</span>
             </div>
+
+            <!-- Bonus Friends (Initially Hidden) -->
+            <div id="friend-boby" class="boxy-friend boby hidden-friend" title="Boby (the bubble envelope)">
+              <div class="friend-body">
+                <div class="envelope-flap"></div>
+                <div class="friend-eyes">
+                  <div class="friend-eye"></div>
+                  <div class="friend-eye"></div>
+                </div>
+                <div class="friend-mouth smile"></div>
+              </div>
+              <span class="friend-label">Boby</span>
+            </div>
+
+            <div id="friend-cuppy" class="boxy-friend cuppy hidden-friend" title="Cuppy (the paper cup)">
+              <div class="friend-body-cup">
+                <div class="cup-sleeve">
+                  <div class="friend-eyes">
+                    <div class="friend-eye"></div>
+                    <div class="friend-eye"></div>
+                  </div>
+                  <div class="friend-mouth open"></div>
+                </div>
+              </div>
+              <span class="friend-label">Cuppy</span>
+            </div>
+
+            <div id="friend-papy" class="boxy-friend papy hidden-friend" title="Papy (the paper roll)">
+              <div class="friend-body-roll">
+                <div class="roll-spiral"></div>
+                <div class="friend-eyes">
+                  <div class="friend-eye"></div>
+                  <div class="friend-eye"></div>
+                </div>
+                <div class="friend-mouth flat"></div>
+              </div>
+              <span class="friend-label">Papy</span>
+            </div>
           </div>
         </div>
 
@@ -197,6 +239,21 @@
       </section>
 
     </main>
+  </div>
+
+  <!-- Level Transition Overlay -->
+  <div id="level-transition-overlay" class="transition-overlay hidden">
+    <div class="cardboard-transition-box">
+      <div class="flap flap-left"></div>
+      <div class="flap flap-right"></div>
+      <div class="transition-card">
+        <div class="tape tape-transition"></div>
+        <h2 id="transition-title" class="transition-title">LEVEL CLEAR!</h2>
+        <p id="transition-subtitle">Unpacking next package...</p>
+        <div class="transition-mascot">📦✨</div>
+        <p class="time-added-bonus">+2:00 TIME BONUS!</p>
+      </div>
+    </div>
   </div>
 
   <!-- Help Overlay Modal -->
@@ -365,9 +422,9 @@
 
   <!-- Supabase Client CDN -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <!-- Game Scripts (v=25) -->
-  <script src="words_data.js?v=25"></script>
-  <script src="game.js?v=25"></script>
+  <!-- Game Scripts (v=26) -->
+  <script src="words_data.js?v=26"></script>
+  <script src="game.js?v=26"></script>
   <script>
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
