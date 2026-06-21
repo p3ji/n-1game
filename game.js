@@ -27,8 +27,12 @@ let gameState = {
   easyMode: false,
   timeLeft: 120,
   bonusCount: 0,
-  bonusClaimedCurrentLevel: false
+  bonusClaimedCurrentLevel: false,
+  isTransitioning: false
 };
+
+// Track the auto-proceed timeout so we can cancel stale ones
+let autoProceedTimeout = null;
 
 // Audio variables
 let audioCtx = null;
@@ -112,6 +116,20 @@ window.addEventListener('DOMContentLoaded', () => {
   document.getElementById('btn-start-game').addEventListener('click', () => {
     playTapSound();
     document.getElementById('home-screen').classList.add('hidden');
+
+    // Dismiss any stale victory modal that might be underneath
+    document.getElementById('victory-modal')?.classList.add('hidden');
+
+    // Reset timer to a fresh 2 minutes and (re)start the timer loop
+    gameState.timeLeft = 120;
+    gameState.isTransitioning = false;
+    if (autoProceedTimeout) {
+      clearTimeout(autoProceedTimeout);
+      autoProceedTimeout = null;
+    }
+    updateTimerUI();
+    startTimerLoop();
+    saveGameState();
   });
   document.getElementById('home-btn-difficulty').addEventListener('click', () => {
     toggleDifficulty();
@@ -156,8 +174,14 @@ window.addEventListener('DOMContentLoaded', () => {
   updateBonusUI();
 
   if (gameState.timeLeft <= 0) {
-    // If the session has already expired on load, immediately end it
-    endGameSession(true);
+    // If the session has already expired on load, don't auto-end —
+    // the home screen is showing and START will reset the timer.
+    // Just make sure the timer shows 0:00 and the loop isn't running.
+    if (timerInterval) {
+      clearInterval(timerInterval);
+      timerInterval = null;
+    }
+    updateTimerUI();
   } else {
     // Boxy initial speech
     setTimeout(() => {
@@ -1030,11 +1054,23 @@ function updateProgressUI() {
 }
 
 function purchaseNextLevel() {
+  // Guard against re-entrant calls during transition
+  if (gameState.isTransitioning) return;
+
   const W = gameState.currentWordObj.subwords.length;
   const goalCount = gameState.easyMode ? Math.max(1, W - 2) : Math.max(1, W - 1);
   if (gameState.foundWords.length < goalCount) {
     playCrinkleSound();
     return;
+  }
+
+  // Set guard flag immediately
+  gameState.isTransitioning = true;
+
+  // Clear any pending auto-proceed timeout
+  if (autoProceedTimeout) {
+    clearTimeout(autoProceedTimeout);
+    autoProceedTimeout = null;
   }
 
   // Record this completed package in history
@@ -1046,6 +1082,7 @@ function purchaseNextLevel() {
   gameState.isLevelUnlocked = false;
 
   if (nextLevel > 7) {
+    gameState.isTransitioning = false;
     showVictoryModal();
   } else {
     triggerBoxyEmotion('happy');
@@ -1054,15 +1091,25 @@ function purchaseNextLevel() {
 }
 
 function checkAutoProceed() {
+  // Don't schedule if already transitioning
+  if (gameState.isTransitioning) return;
+
   const W = gameState.currentWordObj.subwords.length;
   const found = gameState.foundWords.length;
   const goalCount = gameState.easyMode ? Math.max(1, W - 2) : Math.max(1, W - 1);
   
   if (found >= goalCount) {
+    // Clear any previously scheduled auto-proceed to prevent duplicates
+    if (autoProceedTimeout) {
+      clearTimeout(autoProceedTimeout);
+      autoProceedTimeout = null;
+    }
+
     // Player reached the goal count! Auto-proceed after a short delay (1000ms)
-    setTimeout(() => {
-      // Make sure they haven't reset or time hasn't run out during the timeout
-      if (gameState.timeLeft > 0 && gameState.foundWords.length >= goalCount) {
+    autoProceedTimeout = setTimeout(() => {
+      autoProceedTimeout = null;
+      // Make sure they haven't reset, time hasn't run out, or already transitioning
+      if (gameState.timeLeft > 0 && !gameState.isTransitioning && gameState.foundWords.length >= goalCount) {
         purchaseNextLevel();
       }
     }, 1000);
@@ -1327,6 +1374,19 @@ function resetGame() {
   document.getElementById('reset-modal').classList.add('hidden');
   localStorage.removeItem('n1_gameState');
   
+  // Clear transition state and pending timeouts
+  gameState.isTransitioning = false;
+  if (autoProceedTimeout) {
+    clearTimeout(autoProceedTimeout);
+    autoProceedTimeout = null;
+  }
+  // Make sure transition overlay is hidden
+  const transOverlay = document.getElementById('level-transition-overlay');
+  if (transOverlay) {
+    transOverlay.classList.add('hidden');
+    transOverlay.classList.remove('animating');
+  }
+
   gameState.totalScore = 0;
   gameState.level = 4;
   gameState.foundWords = [];
@@ -1723,7 +1783,10 @@ let timerInterval = null;
 function isGameActive() {
   // Game is active if no modal overlay is visible (doesn't have hidden class)
   const activeOverlay = document.querySelector('.modal-overlay:not(.hidden)');
-  return !activeOverlay;
+  // Also check the transition overlay (which uses a different class)
+  const transitionOverlay = document.getElementById('level-transition-overlay');
+  const isTransitioning = transitionOverlay && !transitionOverlay.classList.contains('hidden');
+  return !activeOverlay && !isTransitioning;
 }
 
 function startTimerLoop() {
@@ -1874,6 +1937,7 @@ function updateBonusUI() {
 function showLevelTransition(nextLevel) {
   const overlay = document.getElementById('level-transition-overlay');
   if (!overlay) {
+    gameState.isTransitioning = false;
     startNewLevel(nextLevel);
     return;
   }
@@ -1902,8 +1966,18 @@ function showLevelTransition(nextLevel) {
     overlay.classList.remove('animating');
   }, 1500);
   
-  // At 2.0s, hide overlay completely
+  // At 2.0s, hide overlay completely and clear transitioning flag
   setTimeout(() => {
     overlay.classList.add('hidden');
+    gameState.isTransitioning = false;
   }, 2000);
+
+  // Safety fallback: ensure overlay is always cleaned up after 3s max
+  setTimeout(() => {
+    if (!overlay.classList.contains('hidden')) {
+      overlay.classList.add('hidden');
+      overlay.classList.remove('animating');
+    }
+    gameState.isTransitioning = false;
+  }, 3000);
 }
