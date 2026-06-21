@@ -8,7 +8,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@300..700&family=Patrick+Hand&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="style.css?v=13">
   <link rel="manifest" href="manifest.json">
   <meta name="theme-color" content="#d7a15c">
   <meta name="apple-mobile-web-app-capable" content="yes">
@@ -35,15 +35,19 @@
           </div>
         </div>
 
-        <!-- Single Menu/Settings Dropdown -->
-        <div class="settings-dropdown-container">
-          <button id="btn-settings" class="btn-icon" aria-label="Settings/Menu">⚙️</button>
-          <div id="settings-dropdown" class="settings-dropdown-content hidden">
-            <div class="tape tape-dropdown"></div>
-            <button id="btn-sound" class="btn-craft btn-small">Sound: ON</button>
-            <button id="btn-help" class="btn-craft btn-small">How to Play</button>
-            <button id="btn-reset" class="btn-craft btn-small btn-danger">Reset Game</button>
-            <button id="btn-force-update" class="btn-craft btn-small" style="font-size:0.7rem;opacity:0.75">🔄 Force Update</button>
+        <!-- Header Controls Container -->
+        <div class="header-controls">
+          <button id="btn-history-icon" class="btn-icon" aria-label="Attempt History">📜</button>
+          <div class="settings-dropdown-container">
+            <button id="btn-settings" class="btn-icon" aria-label="Settings/Menu">⚙️</button>
+            <div id="settings-dropdown" class="settings-dropdown-content hidden">
+              <div class="tape tape-dropdown"></div>
+              <button id="btn-sound" class="btn-craft btn-small">Sound: ON</button>
+              <button id="btn-difficulty" class="btn-craft btn-small">Easy Mode: OFF</button>
+              <button id="btn-help" class="btn-craft btn-small">How to Play</button>
+              <button id="btn-reset" class="btn-craft btn-small btn-danger">Reset Game</button>
+              <button id="btn-force-update" class="btn-craft btn-small" style="font-size:0.7rem;opacity:0.75">🔄 Force Update</button>
+            </div>
           </div>
         </div>
       </div>
@@ -244,12 +248,29 @@
     </div>
   </div>
 
+  <!-- History/Attempts Overlay Modal -->
+  <div id="history-modal" class="modal-overlay hidden">
+    <div class="modal-cardboard history-cardboard">
+      <div class="tape tape-modal-top"></div>
+      <div class="notebook-sheet modal-notebook">
+        <h2>Past Word Crafts</h2>
+        <div id="history-list-container" class="history-list-container">
+          <!-- Dynamically populated past attempts -->
+        </div>
+        <div class="history-actions">
+          <button id="btn-close-history" class="btn-craft btn-medium">Close</button>
+          <button id="btn-clear-history" class="btn-craft btn-medium btn-danger">Reset History</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <!-- Particle / Confetti Canvas Layer -->
   <canvas id="confetti-canvas"></canvas>
 
-  <!-- Game Scripts (v=12) -->
-  <script src="words_data.js?v=12"></script>
-  <script src="game.js?v=12"></script>
+  <!-- Game Scripts (v=13) -->
+  <script src="words_data.js?v=13"></script>
+  <script src="game.js?v=13"></script>
   <script>
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {

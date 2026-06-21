@@ -12,7 +12,9 @@ let gameState = {
   soundEnabled: true,
   hintsRevealed: {}, // maps wordIndex -> array of indices of revealed letters
   isLevelUnlocked: false,
-  hintsUsed: 0
+  hintsUsed: 0,
+  attempts: [],
+  easyMode: false
 };
 
 // Audio variables
@@ -30,10 +32,11 @@ let mascotIdleTimer = null;
 // --- INITIALIZATION ---
 window.addEventListener('DOMContentLoaded', () => {
   loadGameState();
+  loadAttempts();
   initConfetti();
 
   // Always start with all modals/dropdowns closed, regardless of any cached state
-  ['reset-modal', 'help-modal', 'victory-modal'].forEach(id => {
+  ['reset-modal', 'help-modal', 'victory-modal', 'history-modal'].forEach(id => {
     document.getElementById(id)?.classList.add('hidden');
   });
   document.getElementById('settings-dropdown')?.classList.add('hidden');
@@ -42,6 +45,11 @@ window.addEventListener('DOMContentLoaded', () => {
   document.getElementById('btn-settings').addEventListener('click', toggleSettingsDropdown);
   document.getElementById('btn-sound').addEventListener('click', (e) => {
     toggleSound();
+    hideSettingsDropdown();
+  });
+  document.getElementById('btn-history-icon').addEventListener('click', openHistoryModal);
+  document.getElementById('btn-difficulty').addEventListener('click', (e) => {
+    toggleDifficulty();
     hideSettingsDropdown();
   });
   document.getElementById('btn-help').addEventListener('click', (e) => {
@@ -59,6 +67,8 @@ window.addEventListener('DOMContentLoaded', () => {
   });
   
   document.getElementById('btn-close-help').addEventListener('click', hideHelp);
+  document.getElementById('btn-close-history').addEventListener('click', hideHistoryModal);
+  document.getElementById('btn-clear-history').addEventListener('click', clearAttemptsHistory);
   document.getElementById('btn-cancel-reset').addEventListener('click', (e) => {
     e.stopPropagation();
     hideResetConfirm();
@@ -140,6 +150,7 @@ function loadGameState() {
       gameState.hintsRevealed = parsed.hintsRevealed || {};
       gameState.soundEnabled = parsed.soundEnabled !== false;
       gameState.hintsUsed = parsed.hintsUsed || 0;
+      gameState.easyMode = parsed.easyMode === true;
       
       if (parsed.currentWord) {
         const wordsList = WORDS_DATA[gameState.level] || [];
@@ -161,6 +172,7 @@ function loadGameState() {
       }
       
       updateSoundButtonUI();
+      updateDifficultyButtonUI();
     } catch (e) {
       console.error('Failed to parse saved game state', e);
     }
@@ -176,7 +188,8 @@ function saveGameState() {
     foundWords: gameState.foundWords,
     hintsRevealed: gameState.hintsRevealed,
     soundEnabled: gameState.soundEnabled,
-    hintsUsed: gameState.hintsUsed
+    hintsUsed: gameState.hintsUsed,
+    easyMode: gameState.easyMode
   };
   localStorage.setItem('n1_gameState', JSON.stringify(stateToSave));
 }
@@ -396,6 +409,26 @@ function toggleSound() {
   updateSoundButtonUI();
   saveGameState();
   playTapSound();
+}
+
+function toggleDifficulty() {
+  gameState.easyMode = !gameState.easyMode;
+  updateDifficultyButtonUI();
+  updateProgressUI();
+  saveGameState();
+  playTapSound();
+}
+
+function updateDifficultyButtonUI() {
+  const btn = document.getElementById('btn-difficulty');
+  if (btn) {
+    btn.textContent = `Easy Mode: ${gameState.easyMode ? 'ON' : 'OFF'}`;
+    if (gameState.easyMode) {
+      btn.classList.add('btn-danger'); // Use red background to indicate it's active
+    } else {
+      btn.classList.remove('btn-danger');
+    }
+  }
 }
 
 function updateSoundButtonUI() {
@@ -886,7 +919,7 @@ function updateProgressUI() {
   const progressBar = document.getElementById('words-progress-bar');
   progressBar.style.width = `${progressPercent}%`;
   
-  const goalCount = Math.max(1, W - 1);
+  const goalCount = gameState.easyMode ? Math.max(1, Math.ceil(W / 2)) : Math.max(1, W - 1);
   const goalPercent = (goalCount / W) * 100;
   
   const goalMarker = document.getElementById('goal-marker');
@@ -920,10 +953,15 @@ function updateProgressUI() {
 }
 
 function purchaseNextLevel() {
-  if (gameState.foundWords.length < gameState.currentWordObj.subwords.length - 1) {
+  const W = gameState.currentWordObj.subwords.length;
+  const goalCount = gameState.easyMode ? Math.max(1, Math.ceil(W / 2)) : Math.max(1, W - 1);
+  if (gameState.foundWords.length < goalCount) {
     playCrinkleSound();
     return;
   }
+
+  // Record this completed package in history
+  recordCurrentAttempt();
 
   playLevelUpSound();
   
@@ -942,8 +980,9 @@ function purchaseNextLevel() {
 function checkDirectVictory() {
   const W = gameState.currentWordObj.subwords.length;
   const found = gameState.foundWords.length;
+  const goalCount = gameState.easyMode ? Math.max(1, Math.ceil(W / 2)) : Math.max(1, W - 1);
   
-  if (gameState.level === 4 && found >= W - 1) {
+  if (gameState.level === 4 && found >= goalCount) {
     const purchaseButton = document.getElementById('btn-purchase');
     purchaseButton.textContent = "VICTORY";
     purchaseButton.classList.add('ready');
@@ -951,6 +990,7 @@ function checkDirectVictory() {
     purchaseButton.disabled = false;
     
     if (found === W) {
+      recordCurrentAttempt(); // Record final 100% completion in history
       showVictoryModal();
     }
   }
@@ -1273,5 +1313,105 @@ function animateConfetti() {
   } else {
     confettiAnimationId = null;
     ctx.clearRect(0, 0, canvas.width, canvas.height);
+  }
+}
+
+// --- ATTEMPTS HISTORY ---
+function saveAttempts() {
+  localStorage.setItem('n1_attempts', JSON.stringify(gameState.attempts || []));
+}
+
+function loadAttempts() {
+  const saved = localStorage.getItem('n1_attempts');
+  if (saved) {
+    try {
+      gameState.attempts = JSON.parse(saved) || [];
+    } catch(e) {
+      console.error('Failed to parse saved attempts', e);
+      gameState.attempts = [];
+    }
+  } else {
+    gameState.attempts = [];
+  }
+}
+
+function recordCurrentAttempt() {
+  if (!gameState.currentWordObj) return;
+
+  const lastAttempt = gameState.attempts[gameState.attempts.length - 1];
+  if (lastAttempt && 
+      lastAttempt.starterWord === gameState.currentWordObj.word && 
+      lastAttempt.foundCount === gameState.foundWords.length) {
+    return;
+  }
+
+  const attempt = {
+    starterWord: gameState.currentWordObj.word,
+    level: gameState.level,
+    foundCount: gameState.foundWords.length,
+    totalCount: gameState.currentWordObj.subwords.length,
+    timestamp: new Date().toISOString()
+  };
+
+  if (!gameState.attempts) {
+    gameState.attempts = [];
+  }
+  gameState.attempts.push(attempt);
+  saveAttempts();
+}
+
+function openHistoryModal() {
+  playTapSound();
+  document.getElementById('settings-dropdown').classList.add('hidden');
+  
+  const listContainer = document.getElementById('history-list-container');
+  listContainer.innerHTML = '';
+
+  const attempts = gameState.attempts || [];
+  if (attempts.length === 0) {
+    const emptyMsg = document.createElement('p');
+    emptyMsg.className = 'history-empty-msg';
+    emptyMsg.textContent = "No cardboard word packages completed yet! Start spelling to make history.";
+    listContainer.appendChild(emptyMsg);
+  } else {
+    // Sort from newest to oldest
+    const sorted = [...attempts].reverse();
+    sorted.forEach(att => {
+      const item = document.createElement('div');
+      item.className = 'history-item';
+      
+      const date = new Date(att.timestamp);
+      const dateStr = date.toLocaleDateString([], { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' });
+      
+      item.innerHTML = `
+        <div class="history-item-left">
+          <span class="history-word">${att.starterWord.toUpperCase()}</span>
+          <span class="history-level-label">Level ${8 - att.level} (${att.level}L)</span>
+        </div>
+        <div class="history-item-mid">
+          <span class="history-words-count">${att.foundCount}/${att.totalCount}</span>
+        </div>
+        <div class="history-item-right">
+          <span class="history-date">${dateStr}</span>
+        </div>
+      `;
+      listContainer.appendChild(item);
+    });
+  }
+
+  document.getElementById('history-modal').classList.remove('hidden');
+}
+
+function hideHistoryModal() {
+  playTapSound();
+  document.getElementById('history-modal').classList.add('hidden');
+}
+
+function clearAttemptsHistory() {
+  playCrinkleSound();
+  if (confirm("Are you sure you want to reset your entire attempt history?")) {
+    gameState.attempts = [];
+    saveAttempts();
+    openHistoryModal(); // refresh UI
   }
 }

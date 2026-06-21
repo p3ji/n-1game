@@ -207,6 +207,11 @@ body {
 }
 
 /* --- SETTINGS MENU DROPDOWN --- */
+.header-controls {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
 .settings-dropdown-container {
   position: relative;
   display: inline-block;
@@ -223,7 +228,7 @@ body {
   display: flex;
   flex-direction: column;
   gap: 6px;
-  width: 110px;
+  width: 130px;
   box-shadow: 2px 3px 0 0 var(--marker-ink);
   animation: pop-up 0.15s cubic-bezier(0.175, 0.885, 0.32, 1.1);
 }
@@ -1326,4 +1331,85 @@ body {
 @keyframes heartbeat {
   0% { transform: scale(1); }
   100% { transform: scale(1.04); }
+}
+
+/* --- HISTORY MODAL --- */
+.history-cardboard {
+  max-width: 380px;
+  background-color: var(--cardboard-base);
+  padding: 12px;
+}
+.history-list-container {
+  max-height: 220px;
+  overflow-y: auto;
+  margin-top: 5px;
+  margin-bottom: 15px;
+  padding-right: 6px;
+}
+.history-list-container::-webkit-scrollbar {
+  width: 6px;
+}
+.history-list-container::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.05);
+  border-radius: 3px;
+}
+.history-list-container::-webkit-scrollbar-thumb {
+  background: var(--marker-ink);
+  border-radius: 3px;
+}
+.history-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1.5px dashed rgba(30, 41, 59, 0.2);
+  padding: 8px 0;
+  font-family: var(--font-handwritten);
+  font-size: 0.9rem;
+}
+.history-item:last-child {
+  border-bottom: none;
+}
+.history-item-left {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+.history-word {
+  font-weight: bold;
+  font-size: 0.95rem;
+  color: var(--marker-ink);
+  letter-spacing: 0.5px;
+}
+.history-level-label {
+  font-size: 0.7rem;
+  opacity: 0.75;
+}
+.history-item-mid {
+  font-weight: bold;
+  font-family: var(--font-fun);
+  font-size: 0.85rem;
+  color: var(--marker-ink);
+  background-color: rgba(0, 0, 0, 0.04);
+  padding: 2px 6px;
+  border-radius: 3px;
+  border: 1px dashed rgba(30, 41, 59, 0.3);
+}
+.history-item-right {
+  font-size: 0.7rem;
+  opacity: 0.75;
+  text-align: right;
+}
+.history-empty-msg {
+  text-align: center;
+  font-family: var(--font-handwritten);
+  font-size: 1rem;
+  opacity: 0.75;
+  padding: 30px 10px;
+  line-height: 1.4;
+}
+.history-actions {
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+  margin-top: 10px;
 }
