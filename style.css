@@ -163,19 +163,21 @@ body {
 }
 .logo-title {
   font-family: var(--font-fun);
-  font-size: 1.4rem;
+  font-size: 1.2rem;
   font-weight: 700;
   text-transform: uppercase;
   color: var(--marker-ink);
   display: flex;
   align-items: center;
-  gap: 5px;
+  gap: 4px;
+  white-space: nowrap;
+  flex-shrink: 0;
 }
 .logo-sub {
   font-family: var(--font-handwritten);
-  font-size: 0.85rem;
+  font-size: 0.8rem;
   background-color: var(--c-paper-yellow);
-  padding: 1px 4px;
+  padding: 1px 3px;
   border: 1.5px solid var(--marker-ink);
   border-radius: 2px;
   transform: rotate(4deg);
@@ -1807,5 +1809,16 @@ body {
   left: 20px;
   border-left: 1px dashed rgba(0,0,0,0.1);
   border-right: 1px dashed rgba(0,0,0,0.1);
+}
+
+/* --- COUNTDOWN TIMER --- */
+.timer-urgent {
+  color: #b91c1c !important; /* Urgent Red */
+  animation: pulse-urgent 1s infinite alternate;
+  font-weight: bold;
+}
+@keyframes pulse-urgent {
+  0% { transform: scale(1); }
+  100% { transform: scale(1.1); }
 }
 

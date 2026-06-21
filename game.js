@@ -24,7 +24,8 @@ let gameState = {
   isLevelUnlocked: false,
   hintsUsed: 0,
   attempts: [],
-  easyMode: false
+  easyMode: false,
+  timeLeft: 300
 };
 
 // Audio variables
@@ -147,13 +148,22 @@ window.addEventListener('DOMContentLoaded', () => {
     updateProgressUI();
   }
 
-  // Boxy initial speech
-  setTimeout(() => {
-    boxySpeak("Hi! Let's craft words out of cardboard!", 4000);
-  }, 1000);
+  // Initialize timer loop and update UI
+  startTimerLoop();
+  updateTimerUI();
 
-  // Start mascot idle chatter
-  startMascotIdleChatter();
+  if (gameState.timeLeft <= 0) {
+    // If the session has already expired on load, immediately end it
+    endGameSession(true);
+  } else {
+    // Boxy initial speech
+    setTimeout(() => {
+      boxySpeak("Hi! Let's craft words out of cardboard!", 4000);
+    }, 1000);
+
+    // Start mascot idle chatter
+    startMascotIdleChatter();
+  }
 });
 
 // --- SETTINGS DROPDOWN ---
@@ -189,6 +199,7 @@ function loadGameState() {
       gameState.soundEnabled = parsed.soundEnabled !== false;
       gameState.hintsUsed = parsed.hintsUsed || 0;
       gameState.easyMode = parsed.easyMode === true;
+      gameState.timeLeft = typeof parsed.timeLeft !== 'undefined' ? parsed.timeLeft : 300;
       
       if (parsed.currentWord) {
         const wordsList = WORDS_DATA[gameState.level] || [];
@@ -227,7 +238,8 @@ function saveGameState() {
     hintsRevealed: gameState.hintsRevealed,
     soundEnabled: gameState.soundEnabled,
     hintsUsed: gameState.hintsUsed,
-    easyMode: gameState.easyMode
+    easyMode: gameState.easyMode,
+    timeLeft: gameState.timeLeft
   };
   localStorage.setItem('n1_gameState', JSON.stringify(stateToSave));
 }
@@ -1318,11 +1330,16 @@ function resetGame() {
   gameState.hintsRevealed = {};
   gameState.currentWordObj = null;
   gameState.isLevelUnlocked = false;
+  gameState.timeLeft = 300;
   
   startNewLevel(4);
   triggerBoxyEmotion('idle');
   boxySpeak("Started fresh cardboard! Level 1!", 4000);
   document.getElementById('home-screen').classList.remove('hidden');
+
+  // Start the timer loop
+  startTimerLoop();
+  updateTimerUI();
 }
 function restartFromScratch() {
   playLevelUpSound();
@@ -1330,31 +1347,7 @@ function restartFromScratch() {
   resetGame();
 }
 function showVictoryModal() {
-  const finalScore = gameState.totalScore;
-  document.getElementById('vic-final-score').textContent = finalScore;
-  
-  // Reset leaderboard submission UI
-  const nameInput = document.getElementById('player-name-input');
-  if (nameInput) {
-    nameInput.value = '';
-    nameInput.disabled = false;
-  }
-  const submitBtn = document.getElementById('btn-submit-score');
-  if (submitBtn) {
-    submitBtn.disabled = false;
-    submitBtn.textContent = 'Submit';
-    submitBtn.classList.remove('disabled');
-  }
-  const statusLabel = document.getElementById('leaderboard-status');
-  if (statusLabel) {
-    statusLabel.textContent = '';
-    statusLabel.className = 'leaderboard-status hidden';
-  }
-
-  document.getElementById('victory-modal').classList.remove('hidden');
-  triggerBoxyEmotion('happy');
-  startVictoryConfetti();
-  boxySpeak("VICTORY! We cleared it!", 10000);
+  endGameSession(false);
 }
 
 // --- PARTICLE CONFETTI ---
@@ -1716,4 +1709,110 @@ function escapeHTML(str) {
       '"': '&quot;'
     }[tag] || tag)
   );
+}
+
+// --- SESSION TIMER HELPERS ---
+let timerInterval = null;
+
+function isGameActive() {
+  // Game is active if no modal overlay is visible (doesn't have hidden class)
+  const activeOverlay = document.querySelector('.modal-overlay:not(.hidden)');
+  return !activeOverlay;
+}
+
+function startTimerLoop() {
+  if (timerInterval) {
+    clearInterval(timerInterval);
+  }
+  
+  timerInterval = setInterval(() => {
+    if (isGameActive()) {
+      gameState.timeLeft--;
+      
+      // Update UI
+      updateTimerUI();
+      
+      // Save game state every 5 seconds (when timeLeft is a multiple of 5)
+      if (gameState.timeLeft % 5 === 0) {
+        saveGameState();
+      }
+      
+      // Check if time is up
+      if (gameState.timeLeft <= 0) {
+        saveGameState();
+        endGameSession(true);
+      }
+    }
+  }, 1000);
+}
+
+function updateTimerUI() {
+  const timerSpan = document.getElementById('game-timer');
+  if (!timerSpan) return;
+  
+  const minutes = Math.floor(Math.max(0, gameState.timeLeft) / 60);
+  const seconds = Math.max(0, gameState.timeLeft) % 60;
+  timerSpan.textContent = `${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
+  
+  if (gameState.timeLeft <= 30) {
+    timerSpan.classList.add('timer-urgent');
+  } else {
+    timerSpan.classList.remove('timer-urgent');
+  }
+}
+
+function endGameSession(isTimeUp) {
+  // Stop the timer
+  if (timerInterval) {
+    clearInterval(timerInterval);
+    timerInterval = null;
+  }
+  
+  // Hide home screen and other modal overlays so they don't overlap/block victory modal
+  document.getElementById('home-screen')?.classList.add('hidden');
+  ['reset-modal', 'help-modal', 'history-modal', 'leaderboard-modal'].forEach(id => {
+    document.getElementById(id)?.classList.add('hidden');
+  });
+
+  // Populate final score
+  const finalScore = gameState.totalScore;
+  document.getElementById('vic-final-score').textContent = finalScore;
+
+  // Change victory modal title dynamically
+  const titleEl = document.querySelector('.victory-title');
+  if (titleEl) {
+    titleEl.textContent = isTimeUp ? "⏰ TIME'S UP! ⏰" : "🎉 VICTORY! 🎉";
+  }
+
+  // Reset leaderboard submission UI
+  const nameInput = document.getElementById('player-name-input');
+  if (nameInput) {
+    nameInput.value = '';
+    nameInput.disabled = false;
+  }
+  const submitBtn = document.getElementById('btn-submit-score');
+  if (submitBtn) {
+    submitBtn.disabled = false;
+    submitBtn.textContent = 'Submit';
+    submitBtn.classList.remove('disabled');
+  }
+  const statusLabel = document.getElementById('leaderboard-status');
+  if (statusLabel) {
+    statusLabel.textContent = '';
+    statusLabel.className = 'leaderboard-status hidden';
+  }
+
+  // Show victory modal
+  document.getElementById('victory-modal').classList.remove('hidden');
+  
+  // Play sound and trigger reaction
+  playLevelUpSound();
+  triggerBoxyEmotion(isTimeUp ? 'sad' : 'happy');
+  
+  if (isTimeUp) {
+    boxySpeak("Time's up! Great effort, let's submit your score!", 10000);
+  } else {
+    boxySpeak("VICTORY! We cleared it!", 10000);
+    startVictoryConfetti();
+  }
 }
