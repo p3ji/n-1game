@@ -1,983 +1,1055 @@
 // Curated word data for the N-1 Cardboard Word Game
 // Dictionary: ENABLE (valid answers) + Google 10k (starter words)
-// Generated on 2026-06-21T03:39:53.395Z
+// Generated on 2026-06-21T03:54:46.053Z
 const WORDS_DATA = {
   "4": [
     {
-      "word": "bank",
-      "subwords": [
-        "ban",
-        "kab",
-        "nab",
-        "bank"
-      ]
-    },
-    {
-      "word": "want",
-      "subwords": [
-        "ant",
-        "awn",
-        "naw",
-        "tan",
-        "taw",
-        "twa",
-        "wan",
-        "wat",
-        "want"
-      ]
-    },
-    {
-      "word": "ages",
+      "word": "gear",
       "subwords": [
         "age",
-        "gae",
-        "gas",
-        "sae",
-        "sag",
-        "sea",
-        "seg",
-        "ages",
-        "gaes",
-        "sage"
-      ]
-    },
-    {
-      "word": "visa",
-      "subwords": [
-        "ais",
-        "vas",
-        "via",
-        "vis",
-        "visa"
-      ]
-    },
-    {
-      "word": "knew",
-      "subwords": [
-        "ken",
-        "new",
-        "wen",
-        "knew"
-      ]
-    },
-    {
-      "word": "rail",
-      "subwords": [
-        "ail",
-        "air",
-        "lar",
-        "ria",
-        "aril",
-        "lair",
-        "lari",
-        "liar",
-        "lira",
-        "rail",
-        "rial"
-      ]
-    },
-    {
-      "word": "free",
-      "subwords": [
-        "ere",
-        "fee",
-        "fer",
-        "ree",
-        "ref",
-        "fere",
-        "free",
-        "reef"
-      ]
-    },
-    {
-      "word": "palm",
-      "subwords": [
-        "alp",
-        "amp",
-        "lam",
-        "lap",
-        "map",
-        "pal",
-        "pam",
-        "lamp",
-        "palm"
-      ]
-    },
-    {
-      "word": "send",
-      "subwords": [
-        "den",
-        "end",
-        "ens",
-        "sen",
-        "dens",
-        "ends",
-        "send",
-        "sned"
-      ]
-    },
-    {
-      "word": "fees",
-      "subwords": [
-        "efs",
-        "fee",
-        "see",
-        "fees"
-      ]
-    },
-    {
-      "word": "fail",
-      "subwords": [
-        "ail",
-        "fil",
-        "alif",
-        "fail",
-        "fila"
-      ]
-    },
-    {
-      "word": "ward",
-      "subwords": [
-        "daw",
-        "rad",
-        "raw",
-        "wad",
-        "war",
-        "draw",
-        "ward"
-      ]
-    },
-    {
-      "word": "past",
-      "subwords": [
-        "apt",
-        "asp",
-        "pas",
-        "pat",
-        "sap",
-        "sat",
-        "spa",
-        "tap",
-        "tas",
-        "past",
-        "pats",
-        "spat",
-        "taps"
-      ]
-    },
-    {
-      "word": "solo",
-      "subwords": [
-        "loo",
-        "sol",
-        "loos",
-        "solo"
+        "are",
+        "ear",
+        "era",
+        "reg",
+        "gear"
       ]
     },
     {
       "word": "edit",
       "subwords": [
         "die",
-        "dit",
-        "ted",
         "tie",
         "diet",
-        "dite",
-        "edit",
-        "tide",
-        "tied"
+        "edit"
       ]
     },
     {
-      "word": "yoga",
+      "word": "days",
       "subwords": [
-        "ago",
-        "gay",
-        "goa",
-        "goy",
-        "yoga"
+        "ads",
+        "day",
+        "say",
+        "days"
       ]
     },
     {
-      "word": "char",
+      "word": "beta",
       "subwords": [
-        "arc",
-        "car",
-        "rah",
-        "arch",
-        "char"
-      ]
-    },
-    {
-      "word": "beat",
-      "subwords": [
-        "ate",
-        "bat",
         "bet",
         "eat",
-        "eta",
         "tab",
-        "tae",
         "tea",
-        "abet",
-        "bate",
         "beat",
         "beta"
       ]
     },
     {
-      "word": "make",
+      "word": "town",
       "subwords": [
-        "kae",
-        "kea",
-        "mae",
-        "kame",
-        "make"
+        "not",
+        "now",
+        "own",
+        "two",
+        "won",
+        "town"
       ]
     },
     {
-      "word": "acid",
+      "word": "meat",
       "subwords": [
-        "aid",
-        "cad",
-        "acid",
-        "cadi",
-        "caid"
+        "eat",
+        "met",
+        "tea",
+        "meat",
+        "team"
+      ]
+    },
+    {
+      "word": "ward",
+      "subwords": [
+        "raw",
+        "war",
+        "draw",
+        "ward"
+      ]
+    },
+    {
+      "word": "keys",
+      "subwords": [
+        "key",
+        "sky",
+        "yes",
+        "keys"
+      ]
+    },
+    {
+      "word": "node",
+      "subwords": [
+        "don",
+        "end",
+        "one",
+        "done",
+        "node"
+      ]
+    },
+    {
+      "word": "mark",
+      "subwords": [
+        "arm",
+        "mar",
+        "ram",
+        "mark"
+      ]
+    },
+    {
+      "word": "gold",
+      "subwords": [
+        "dog",
+        "log",
+        "old",
+        "gold"
+      ]
+    },
+    {
+      "word": "adds",
+      "subwords": [
+        "add",
+        "ads",
+        "dad",
+        "adds"
+      ]
+    },
+    {
+      "word": "kits",
+      "subwords": [
+        "its",
+        "kit",
+        "sit",
+        "ski",
+        "kits"
+      ]
+    },
+    {
+      "word": "seat",
+      "subwords": [
+        "eat",
+        "sat",
+        "sea",
+        "set",
+        "tea",
+        "east",
+        "seat"
+      ]
+    },
+    {
+      "word": "rear",
+      "subwords": [
+        "are",
+        "ear",
+        "era",
+        "rare",
+        "rear"
+      ]
+    },
+    {
+      "word": "name",
+      "subwords": [
+        "man",
+        "men",
+        "mean",
+        "name"
+      ]
+    },
+    {
+      "word": "hits",
+      "subwords": [
+        "his",
+        "hit",
+        "its",
+        "sit",
+        "hist",
+        "hits",
+        "this"
+      ]
+    },
+    {
+      "word": "cart",
+      "subwords": [
+        "act",
+        "art",
+        "car",
+        "cat",
+        "cart"
+      ]
+    },
+    {
+      "word": "bear",
+      "subwords": [
+        "are",
+        "bar",
+        "ear",
+        "era",
+        "bear"
+      ]
+    },
+    {
+      "word": "easy",
+      "subwords": [
+        "say",
+        "sea",
+        "yes",
+        "easy"
       ]
     }
   ],
   "5": [
     {
-      "word": "honor",
+      "word": "false",
       "subwords": [
-        "hon",
-        "noh",
-        "noo",
-        "nor",
-        "oho",
-        "ooh",
-        "rho",
-        "horn",
-        "honor"
-      ]
-    },
-    {
-      "word": "world",
-      "subwords": [
-        "dol",
-        "dor",
-        "dow",
-        "low",
-        "old",
-        "owl",
-        "rod",
-        "row",
-        "lord",
-        "wold",
-        "word",
-        "world"
-      ]
-    },
-    {
-      "word": "going",
-      "subwords": [
-        "gig",
-        "gin",
-        "ion",
-        "nog",
-        "gong",
-        "nogg",
-        "going"
-      ]
-    },
-    {
-      "word": "girls",
-      "subwords": [
-        "lis",
-        "rig",
-        "sir",
-        "sri",
-        "girl",
-        "rigs",
-        "girls"
-      ]
-    },
-    {
-      "word": "fraud",
-      "subwords": [
-        "arf",
-        "fad",
-        "far",
-        "fud",
-        "fur",
-        "rad",
-        "urd",
-        "dura",
-        "fard",
-        "fraud"
-      ]
-    },
-    {
-      "word": "cache",
-      "subwords": [
-        "ace",
-        "hae",
-        "ache",
-        "ceca",
-        "each",
-        "cache"
-      ]
-    },
-    {
-      "word": "fight",
-      "subwords": [
-        "fig",
-        "fit",
-        "ghi",
-        "git",
-        "hit",
-        "gift",
-        "fight"
-      ]
-    },
-    {
-      "word": "falls",
-      "subwords": [
-        "all",
-        "als",
-        "fas",
         "las",
-        "sal",
-        "alls",
-        "fall",
-        "sall",
-        "falls"
+        "sea",
+        "safe",
+        "sale",
+        "seal",
+        "self",
+        "false"
       ]
     },
     {
-      "word": "river",
+      "word": "ebony",
       "subwords": [
-        "err",
-        "ire",
-        "rei",
-        "rev",
-        "vie",
-        "rive",
-        "vier",
-        "river"
-      ]
-    },
-    {
-      "word": "songs",
-      "subwords": [
-        "nog",
-        "nos",
-        "ons",
-        "son",
-        "sos",
-        "nogs",
-        "snog",
-        "song",
-        "sons",
-        "snogs",
-        "songs"
-      ]
-    },
-    {
-      "word": "birth",
-      "subwords": [
-        "bit",
-        "hit",
-        "rib",
-        "brit",
-        "thir",
-        "birth"
-      ]
-    },
-    {
-      "word": "proof",
-      "subwords": [
-        "fop",
-        "for",
-        "fro",
-        "pro",
-        "poof",
-        "poor",
-        "prof",
-        "roof",
-        "proof"
-      ]
-    },
-    {
-      "word": "truly",
-      "subwords": [
-        "rut",
-        "try",
-        "ruly",
-        "yurt",
-        "truly"
-      ]
-    },
-    {
-      "word": "fruit",
-      "subwords": [
-        "fir",
-        "fit",
-        "fur",
-        "rif",
-        "rut",
-        "tui",
-        "frit",
-        "rift",
-        "turf",
-        "fruit"
-      ]
-    },
-    {
-      "word": "shall",
-      "subwords": [
-        "all",
-        "als",
-        "ash",
-        "has",
-        "las",
-        "sal",
-        "sha",
-        "alls",
-        "hall",
-        "lash",
-        "sall",
-        "halls",
-        "shall"
-      ]
-    },
-    {
-      "word": "money",
-      "subwords": [
-        "eon",
-        "men",
-        "mon",
-        "nom",
+        "ben",
+        "boy",
         "one",
-        "yen",
-        "yom",
-        "yon",
-        "meno",
-        "mony",
-        "nome",
-        "omen",
-        "money"
+        "bone",
+        "ebony"
       ]
     },
     {
-      "word": "ended",
+      "word": "still",
       "subwords": [
-        "dee",
-        "den",
+        "ill",
+        "its",
+        "sit",
+        "list",
+        "till",
+        "still"
+      ]
+    },
+    {
+      "word": "trend",
+      "subwords": [
         "end",
-        "nee",
-        "deed",
-        "dene",
-        "need",
-        "ended"
+        "net",
+        "red",
+        "ten",
+        "rent",
+        "trend"
       ]
     },
     {
-      "word": "allow",
+      "word": "lines",
       "subwords": [
-        "all",
-        "awl",
-        "law",
-        "low",
-        "owl",
-        "alow",
-        "awol",
-        "olla",
-        "wall",
-        "allow"
+        "sin",
+        "lens",
+        "lies",
+        "line",
+        "lines"
       ]
     },
     {
-      "word": "occur",
+      "word": "goals",
       "subwords": [
-        "cor",
-        "cur",
-        "orc",
-        "our",
-        "roc",
-        "croc",
-        "occur"
+        "ago",
+        "gas",
+        "las",
+        "log",
+        "also",
+        "goal",
+        "goals"
       ]
     },
     {
-      "word": "stats",
+      "word": "ideal",
       "subwords": [
-        "ass",
-        "att",
-        "sat",
-        "tas",
-        "tat",
-        "stat",
-        "tass",
-        "tats",
-        "stats"
+        "aid",
+        "del",
+        "die",
+        "led",
+        "deal",
+        "dial",
+        "idea",
+        "lead",
+        "ideal"
+      ]
+    },
+    {
+      "word": "delta",
+      "subwords": [
+        "del",
+        "eat",
+        "led",
+        "let",
+        "tea",
+        "tel",
+        "date",
+        "deal",
+        "late",
+        "lead",
+        "delta"
+      ]
+    },
+    {
+      "word": "rated",
+      "subwords": [
+        "are",
+        "art",
+        "ear",
+        "eat",
+        "era",
+        "red",
+        "tea",
+        "date",
+        "dear",
+        "rate",
+        "read",
+        "rated",
+        "trade"
+      ]
+    },
+    {
+      "word": "forms",
+      "subwords": [
+        "for",
+        "rom",
+        "form",
+        "from",
+        "forms"
+      ]
+    },
+    {
+      "word": "later",
+      "subwords": [
+        "are",
+        "art",
+        "ear",
+        "eat",
+        "era",
+        "let",
+        "tea",
+        "tel",
+        "late",
+        "rate",
+        "real",
+        "alert",
+        "later"
+      ]
+    },
+    {
+      "word": "baker",
+      "subwords": [
+        "are",
+        "bar",
+        "ear",
+        "era",
+        "bear",
+        "baker",
+        "break"
+      ]
+    },
+    {
+      "word": "first",
+      "subwords": [
+        "fit",
+        "its",
+        "sir",
+        "sit",
+        "sri",
+        "first"
+      ]
+    },
+    {
+      "word": "stick",
+      "subwords": [
+        "its",
+        "kit",
+        "sit",
+        "ski",
+        "kits",
+        "sick",
+        "stick"
+      ]
+    },
+    {
+      "word": "heads",
+      "subwords": [
+        "ads",
+        "had",
+        "has",
+        "sea",
+        "she",
+        "head",
+        "heads"
+      ]
+    },
+    {
+      "word": "worth",
+      "subwords": [
+        "hot",
+        "how",
+        "row",
+        "two",
+        "who",
+        "throw",
+        "worth"
+      ]
+    },
+    {
+      "word": "craft",
+      "subwords": [
+        "act",
+        "art",
+        "car",
+        "cat",
+        "far",
+        "fat",
+        "cart",
+        "fact",
+        "craft"
+      ]
+    },
+    {
+      "word": "modes",
+      "subwords": [
+        "med",
+        "mod",
+        "demo",
+        "does",
+        "dose",
+        "mode",
+        "some",
+        "modes"
+      ]
+    },
+    {
+      "word": "grace",
+      "subwords": [
+        "age",
+        "are",
+        "car",
+        "ear",
+        "era",
+        "reg",
+        "care",
+        "gear",
+        "race",
+        "grace"
+      ]
+    },
+    {
+      "word": "brown",
+      "subwords": [
+        "nor",
+        "now",
+        "own",
+        "rob",
+        "row",
+        "won",
+        "born",
+        "brown"
       ]
     }
   ],
   "6": [
     {
-      "word": "object",
+      "word": "friend",
       "subwords": [
-        "bet",
-        "bot",
-        "cob",
-        "cot",
-        "jet",
-        "job",
-        "joe",
-        "jot",
-        "obe",
-        "toe",
-        "cote",
-        "objet",
-        "object"
+        "die",
+        "end",
+        "red",
+        "ref",
+        "find",
+        "fine",
+        "fire",
+        "ride",
+        "finder",
+        "friend"
       ]
     },
     {
-      "word": "avatar",
+      "word": "former",
+      "subwords": [
+        "for",
+        "ref",
+        "rom",
+        "form",
+        "from",
+        "more",
+        "former",
+        "reform"
+      ]
+    },
+    {
+      "word": "spirit",
+      "subwords": [
+        "its",
+        "sir",
+        "sit",
+        "sri",
+        "tip",
+        "tips",
+        "trip",
+        "strip",
+        "trips",
+        "spirit"
+      ]
+    },
+    {
+      "word": "dragon",
+      "subwords": [
+        "ago",
+        "and",
+        "dog",
+        "don",
+        "nor",
+        "ran",
+        "road",
+        "grand",
+        "dragon"
+      ]
+    },
+    {
+      "word": "prison",
+      "subwords": [
+        "nor",
+        "pin",
+        "pro",
+        "sin",
+        "sir",
+        "son",
+        "sri",
+        "iron",
+        "prison"
+      ]
+    },
+    {
+      "word": "recent",
+      "subwords": [
+        "net",
+        "ten",
+        "cent",
+        "rent",
+        "teen",
+        "tree",
+        "enter",
+        "center",
+        "centre",
+        "recent"
+      ]
+    },
+    {
+      "word": "custom",
+      "subwords": [
+        "cut",
+        "out",
+        "sum",
+        "tom",
+        "cost",
+        "most",
+        "must",
+        "custom"
+      ]
+    },
+    {
+      "word": "single",
+      "subwords": [
+        "leg",
+        "sin",
+        "legs",
+        "lens",
+        "lies",
+        "line",
+        "sign",
+        "lines",
+        "single"
+      ]
+    },
+    {
+      "word": "helped",
+      "subwords": [
+        "del",
+        "led",
+        "lee",
+        "deep",
+        "held",
+        "help",
+        "helped"
+      ]
+    },
+    {
+      "word": "ignore",
+      "subwords": [
+        "nor",
+        "one",
+        "reg",
+        "gone",
+        "iron",
+        "ring",
+        "ignore",
+        "region"
+      ]
+    },
+    {
+      "word": "return",
+      "subwords": [
+        "net",
+        "run",
+        "ten",
+        "rent",
+        "true",
+        "turn",
+        "return"
+      ]
+    },
+    {
+      "word": "brazil",
+      "subwords": [
+        "air",
+        "bar",
+        "biz",
+        "lab",
+        "lib",
+        "rail",
+        "brazil"
+      ]
+    },
+    {
+      "word": "larger",
+      "subwords": [
+        "age",
+        "are",
+        "ear",
+        "era",
+        "leg",
+        "reg",
+        "gear",
+        "rare",
+        "real",
+        "rear",
+        "large",
+        "larger"
+      ]
+    },
+    {
+      "word": "entire",
+      "subwords": [
+        "net",
+        "ten",
+        "tie",
+        "rent",
+        "teen",
+        "tree",
+        "enter",
+        "inter",
+        "entire"
+      ]
+    },
+    {
+      "word": "longer",
+      "subwords": [
+        "leg",
+        "log",
+        "nor",
+        "one",
+        "reg",
+        "gone",
+        "long",
+        "role",
+        "longer"
+      ]
+    },
+    {
+      "word": "tennis",
+      "subwords": [
+        "inn",
+        "its",
+        "net",
+        "set",
+        "sin",
+        "sit",
+        "ten",
+        "tie",
+        "nine",
+        "sent",
+        "site",
+        "tennis"
+      ]
+    },
+    {
+      "word": "remote",
+      "subwords": [
+        "met",
+        "rom",
+        "toe",
+        "tom",
+        "meet",
+        "more",
+        "term",
+        "tree",
+        "meter",
+        "metro",
+        "remote"
+      ]
+    },
+    {
+      "word": "starts",
       "subwords": [
         "art",
-        "ava",
-        "rat",
-        "tar",
-        "tav",
-        "var",
-        "vat",
-        "vara",
-        "avatar"
+        "sat",
+        "arts",
+        "star",
+        "stars",
+        "start",
+        "stats",
+        "starts"
       ]
     },
     {
-      "word": "vacuum",
+      "word": "papers",
       "subwords": [
-        "amu",
-        "cam",
-        "cum",
-        "mac",
-        "vac",
-        "vau",
-        "vacuum"
+        "are",
+        "asp",
+        "ear",
+        "era",
+        "par",
+        "per",
+        "rep",
+        "res",
+        "sea",
+        "spa",
+        "paper",
+        "papers"
       ]
     },
     {
-      "word": "common",
+      "word": "square",
       "subwords": [
-        "con",
-        "coo",
-        "moc",
-        "mom",
-        "mon",
-        "moo",
-        "nom",
-        "noo",
-        "coon",
-        "mono",
-        "moon",
-        "common"
-      ]
-    },
-    {
-      "word": "alaska",
-      "subwords": [
-        "aal",
-        "aas",
-        "ala",
-        "als",
-        "ask",
-        "kas",
-        "las",
-        "sal",
-        "ska",
-        "aals",
-        "alas",
-        "kaas",
-        "alaska"
-      ]
-    },
-    {
-      "word": "ticket",
-      "subwords": [
-        "ice",
-        "ick",
-        "kit",
-        "tet",
-        "tic",
-        "tie",
-        "tit",
-        "cite",
-        "etic",
-        "kite",
-        "tick",
-        "tike",
-        "ticket"
-      ]
-    },
-    {
-      "word": "cheese",
-      "subwords": [
-        "cee",
-        "hes",
-        "sec",
-        "see",
-        "she",
-        "cees",
-        "eche",
-        "eches",
-        "cheese"
-      ]
-    },
-    {
-      "word": "attack",
-      "subwords": [
-        "act",
-        "att",
-        "cat",
-        "kat",
-        "tat",
-        "acta",
-        "kata",
-        "tack",
-        "tact",
-        "taka",
-        "attack"
-      ]
-    },
-    {
-      "word": "dining",
-      "subwords": [
-        "dig",
-        "din",
-        "gid",
-        "gin",
-        "inn",
-        "ding",
-        "nidi",
-        "dining",
-        "indign",
-        "niding"
-      ]
-    },
-    {
-      "word": "equity",
-      "subwords": [
-        "tie",
-        "tui",
-        "tye",
-        "yet",
-        "etui",
-        "quey",
-        "quit",
-        "yeti",
-        "quiet",
-        "quite",
-        "equity"
-      ]
-    },
-    {
-      "word": "become",
-      "subwords": [
-        "bee",
-        "cee",
-        "cob",
-        "eme",
-        "mob",
-        "moc",
-        "obe",
-        "comb",
-        "come",
-        "combe",
-        "become"
-      ]
-    },
-    {
-      "word": "modify",
-      "subwords": [
-        "dim",
-        "dom",
-        "fid",
-        "foy",
-        "mid",
-        "mod",
-        "yid",
-        "yod",
-        "yom",
-        "fido",
-        "modi",
-        "myoid",
-        "modify"
-      ]
-    },
-    {
-      "word": "follow",
-      "subwords": [
-        "loo",
-        "low",
-        "owl",
-        "woo",
-        "flow",
-        "fool",
-        "fowl",
-        "loof",
-        "wolf",
-        "woof",
-        "wool",
-        "follow"
-      ]
-    },
-    {
-      "word": "lyrics",
-      "subwords": [
-        "cis",
-        "cry",
-        "icy",
-        "lis",
-        "sic",
-        "sir",
-        "sly",
-        "sri",
-        "cris",
-        "scry",
-        "syli",
-        "lyric",
-        "lyrics"
-      ]
-    },
-    {
-      "word": "rubber",
-      "subwords": [
-        "brr",
-        "bub",
-        "bur",
-        "ebb",
-        "err",
-        "reb",
-        "rub",
-        "rue",
-        "urb",
-        "burr",
-        "rube",
-        "ruer",
-        "rubber"
-      ]
-    },
-    {
-      "word": "moving",
-      "subwords": [
-        "gin",
-        "ion",
-        "mig",
-        "mog",
-        "mon",
-        "nim",
-        "nog",
-        "nom",
-        "vig",
-        "vim",
-        "vino",
-        "moving"
-      ]
-    },
-    {
-      "word": "engine",
-      "subwords": [
-        "eng",
-        "gee",
-        "gen",
-        "gie",
-        "gin",
-        "inn",
-        "nee",
-        "gene",
-        "gien",
-        "nene",
-        "nine",
-        "genie",
-        "engine"
-      ]
-    },
-    {
-      "word": "french",
-      "subwords": [
-        "ern",
-        "feh",
-        "fen",
-        "fer",
-        "hen",
-        "her",
-        "rec",
-        "ref",
-        "chef",
-        "fern",
-        "hern",
-        "french"
-      ]
-    },
-    {
-      "word": "expect",
-      "subwords": [
-        "cee",
-        "cep",
-        "pec",
-        "pee",
-        "pet",
-        "tee",
-        "cepe",
-        "cete",
-        "exec",
-        "except",
-        "expect"
-      ]
-    },
-    {
-      "word": "filing",
-      "subwords": [
-        "fig",
-        "fil",
-        "fin",
-        "gin",
-        "lin",
-        "nil",
-        "ling",
-        "fling",
-        "filing"
+        "are",
+        "ear",
+        "era",
+        "res",
+        "sea",
+        "use",
+        "sure",
+        "user",
+        "square"
       ]
     }
   ],
   "7": [
     {
-      "word": "unknown",
+      "word": "defined",
       "subwords": [
-        "now",
-        "nun",
-        "own",
-        "wok",
-        "won",
-        "know",
-        "noun",
-        "wonk",
-        "known",
-        "unwon",
-        "unknown"
+        "did",
+        "die",
+        "end",
+        "fee",
+        "died",
+        "feed",
+        "find",
+        "fine",
+        "need",
+        "ended",
+        "define",
+        "indeed",
+        "defined"
       ]
     },
     {
-      "word": "utility",
+      "word": "offered",
       "subwords": [
-        "lit",
-        "til",
-        "tit",
-        "tui",
-        "tut",
-        "litu",
-        "tilt",
-        "titi",
-        "utility"
+        "fee",
+        "for",
+        "off",
+        "red",
+        "ref",
+        "feed",
+        "ford",
+        "free",
+        "offer",
+        "offered"
       ]
     },
     {
-      "word": "minimum",
+      "word": "message",
       "subwords": [
-        "mim",
-        "mum",
-        "mun",
-        "nim",
-        "umm",
-        "mini",
-        "mumm",
-        "muni",
-        "minim",
-        "minium",
-        "minimum"
+        "age",
+        "gas",
+        "sea",
+        "see",
+        "ages",
+        "game",
+        "mass",
+        "same",
+        "seem",
+        "games",
+        "seems",
+        "message"
       ]
     },
     {
-      "word": "winning",
+      "word": "effects",
       "subwords": [
-        "gin",
-        "inn",
-        "wig",
-        "win",
-        "wing",
-        "inning",
-        "wining",
-        "winning"
+        "fee",
+        "sec",
+        "see",
+        "set",
+        "fees",
+        "feet",
+        "effect",
+        "effects"
       ]
     },
     {
-      "word": "quickly",
+      "word": "lessons",
       "subwords": [
-        "ick",
-        "icy",
-        "ilk",
-        "yuk",
-        "icky",
-        "lick",
-        "luck",
-        "yuck",
-        "lucky",
-        "quick",
-        "cliquy",
-        "quickly"
+        "one",
+        "son",
+        "lens",
+        "less",
+        "lose",
+        "loss",
+        "ones",
+        "lesson",
+        "losses",
+        "lessons"
       ]
     },
     {
-      "word": "circuit",
+      "word": "applies",
       "subwords": [
-        "cur",
-        "cut",
-        "rut",
-        "tic",
-        "tui",
-        "curt",
-        "uric",
-        "ictic",
-        "citric",
-        "critic",
-        "circuit"
+        "asp",
+        "las",
+        "sea",
+        "spa",
+        "lies",
+        "pipe",
+        "sale",
+        "seal",
+        "apple",
+        "applies"
       ]
     },
     {
-      "word": "willing",
+      "word": "species",
       "subwords": [
-        "gin",
+        "ice",
+        "pic",
+        "sec",
+        "see",
+        "pics",
+        "piece",
+        "specs",
+        "pieces",
+        "species"
+      ]
+    },
+    {
+      "word": "however",
+      "subwords": [
+        "her",
+        "how",
+        "row",
+        "who",
+        "ever",
+        "here",
+        "over",
+        "were",
+        "where",
+        "however"
+      ]
+    },
+    {
+      "word": "generic",
+      "subwords": [
+        "ice",
+        "reg",
+        "gene",
+        "nice",
+        "rice",
+        "ring",
+        "genre",
+        "green",
+        "generic"
+      ]
+    },
+    {
+      "word": "forever",
+      "subwords": [
+        "fee",
+        "for",
+        "ref",
+        "ever",
+        "free",
+        "over",
+        "refer",
+        "forever"
+      ]
+    },
+    {
+      "word": "biggest",
+      "subwords": [
+        "bet",
+        "big",
+        "bit",
+        "get",
+        "its",
+        "set",
+        "sit",
+        "tie",
+        "best",
+        "bits",
+        "gets",
+        "site",
+        "biggest"
+      ]
+    },
+    {
+      "word": "library",
+      "subwords": [
+        "air",
+        "bar",
+        "bay",
+        "lab",
+        "lay",
+        "lib",
+        "ray",
+        "rail",
+        "library"
+      ]
+    },
+    {
+      "word": "massage",
+      "subwords": [
+        "age",
+        "gas",
+        "sea",
+        "ages",
+        "game",
+        "mass",
+        "same",
+        "games",
+        "massage"
+      ]
+    },
+    {
+      "word": "through",
+      "subwords": [
+        "got",
+        "hot",
+        "our",
+        "out",
+        "hour",
+        "tour",
+        "though",
+        "through"
+      ]
+    },
+    {
+      "word": "disease",
+      "subwords": [
+        "ads",
+        "aid",
+        "die",
+        "sea",
+        "see",
+        "aids",
+        "idea",
+        "said",
+        "seed",
+        "side",
+        "ideas",
+        "sides",
+        "disease"
+      ]
+    },
+    {
+      "word": "feeling",
+      "subwords": [
+        "fee",
+        "fig",
+        "lee",
+        "leg",
+        "feel",
+        "file",
+        "fine",
+        "gene",
+        "life",
+        "line",
+        "feeling"
+      ]
+    },
+    {
+      "word": "fantasy",
+      "subwords": [
+        "any",
+        "fan",
+        "fat",
+        "sat",
+        "say",
+        "fans",
+        "fast",
+        "stay",
+        "fantasy"
+      ]
+    },
+    {
+      "word": "massive",
+      "subwords": [
+        "aim",
+        "ave",
+        "sea",
+        "via",
+        "mass",
+        "miss",
+        "same",
+        "save",
+        "semi",
+        "visa",
+        "massive"
+      ]
+    },
+    {
+      "word": "selling",
+      "subwords": [
         "ill",
-        "lin",
-        "nil",
-        "wig",
-        "win",
-        "gill",
-        "ling",
-        "nill",
-        "will",
-        "wing",
-        "wiling",
-        "willing"
+        "leg",
+        "sin",
+        "legs",
+        "lens",
+        "lies",
+        "line",
+        "sell",
+        "sign",
+        "lines",
+        "single",
+        "selling"
       ]
     },
     {
-      "word": "require",
+      "word": "monthly",
       "subwords": [
-        "ere",
-        "err",
-        "ire",
-        "ree",
-        "rei",
-        "rue",
-        "ruer",
-        "queer",
-        "quire",
-        "querier",
-        "require"
+        "hot",
+        "lot",
+        "mon",
+        "not",
+        "tom",
+        "toy",
+        "holy",
+        "only",
+        "tony",
+        "month",
+        "monthly"
       ]
     }
   ]

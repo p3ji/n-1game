@@ -49,8 +49,8 @@ const starterCandidates = [...commonWords].filter(w =>
 );
 console.log(`  → ${starterCandidates.length} valid starter candidates`);
 
-// Precompute frequencies for all ENABLE words (for subword checking)
-const enableArray = [...enableWords];
+// Precompute frequencies for ENABLE words that are ALSO in commonWords (to filter out obscure subwords/abbreviations)
+const enableArray = [...enableWords].filter(w => commonWords.has(w));
 const enableFreqs = enableArray.map(w => ({ word: w, freq: getFreq(w) }));
 
 // Thresholds for number of subwords per level (max 13 to fit on mobile screen)

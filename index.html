@@ -30,12 +30,8 @@
         
         <div class="header-stats">
           <div class="stat-tag">
-            <span class="stat-label">Total:</span>
-            <span id="total-score" class="stat-value">0000</span>
-          </div>
-          <div class="stat-tag">
-            <span class="stat-label">High:</span>
-            <span id="high-score" class="stat-value">0000</span>
+            <span class="stat-label">Total Words:</span>
+            <span id="total-score" class="stat-value">0</span>
           </div>
         </div>
 
@@ -138,19 +134,17 @@
         </div>
       </section>
 
-      <!-- Bottom Section: Shop Tag & Hint (Compact Row) -->
+      <!-- Bottom Section: Next Word & Hint (Compact Row) -->
       <section class="shop-and-hint-panel">
         <button id="btn-hint" class="btn-craft btn-medium btn-accent">
           <span>GET HINT</span>
-          <span class="hint-cost">(250 pts)</span>
         </button>
 
         <div class="shop-tag-compact">
           <div class="tag-body-compact">
-            <span class="shop-title-compact">Shop:</span>
+            <span class="shop-title-compact">Proceed:</span>
             <span id="shop-item-name" class="item-name-compact">6-Letter Word</span>
-            <span class="item-cost-compact"><span id="shop-item-price">1200</span> pts</span>
-            <button id="btn-purchase" class="btn-purchase-compact disabled" disabled>BUY</button>
+            <button id="btn-purchase" class="btn-purchase-compact disabled" disabled>LOCKED</button>
           </div>
         </div>
       </section>
@@ -169,7 +163,7 @@
           <li>Typed/clicked letters appear in the <strong>center of the wheel</strong>.</li>
           <li>Find all possible words <strong>except one</strong> to unlock the next level word package.</li>
           <li>When you submit a correct word, Boxy will <strong>eat it</strong> and one of the mini boxes above will pop open!</li>
-          <li><strong>Buy</strong> the next starter word package (which shrinks to 6, then 5, then <strong>4 letters</strong>).</li>
+          <li><strong>Go to</strong> the next starter word package (which shrinks to 6, then 5, then <strong>4 letters</strong>).</li>
           <li>Complete the 4-letter level to claim ultimate Victory!</li>
         </ol>
         <p class="modal-tips">
@@ -190,12 +184,8 @@
         
         <div class="victory-stats">
           <div class="vic-stat">
-            <span class="vic-stat-label">Final Score</span>
-            <span id="vic-final-score" class="vic-stat-val">0000</span>
-          </div>
-          <div class="vic-stat">
-            <span class="vic-stat-label">High Score</span>
-            <span id="vic-high-score" class="vic-stat-val">0000</span>
+            <span class="vic-stat-label">Total Words</span>
+            <span id="vic-final-score" class="vic-stat-val">0</span>
           </div>
         </div>
 
@@ -211,7 +201,7 @@
       <div class="tape tape-reset"></div>
       <div class="reset-content">
         <h2>Reset Game?</h2>
-        <p>Are you sure you want to reset your score and start back at Level 1 (7 letters)? This will clear your current progress!</p>
+        <p>Are you sure you want to reset your progress and start back at Level 1 (7 letters)? This will clear your current progress!</p>
         <div class="reset-actions">
           <button id="btn-confirm-reset" class="btn-craft btn-danger">Yes, Reset</button>
           <button id="btn-cancel-reset" class="btn-craft">Cancel</button>
@@ -223,9 +213,9 @@
   <!-- Particle / Confetti Canvas Layer -->
   <canvas id="confetti-canvas"></canvas>
 
-  <!-- Game Scripts (v=8) -->
-  <script src="words_data.js?v=8"></script>
-  <script src="game.js?v=8"></script>
+  <!-- Game Scripts (v=11) -->
+  <script src="words_data.js?v=11"></script>
+  <script src="game.js?v=11"></script>
   <script>
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {

@@ -3,15 +3,16 @@
 // --- GAME STATE ---
 let gameState = {
   totalScore: 0,
-  highScore: 0,
   level: 7, // 7 letters -> 6 letters -> 5 letters -> 4 letters
   currentWordObj: null, // { word: 'weather', subwords: [...] }
+  wheelLetters: [], // current letters on the wheel (shuffled version of starter word)
   foundWords: [], // List of found words
   spelledWord: '',
   selectedTileIndices: [], // Indices of letter tiles currently selected
   soundEnabled: true,
   hintsRevealed: {}, // maps wordIndex -> array of indices of revealed letters
-  isLevelUnlocked: false
+  isLevelUnlocked: false,
+  hintsUsed: 0
 };
 
 // Audio variables
@@ -28,7 +29,6 @@ let mascotIdleTimer = null;
 
 // --- INITIALIZATION ---
 window.addEventListener('DOMContentLoaded', () => {
-  loadHighScore();
   loadGameState();
   initConfetti();
 
@@ -129,17 +129,6 @@ function hideSettingsDropdown() {
 }
 
 // --- STATE PERSISTENCE ---
-function loadHighScore() {
-  const saved = localStorage.getItem('n1_highScore');
-  if (saved) {
-    gameState.highScore = parseInt(saved, 10);
-  }
-}
-
-function saveHighScore() {
-  localStorage.setItem('n1_highScore', gameState.highScore);
-}
-
 function loadGameState() {
   const saved = localStorage.getItem('n1_gameState');
   if (saved) {
@@ -150,12 +139,24 @@ function loadGameState() {
       gameState.foundWords = parsed.foundWords || [];
       gameState.hintsRevealed = parsed.hintsRevealed || {};
       gameState.soundEnabled = parsed.soundEnabled !== false;
+      gameState.hintsUsed = parsed.hintsUsed || 0;
       
       if (parsed.currentWord) {
         const wordsList = WORDS_DATA[gameState.level] || [];
         const match = wordsList.find(w => w.word === parsed.currentWord);
         if (match) {
           gameState.currentWordObj = match;
+          if (parsed.wheelLetters && parsed.wheelLetters.length === match.word.length) {
+            gameState.wheelLetters = parsed.wheelLetters;
+          } else {
+            // Generate them by shuffling
+            const chars = match.word.split('');
+            for (let i = chars.length - 1; i > 0; i--) {
+              const j = Math.floor(Math.random() * (i + 1));
+              [chars[i], chars[j]] = [chars[j], chars[i]];
+            }
+            gameState.wheelLetters = chars;
+          }
         }
       }
       
@@ -171,9 +172,11 @@ function saveGameState() {
     totalScore: gameState.totalScore,
     level: gameState.level,
     currentWord: gameState.currentWordObj ? gameState.currentWordObj.word : null,
+    wheelLetters: gameState.wheelLetters,
     foundWords: gameState.foundWords,
     hintsRevealed: gameState.hintsRevealed,
-    soundEnabled: gameState.soundEnabled
+    soundEnabled: gameState.soundEnabled,
+    hintsUsed: gameState.hintsUsed
   };
   localStorage.setItem('n1_gameState', JSON.stringify(stateToSave));
 }
@@ -415,6 +418,7 @@ function startNewLevel(n) {
   gameState.spelledWord = '';
   gameState.selectedTileIndices = [];
   gameState.isLevelUnlocked = false;
+  gameState.hintsUsed = 0;
   
   const candidates = WORDS_DATA[n] || [];
   if (candidates.length === 0) {
@@ -424,6 +428,14 @@ function startNewLevel(n) {
   
   const randIndex = Math.floor(Math.random() * candidates.length);
   gameState.currentWordObj = candidates[randIndex];
+  
+  // Scramble starter word letters initially to populate wheelLetters
+  const chars = gameState.currentWordObj.word.split('');
+  for (let i = chars.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [chars[i], chars[j]] = [chars[j], chars[i]];
+  }
+  gameState.wheelLetters = chars;
   
   setupLevelUI();
   updateScoreUI();
@@ -435,7 +447,7 @@ function setupLevelUI() {
   const wordObj = gameState.currentWordObj;
   if (!wordObj) return;
 
-  document.getElementById('current-word-display').textContent = wordObj.word;
+  document.getElementById('current-word-display').textContent = wordObj.word.toUpperCase();
 
   // Populate Mini Cardboard Boxes Row
   const grid = document.getElementById('mini-boxes-grid');
@@ -492,21 +504,24 @@ function setupLevelUI() {
   // Render Letter Wheel
   renderLetterWheel();
 
-  // Update shop text
+  // Update shop/progression text
   const nextSize = gameState.level - 1;
   const shopTitle = document.getElementById('shop-item-name');
-  const shopPrice = document.getElementById('shop-item-price');
   
   if (nextSize >= 4) {
     shopTitle.textContent = `${nextSize}-Letter Word`;
-    shopPrice.textContent = calculateNextLevelPrice();
   } else {
     shopTitle.textContent = `Claim Victory!`;
-    shopPrice.textContent = 'FREE';
   }
 
   // Clear typed display
   updateTypedDisplay();
+  
+  // Make sure selection classes are synced on the new tiles
+  updateTileSelectionUI();
+
+  // Update hints counter button state
+  updateHintButtonUI();
 }
 
 function renderLetterWheel() {
@@ -515,8 +530,8 @@ function renderLetterWheel() {
   const tiles = wheel.querySelectorAll('.wheel-letter-tile');
   tiles.forEach(tile => tile.remove());
 
-  const word = gameState.currentWordObj.word;
-  const chars = word.split('');
+  const chars = gameState.wheelLetters;
+  if (!chars || chars.length === 0) return;
   
   const radius = 75; // px (fits 210px container)
   const center = 105; // half of 210px
@@ -545,14 +560,13 @@ function renderLetterWheel() {
 }
 
 function handleTileClick(idx) {
-  const word = gameState.currentWordObj.word;
-  const char = word[idx];
+  const char = gameState.wheelLetters[idx];
   
   const selectedIdx = gameState.selectedTileIndices.indexOf(idx);
   if (selectedIdx !== -1) {
     playTapSound();
     gameState.selectedTileIndices.splice(selectedIdx, 1);
-    gameState.spelledWord = gameState.selectedTileIndices.map(i => word[i]).join('');
+    gameState.spelledWord = gameState.selectedTileIndices.map(i => gameState.wheelLetters[i]).join('');
     updateTileSelectionUI();
     updateTypedDisplay();
   } else {
@@ -595,16 +609,16 @@ function shuffleLetters() {
   gameState.selectedTileIndices = [];
   updateTypedDisplay();
 
-  const word = gameState.currentWordObj.word;
-  const chars = word.split('');
+  const chars = [...gameState.wheelLetters];
   
   for (let i = chars.length - 1; i > 0; i--) {
     const j = Math.floor(Math.random() * (i + 1));
     [chars[i], chars[j]] = [chars[j], chars[i]];
   }
   
-  gameState.currentWordObj.word = chars.join('');
+  gameState.wheelLetters = chars;
   renderLetterWheel();
+  saveGameState();
   
   triggerBoxyEmotion('idle');
   boxySpeak("Mixed up the cardboard!", 2000);
@@ -736,17 +750,12 @@ function animateEatingScrap(word) {
     // Save word
     gameState.foundWords.push(typedWord);
     
-    // Points
-    const points = typedWord.length * 100;
-    gameState.totalScore += points;
-    if (gameState.totalScore > gameState.highScore) {
-      gameState.highScore = gameState.totalScore;
-      saveHighScore();
-    }
+    // Increment total words gotten
+    gameState.totalScore += 1;
     
     const compliments = ["Yum! Splendid!", "Gulp! Delicious!", "Tasty spelling!", "Crunchy word!", "Perfect!", "Ate it!"];
     const randComp = compliments[Math.floor(Math.random() * compliments.length)];
-    boxySpeak(`${randComp} +${points} pts`, 3000);
+    boxySpeak(`${randComp} +1 word`, 3000);
 
     // Reveal mini box
     revealMiniBox(typedWord);
@@ -861,8 +870,7 @@ function handleKeyboardInput(e) {
 
 // --- SHOP & PROGRESSION ---
 function updateScoreUI() {
-  document.getElementById('total-score').textContent = String(gameState.totalScore).padStart(4, '0');
-  document.getElementById('high-score').textContent = String(gameState.highScore).padStart(4, '0');
+  document.getElementById('total-score').textContent = gameState.totalScore;
 }
 
 function updateProgressUI() {
@@ -888,7 +896,7 @@ function updateProgressUI() {
     purchaseButton.classList.remove('ready');
     purchaseButton.classList.add('disabled');
     purchaseButton.disabled = true;
-    purchaseButton.textContent = "BUY";
+    purchaseButton.textContent = "LOCKED";
   } else {
     purchaseButton.classList.add('ready');
     purchaseButton.classList.remove('disabled');
@@ -897,7 +905,7 @@ function updateProgressUI() {
     if (gameState.level === 4) {
       purchaseButton.textContent = "WIN";
     } else {
-      purchaseButton.textContent = "BUY";
+      purchaseButton.textContent = "PROCEED";
     }
     
     if (!gameState.isLevelUnlocked) {
@@ -908,27 +916,11 @@ function updateProgressUI() {
   }
 }
 
-function calculateNextLevelPrice() {
-  const W = gameState.currentWordObj.subwords.length;
-  return (W - 1) * 200;
-}
-
 function purchaseNextLevel() {
   if (gameState.foundWords.length < gameState.currentWordObj.subwords.length - 1) {
     playCrinkleSound();
     return;
   }
-
-  const price = calculateNextLevelPrice();
-  if (gameState.totalScore < price && gameState.level > 4) {
-    boxySpeak("Spell more words to get points!", 3000);
-    playCrinkleSound();
-    return;
-  }
-
-  // Deduct points
-  gameState.totalScore = Math.max(0, gameState.totalScore - price);
-  updateScoreUI();
 
   playLevelUpSound();
   
@@ -962,10 +954,25 @@ function checkDirectVictory() {
 }
 
 // --- HINTS ---
+function updateHintButtonUI() {
+  const btnHint = document.getElementById('btn-hint');
+  if (!btnHint) return;
+
+  const left = Math.max(0, 3 - (gameState.hintsUsed || 0));
+  btnHint.textContent = `GET HINT (${left} left)`;
+
+  if (left <= 0) {
+    btnHint.classList.add('disabled');
+    btnHint.disabled = true;
+  } else {
+    btnHint.classList.remove('disabled');
+    btnHint.disabled = false;
+  }
+}
+
 function purchaseHint() {
-  const hintCost = 250;
-  if (gameState.totalScore < hintCost) {
-    boxySpeak("Hints cost 250 points!", 3000);
+  if ((gameState.hintsUsed || 0) >= 3) {
+    boxySpeak("No more hints for this word!", 3000);
     playCrinkleSound();
     return;
   }
@@ -984,8 +991,6 @@ function purchaseHint() {
     return;
   }
 
-  gameState.totalScore -= hintCost;
-  updateScoreUI();
   playScribbleSound();
 
   const randWordIdx = unfoundIndices[Math.floor(Math.random() * unfoundIndices.length)];
@@ -1006,11 +1011,19 @@ function purchaseHint() {
     }
     gameState.hintsRevealed[randWordIdx].push(randLetterIdx);
 
+    const friends = [
+      "Roxy (the mailing tube)",
+      "Toxy (the triangular box)",
+      "Foxy (the flat pizza box)"
+    ];
+    const helperFriend = friends[gameState.hintsUsed || 0] || "Roxy (the mailing tube)";
+    gameState.hintsUsed = (gameState.hintsUsed || 0) + 1;
+
     setupLevelUI();
     saveGameState();
     
     triggerBoxyEmotion('happy');
-    boxySpeak(`Revealed a letter hint!`, 3000);
+    boxySpeak(`${helperFriend} helped and revealed a letter!`, 4000);
   }
 }
 
@@ -1139,7 +1152,6 @@ function restartFromScratch() {
 function showVictoryModal() {
   const finalScore = gameState.totalScore;
   document.getElementById('vic-final-score').textContent = finalScore;
-  document.getElementById('vic-high-score').textContent = gameState.highScore;
   document.getElementById('victory-modal').classList.remove('hidden');
   triggerBoxyEmotion('happy');
   startVictoryConfetti();
