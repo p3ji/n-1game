@@ -522,6 +522,9 @@ function setupLevelUI() {
 
   // Update hints counter button state
   updateHintButtonUI();
+
+  // Update Boxy's friends visibility surrounding the wheel
+  updateFriendsUI();
 }
 
 function renderLetterWheel() {
@@ -968,6 +971,23 @@ function updateHintButtonUI() {
     btnHint.classList.remove('disabled');
     btnHint.disabled = false;
   }
+}
+
+function updateFriendsUI() {
+  const roxy = document.getElementById('friend-roxy');
+  const toxy = document.getElementById('friend-toxy');
+  const foxy = document.getElementById('friend-foxy');
+  if (!roxy || !toxy || !foxy) return;
+
+  const used = gameState.hintsUsed || 0;
+  if (used >= 1) roxy.classList.add('leaving');
+  else roxy.classList.remove('leaving');
+
+  if (used >= 2) toxy.classList.add('leaving');
+  else toxy.classList.remove('leaving');
+
+  if (used >= 3) foxy.classList.add('leaving');
+  else foxy.classList.remove('leaving');
 }
 
 function purchaseHint() {

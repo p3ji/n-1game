@@ -495,6 +495,87 @@ body {
   align-items: center;
   justify-content: center;
   gap: 10px;
+  position: relative; /* relative anchor for absolute boxy friends */
+}
+
+/* Boxy's Friends (Hints indicators) surrounding the wheel */
+.boxy-friend {
+  position: absolute;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background-color: var(--cardboard-base);
+  border: 2px dashed var(--marker-ink);
+  box-shadow: 2px 2px 0 0 var(--marker-ink);
+  font-family: var(--font-handwritten);
+  font-weight: bold;
+  padding: 4px;
+  transition: opacity 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94), transform 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  z-index: 10;
+}
+.boxy-friend .friend-face {
+  font-size: 0.9rem;
+  margin-bottom: 2px;
+}
+.boxy-friend .friend-label {
+  font-size: 0.62rem;
+  color: var(--marker-ink);
+  text-transform: uppercase;
+}
+
+/* Roxy: cylindrical mailing tube (tall, rounded) */
+.boxy-friend.roxy {
+  top: 15px;
+  left: 20px;
+  width: 44px;
+  height: 60px;
+  border-radius: 18px;
+}
+
+/* Toxy: triangular shipping box */
+.boxy-friend.toxy {
+  top: 15px;
+  right: 20px;
+  width: 50px;
+  height: 50px;
+  clip-path: polygon(50% 0%, 0% 100%, 100% 100%);
+  padding-top: 15px; /* Offset face for triangle shape */
+}
+.boxy-friend.toxy .friend-face {
+  margin-top: 5px;
+  font-size: 0.75rem;
+}
+.boxy-friend.toxy .friend-label {
+  font-size: 0.58rem;
+}
+
+/* Foxy: flat pizza box (wide) */
+.boxy-friend.foxy {
+  bottom: 50px;
+  left: 20px;
+  width: 56px;
+  height: 34px;
+  border-radius: 4px;
+}
+.boxy-friend.foxy::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 10px;
+  height: 100%;
+  background-color: var(--c-tape-brown);
+  opacity: 0.35;
+  z-index: -1;
+}
+
+/* Leaving screen animation when used */
+.boxy-friend.leaving {
+  opacity: 0 !important;
+  transform: scale(0.4) translateY(-40px) rotate(15deg);
+  pointer-events: none;
 }
 
 .wheel-outer-container {
