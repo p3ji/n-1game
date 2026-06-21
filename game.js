@@ -1084,19 +1084,19 @@ function purchaseHint() {
   const targetWord = subwords[randWordIdx];
 
   const alreadyRevealed = gameState.hintsRevealed[randWordIdx] || [];
-  const unrevealedLetterIndices = [];
+  let targetLetterIdx = -1;
   for (let i = 0; i < targetWord.length; i++) {
     if (!alreadyRevealed.includes(i)) {
-      unrevealedLetterIndices.push(i);
+      targetLetterIdx = i;
+      break;
     }
   }
 
-  if (unrevealedLetterIndices.length > 0) {
-    const randLetterIdx = unrevealedLetterIndices[Math.floor(Math.random() * unrevealedLetterIndices.length)];
+  if (targetLetterIdx !== -1) {
     if (!gameState.hintsRevealed[randWordIdx]) {
       gameState.hintsRevealed[randWordIdx] = [];
     }
-    gameState.hintsRevealed[randWordIdx].push(randLetterIdx);
+    gameState.hintsRevealed[randWordIdx].push(targetLetterIdx);
 
     const friendIds = ['friend-roxy', 'friend-toxy', 'friend-foxy'];
     const currentFriendId = friendIds[gameState.hintsUsed || 0];
