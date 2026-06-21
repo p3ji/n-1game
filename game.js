@@ -1040,14 +1040,16 @@ function animateEatingScrap(word) {
       updateHintButtonUI();
       updateFriendsUI();
       let friendUnlockedName = "";
-      if (gameState.bonusCount === 1) friendUnlockedName = "Boby (the bubble envelope)";
-      else if (gameState.bonusCount === 2) friendUnlockedName = "Cuppy (the paper cup)";
-      else if (gameState.bonusCount === 3) friendUnlockedName = "Papy (the paper roll)";
+      if (gameState.bonusCount === 1) friendUnlockedName = "Toxy (the diamond box)";
+      else if (gameState.bonusCount === 2) friendUnlockedName = "Foxy (the flat pizza box)";
+      else if (gameState.bonusCount === 3) friendUnlockedName = "Boby (the bubble envelope)";
+      else if (gameState.bonusCount === 4) friendUnlockedName = "Cuppy (the paper cup)";
+      else if (gameState.bonusCount === 5) friendUnlockedName = "Papy (the paper roll)";
       
       if (friendUnlockedName) {
-        boxySpeak(`🌟 BONUS! Unlocked ${friendUnlockedName}! +1 Hint!`, 5000);
+        boxySpeak(`🌟 BONUS! Unlocked ${friendUnlockedName}! +1 Point & +1 Hint!`, 5000);
       } else {
-        boxySpeak(`🌟 BONUS! +1 Hint Friend unlocked!`, 4000);
+        boxySpeak(`🌟 BONUS! +1 Point & +1 Hint Friend unlocked!`, 5000);
       }
     } else {
       boxySpeak(`${randComp} +1 point`, 3000);
