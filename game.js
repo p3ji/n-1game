@@ -566,7 +566,6 @@ function startNewLevel(n) {
   gameState.spelledWord = '';
   gameState.selectedTileIndices = [];
   gameState.isLevelUnlocked = false;
-  gameState.hintsUsed = 0;
   gameState.bonusClaimedCurrentLevel = false;
   
   const candidates = WORDS_DATA[n] || [];
@@ -1196,32 +1195,38 @@ function updateFriendsUI() {
   const roxy = document.getElementById('friend-roxy');
   const toxy = document.getElementById('friend-toxy');
   const foxy = document.getElementById('friend-foxy');
-  if (!roxy || !toxy || !foxy) return;
+  const boby = document.getElementById('friend-boby');
+  const cuppy = document.getElementById('friend-cuppy');
+  const papy = document.getElementById('friend-papy');
+  if (!roxy || !toxy || !foxy || !boby || !cuppy || !papy) return;
 
-  const hasFoundBonus = gameState.bonusWord && gameState.foundWords.includes(gameState.bonusWord);
-  const maxHints = 1 + (hasFoundBonus ? 1 : 0);
+  const bonusCount = gameState.bonusCount || 0;
+  const maxHints = 1 + bonusCount;
   const used = gameState.hintsUsed || 0;
 
-  // Friend 1 (Roxy): visible if maxHints >= 1. Leaves if used >= 1
-  if (maxHints >= 1) {
-    roxy.style.display = '';
-    if (used >= 1) roxy.classList.add('leaving');
-    else roxy.classList.remove('leaving');
-  } else {
-    roxy.style.display = 'none';
-  }
+  const friendsList = [
+    { el: roxy, minHints: 1 },
+    { el: toxy, minHints: 2 },
+    { el: foxy, minHints: 3 },
+    { el: boby, minHints: 4 },
+    { el: cuppy, minHints: 5 },
+    { el: papy, minHints: 6 }
+  ];
 
-  // Friend 2 (Toxy): visible if maxHints >= 2. Leaves if used >= 2
-  if (maxHints >= 2) {
-    toxy.style.display = '';
-    if (used >= 2) toxy.classList.add('leaving');
-    else toxy.classList.remove('leaving');
-  } else {
-    toxy.style.display = 'none';
-  }
-
-  // Friend 3 (Foxy): always hidden
-  foxy.style.display = 'none';
+  friendsList.forEach((item) => {
+    if (maxHints >= item.minHints) {
+      item.el.style.display = '';
+      item.el.classList.remove('hidden-friend');
+      if (used >= item.minHints) {
+        item.el.classList.add('leaving');
+      } else {
+        item.el.classList.remove('leaving');
+      }
+    } else {
+      item.el.style.display = 'none';
+      item.el.classList.add('hidden-friend');
+    }
+  });
 }
 
 let isHintAnimating = false;
@@ -1261,7 +1266,7 @@ function purchaseHint() {
     gameState.hintsRevealed[randWordIdx].push(i);
   }
 
-    const friendIds = ['friend-roxy', 'friend-toxy', 'friend-foxy'];
+    const friendIds = ['friend-roxy', 'friend-toxy', 'friend-foxy', 'friend-boby', 'friend-cuppy', 'friend-papy'];
     const currentFriendId = friendIds[gameState.hintsUsed || 0];
     const friendEl = document.getElementById(currentFriendId);
     const targetBox = document.querySelector(`.mini-box-item[data-index="${randWordIdx}"]`);
@@ -1289,7 +1294,7 @@ function purchaseHint() {
       flyer.style.left = `${friendRect.left + window.scrollX}px`;
       flyer.style.top = `${friendRect.top + window.scrollY}px`;
 
-      const bodyClone = friendEl.querySelector('.friend-body, .friend-body-diamond').cloneNode(true);
+      const bodyClone = friendEl.querySelector('.friend-body, .friend-body-diamond, .friend-body-cup, .friend-body-roll').cloneNode(true);
       flyer.appendChild(bodyClone);
       document.body.appendChild(flyer);
 
@@ -1308,7 +1313,10 @@ function purchaseHint() {
       const friends = [
         "Roxy (the mailing tube)",
         "Toxy (the diamond box)",
-        "Foxy (the flat pizza box)"
+        "Foxy (the flat pizza box)",
+        "Boby (the bubble envelope)",
+        "Cuppy (the paper cup)",
+        "Papy (the paper roll)"
       ];
       const helperFriend = friends[gameState.hintsUsed || 0] || "Roxy (the mailing tube)";
 
@@ -1969,47 +1977,6 @@ function updateBonusUI() {
   const bonusCounter = document.getElementById('bonus-counter');
   if (bonusCounter) {
     bonusCounter.textContent = gameState.bonusCount || 0;
-  }
-  
-  const count = gameState.bonusCount || 0;
-  const boby = document.getElementById('friend-boby');
-  const cuppy = document.getElementById('friend-cuppy');
-  const papy = document.getElementById('friend-papy');
-  
-  if (boby) {
-    if (count >= 1) {
-      if (boby.classList.contains('hidden-friend')) {
-        boby.classList.remove('hidden-friend');
-        boby.classList.add('newly-unlocked');
-        setTimeout(() => boby.classList.remove('newly-unlocked'), 1000);
-      }
-    } else {
-      boby.classList.add('hidden-friend');
-    }
-  }
-  
-  if (cuppy) {
-    if (count >= 2) {
-      if (cuppy.classList.contains('hidden-friend')) {
-        cuppy.classList.remove('hidden-friend');
-        cuppy.classList.add('newly-unlocked');
-        setTimeout(() => cuppy.classList.remove('newly-unlocked'), 1000);
-      }
-    } else {
-      cuppy.classList.add('hidden-friend');
-    }
-  }
-  
-  if (papy) {
-    if (count >= 3) {
-      if (papy.classList.contains('hidden-friend')) {
-        papy.classList.remove('hidden-friend');
-        papy.classList.add('newly-unlocked');
-        setTimeout(() => papy.classList.remove('newly-unlocked'), 1000);
-      }
-    } else {
-      papy.classList.add('hidden-friend');
-    }
   }
 }
 
