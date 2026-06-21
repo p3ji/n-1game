@@ -1180,8 +1180,9 @@ function updateHintButtonUI() {
   if (!btnHint) return;
 
   const bonusCount = gameState.bonusCount || 0;
-  const maxHints = 1 + bonusCount;
-  const left = Math.min(getUnfoundWordCount(), Math.max(0, maxHints - (gameState.hintsUsed || 0)));
+  const used = gameState.hintsUsed || 0;
+  const maxHints = Math.min(1 + bonusCount, getUnfoundWordCount() + used);
+  const left = Math.max(0, maxHints - used);
   btnHint.textContent = `GET HINT (${left} left)`;
 
   if (left <= 0) {
@@ -1210,8 +1211,8 @@ function updateFriendsUI() {
   if (!roxy || !toxy || !foxy || !boby || !cuppy || !papy) return;
 
   const bonusCount = gameState.bonusCount || 0;
-  const maxHints = 1 + bonusCount;
   const used = gameState.hintsUsed || 0;
+  const maxHints = Math.min(1 + bonusCount, getUnfoundWordCount() + used);
 
   const friendsList = [
     { el: roxy, minHints: 1 },
@@ -1244,8 +1245,9 @@ function purchaseHint() {
   if (isHintAnimating) return;
 
   const bonusCount = gameState.bonusCount || 0;
-  const maxHints = 1 + bonusCount;
-  const left = Math.min(getUnfoundWordCount(), Math.max(0, maxHints - (gameState.hintsUsed || 0)));
+  const used = gameState.hintsUsed || 0;
+  const maxHints = Math.min(1 + bonusCount, getUnfoundWordCount() + used);
+  const left = Math.max(0, maxHints - used);
 
   if (left <= 0) {
     boxySpeak("No more hints for this word!", 3000);
