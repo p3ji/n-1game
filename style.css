@@ -36,6 +36,11 @@
   padding: 0;
 }
 
+/* Utility: hide any element. Used by modals, dropdowns, speech bubbles */
+.hidden {
+  display: none !important;
+}
+
 body {
   background-color: #ecdab9;
   background-image: 
