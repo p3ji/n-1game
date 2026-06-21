@@ -464,7 +464,7 @@ body {
   transform: rotate(360deg) scale(1.15);
 }
 .mini-box-item.has-hint .mini-box-graphic {
-  background-color: var(--c-paper-yellow);
+  display: none;
 }
 .mini-box-graphic::after {
   content: '';
