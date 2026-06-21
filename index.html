@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>N-1 Word Game - Cardboard Edition</title>
+  <!-- Google Fonts for handwriting/crafty feel -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@300..700&family=Patrick+Hand&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+  <!-- Dynamic Favicon SVG -->
+  <link id="favicon" rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><rect x=%2210%22 y=%2225%22 width=%2280%22 height=%2265%22 rx=%228%22 fill=%22%23d7a15c%22 stroke=%22%23c68f49%22 stroke-width=%224%22/><path d=%22M 10 25 L 35 10 L 50 25 M 90 25 L 65 10 L 50 25%22 fill=%22none%22 stroke=%22%23c68f49%22 stroke-width=%224%22/><circle cx=%2235%22 cy=%2255%22 r=%226%22 fill=%22%231e293b%22/><circle cx=%2265%22 cy=%2255%22 r=%226%22 fill=%22%231e293b%22/><path d=%22M 42 70 Q 50 78 58 70%22 fill=%22none%22 stroke=%22%231e293b%22 stroke-width=%224%22 stroke-linecap=%22round%22/></svg>">
+</head>
+<body>
+  <div class="paper-texture-overlay"></div>
+
+  <div class="game-container">
+    <!-- Header Area (Taped Cardboard Sign) -->
+    <header class="cardboard-header">
+      <div class="tape tape-top-left"></div>
+      <div class="tape tape-top-right"></div>
+      <div class="header-content">
+        <h1 class="logo-title">N-1 <span class="logo-sub">Word Craft</span></h1>
+        <div class="header-stats">
+          <div class="stat-tag">
+            <span class="stat-label">Total Score:</span>
+            <span id="total-score" class="stat-value">0000</span>
+          </div>
+          <div class="stat-tag">
+            <span class="stat-label">High Score:</span>
+            <span id="high-score" class="stat-value">0000</span>
+          </div>
+        </div>
+        <div class="header-controls">
+          <button id="btn-sound" class="btn-icon" aria-label="Toggle Sound">
+            <!-- Speaker Icon -->
+            <svg class="icon-speaker" viewBox="0 0 24 24" width="24" height="24">
+              <path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z"/>
+            </svg>
+            <svg class="icon-speaker-muted hidden" viewBox="0 0 24 24" width="24" height="24">
+              <path d="M16.5 12c0-1.77-1.02-3.29-2.5-4.03v2.21l2.45 2.45c.03-.21.05-.42.05-.63zm2.5 0c0 .94-.2 1.82-.54 2.64l1.51 1.51C20.63 14.91 21 13.5 21 12c0-4.28-2.99-7.86-7-8.77v2.06c2.89.86 5 3.54 5 6.71zM4.27 3L3 4.27 7.73 9H3v6h4l5 5v-6.73l4.25 4.25c-.67.52-1.42.93-2.25 1.18v2.06c1.38-.31 2.63-.95 3.69-1.81L19.73 21 21 19.73l-9-9L4.27 3zM12 4L9.91 6.09 12 8.18V4z"/>
+            </svg>
+          </button>
+          <button id="btn-help" class="btn-icon" aria-label="How to Play">?</button>
+          <button id="btn-reset" class="btn-icon text-btn" aria-label="Reset Game">Reset</button>
+        </div>
+      </div>
+    </header>
+
+    <!-- Main Game Board -->
+    <main class="game-board">
+      
+      <!-- Left Panel: Target Words Grid (Written on Notebook Paper) -->
+      <section class="board-panel words-panel">
+        <div class="tape tape-top"></div>
+        <div class="notebook-sheet">
+          <div class="notebook-header">
+            <h2 class="level-indicator">Level: Find words in <span id="current-word-display" class="highlight-word">-------</span></h2>
+            <div class="words-progress">
+              <span>Found:</span>
+              <span id="words-found-count" class="progress-numbers">0 / 0</span>
+            </div>
+          </div>
+          <div class="progress-bar-container">
+            <div id="words-progress-bar" class="progress-bar" style="width: 0%"></div>
+            <div id="goal-marker" class="goal-marker" title="Goal to Unlock Next Level"></div>
+          </div>
+          <div class="progress-sub-text">
+            Need <span id="words-needed-to-unlock">0</span> more word(s) to unlock the shop package!
+          </div>
+          
+          <div class="notebook-content">
+            <!-- Word Grid -->
+            <div id="target-words-grid" class="target-words-grid">
+              <!-- Dynamically populated e.g. <div class="word-slots" data-length="3"><span></span><span></span><span></span></div> -->
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Right Panel: Controls & Mascot (Craft Cardboard Surface) -->
+      <section class="board-panel controls-panel">
+        <div class="tape tape-bottom-right"></div>
+        
+        <!-- Boxy the Mascot Shelf -->
+        <div class="mascot-shelf">
+          <div class="shelf-wood"></div>
+          <!-- Boxy Mascot Container -->
+          <div id="boxy-mascot" class="boxy-mascot idle">
+            <!-- Left Arm -->
+            <div class="boxy-arm arm-left"></div>
+            <!-- Main Box Body -->
+            <div class="boxy-body">
+              <div class="box-face">
+                <div class="box-eyes">
+                  <div class="box-eye eye-left">
+                    <div class="pupil"></div>
+                    <div class="spiral hidden">@</div>
+                  </div>
+                  <div class="box-eye eye-right">
+                    <div class="pupil"></div>
+                    <div class="spiral hidden">@</div>
+                  </div>
+                </div>
+                <div class="box-mouth smile"></div>
+                <div class="box-cheeks"></div>
+              </div>
+              <!-- Box Flaps -->
+              <div class="box-flap flap-left"></div>
+              <div class="box-flap flap-right"></div>
+              <div class="box-flap flap-top"></div>
+            </div>
+            <!-- Right Arm -->
+            <div class="boxy-arm arm-right"></div>
+            <!-- Legs -->
+            <div class="boxy-legs">
+              <div class="boxy-leg leg-left"></div>
+              <div class="boxy-leg leg-right"></div>
+            </div>
+            <!-- Speech Bubble -->
+            <div id="boxy-bubble" class="boxy-bubble hidden">
+              <span id="boxy-bubble-text">Hi! Let's craft words!</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Spelled Word Input Box (Marker Text on Cardboard) -->
+        <div class="input-container">
+          <div class="input-cardboard-piece">
+            <span id="spelled-word-text" class="spelled-word-text"></span>
+            <span class="cursor">|</span>
+          </div>
+          <div class="input-actions">
+            <button id="btn-clear" class="btn-craft btn-small">Clear</button>
+            <button id="btn-shuffle" class="btn-craft btn-small">Shuffle</button>
+          </div>
+        </div>
+
+        <!-- Letter Wheel (Rotatable Circular Cardboard) -->
+        <div class="wheel-outer-container">
+          <div id="letter-wheel" class="letter-wheel">
+            <!-- Brass Pin in the middle -->
+            <div class="wheel-pin"></div>
+            <!-- Letter Tiles dynamically generated -->
+          </div>
+        </div>
+
+        <!-- Action Panel (Submit, Shop, Hint) -->
+        <div class="actions-panel">
+          <button id="btn-submit" class="btn-craft btn-large btn-primary">SUBMIT WORD</button>
+          
+          <!-- Shop Card (Price Tag hanging on string) -->
+          <div class="shop-tag">
+            <div class="tag-string"></div>
+            <div class="tag-body">
+              <div class="tag-hole"></div>
+              <h3 class="tag-title">Next Level Shop</h3>
+              <div class="tag-item">
+                <span id="shop-item-name" class="item-name">6-Letter Starter Word</span>
+                <span class="item-cost"><span id="shop-item-price">1200</span> pts</span>
+              </div>
+              <button id="btn-purchase" class="btn-purchase disabled" disabled>PURCHASE</button>
+              <div id="shop-hint-text" class="shop-hint">Find more words first!</div>
+            </div>
+          </div>
+
+          <!-- Hint Button -->
+          <button id="btn-hint" class="btn-craft btn-medium btn-accent">
+            <span>GET HINT</span>
+            <span class="hint-cost">(250 pts)</span>
+          </button>
+        </div>
+
+      </section>
+    </main>
+  </div>
+
+  <!-- Help Overlay Modal -->
+  <div id="help-modal" class="modal-overlay hidden">
+    <div class="modal-cardboard">
+      <div class="tape tape-modal-top"></div>
+      <div class="notebook-sheet modal-notebook">
+        <h2>How to Play N-1 Word Craft</h2>
+        <ol>
+          <li>You start with a <strong>7-letter word</strong> at Level 1.</li>
+          <li>Spell other words (3+ letters) using only the letters of this word.</li>
+          <li>Each letter can only be used as many times as it appears in the starter word.</li>
+          <li>Find all possible words <strong>except one</strong> to unlock the next level package in the shop.</li>
+          <li><strong>Purchase</strong> the next starter word (which will be <strong>6 letters</strong>).</li>
+          <li>Continue this loop from 6 letters &rarr; 5 letters &rarr; <strong>4 letters</strong>.</li>
+          <li>Complete the 4-letter word level to claim ultimate Victory!</li>
+        </ol>
+        <p class="modal-tips">
+          💡 <strong>Tip:</strong> Earn points to buy hints. Shuffling letters is free!
+        </p>
+        <button id="btn-close-help" class="btn-craft btn-medium">Got it!</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Victory Overlay Modal -->
+  <div id="victory-modal" class="modal-overlay hidden">
+    <div class="modal-cardboard victory-cardboard">
+      <div class="tape tape-victory"></div>
+      <div class="victory-content">
+        <h2 class="victory-title">🎉 VICTORY! 🎉</h2>
+        <p>You have successfully decelerated the letters down to 4 letters and cleared the N-1 Word Craft challenge!</p>
+        
+        <div class="victory-stats">
+          <div class="vic-stat">
+            <span class="vic-stat-label">Final Score</span>
+            <span id="vic-final-score" class="vic-stat-val">0000</span>
+          </div>
+          <div class="vic-stat">
+            <span class="vic-stat-label">New High Score!</span>
+            <span id="vic-high-score" class="vic-stat-val">0000</span>
+          </div>
+        </div>
+
+        <p class="victory-cheer">Boxy is extremely proud of you! 📦💖</p>
+        <button id="btn-play-again" class="btn-craft btn-large btn-primary">PLAY AGAIN</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Reset Confirmation Modal -->
+  <div id="reset-modal" class="modal-overlay hidden">
+    <div class="modal-cardboard reset-cardboard">
+      <div class="tape tape-reset"></div>
+      <div class="reset-content">
+        <h2>Reset Game?</h2>
+        <p>Are you sure you want to reset your score and start back at Level 1 (7 letters)? This will clear your current progress!</p>
+        <div class="reset-actions">
+          <button id="btn-confirm-reset" class="btn-craft btn-danger">Yes, Reset</button>
+          <button id="btn-cancel-reset" class="btn-craft">Cancel</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Particle / Confetti Canvas Layer -->
+  <canvas id="confetti-canvas"></canvas>
+
+  <!-- Game Scripts -->
+  <script src="words_data.js"></script>
+  <script src="game.js"></script>
+</body>
+</html>
