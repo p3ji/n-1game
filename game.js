@@ -3,7 +3,7 @@
 // --- SUPABASE CONFIGURATION ---
 // Please fill in your Supabase credentials here:
 const SUPABASE_URL = "https://wvzxkaaauxnqqubvebcp.supabase.co";
-const SUPABASE_ANON_KEY = "sb_publishable_bjXcbTnaiuhnCFaEoBsSXQ_BBFhYYqJ";
+const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Ind2enhrYWFhdXhucXF1YnZlYmNwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODIwMTg4OTUsImV4cCI6MjA5NzU5NDg5NX0.y44sxNqAwjXe4u2BdqaZ5cXQkPO497usoyC9tIRxxX8";
 
 let supabaseClient = null;
 if (typeof supabase !== 'undefined' && SUPABASE_URL && SUPABASE_URL !== 'YOUR_SUPABASE_URL') {
