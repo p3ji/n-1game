@@ -73,7 +73,7 @@ body {
 
 /* Single Viewport Container */
 .game-container {
-  max-width: 500px; /* Force mobile portrait aspect ratio on desktop */
+  max-width: 500px;
   height: 100%;
   margin: 0 auto;
   padding: 10px;

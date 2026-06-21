@@ -53,12 +53,12 @@ console.log(`  → ${starterCandidates.length} valid starter candidates`);
 const enableArray = [...enableWords];
 const enableFreqs = enableArray.map(w => ({ word: w, freq: getFreq(w) }));
 
-// Thresholds for number of subwords per level (for fun gameplay)
+// Thresholds for number of subwords per level (max 13 to fit on mobile screen)
 const thresholds = {
-  7: { min: 12, max: 30 },
-  6: { min: 9,  max: 25 },
-  5: { min: 7,  max: 20 },
-  4: { min: 5,  max: 12 }
+  7: { min: 8,  max: 13 },
+  6: { min: 7,  max: 13 },
+  5: { min: 5,  max: 13 },
+  4: { min: 4,  max: 13 }
 };
 
 // Shuffle helper

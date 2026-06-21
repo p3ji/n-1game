@@ -518,7 +518,7 @@ function renderLetterWheel() {
   const word = gameState.currentWordObj.word;
   const chars = word.split('');
   
-  const radius = 75; // px (compact size fits 210px container)
+  const radius = 75; // px (fits 210px container)
   const center = 105; // half of 210px
   
   chars.forEach((char, idx) => {
@@ -529,8 +529,8 @@ function renderLetterWheel() {
     tile.setAttribute('data-char', char);
     
     const angle = (idx / chars.length) * 2 * Math.PI - Math.PI / 2;
-    const x = center + radius * Math.cos(angle) - 20; // 20 is half of tile width (40px)
-    const y = center + radius * Math.sin(angle) - 20; // 20 is half of tile height (40px)
+    const x = center + radius * Math.cos(angle) - 20;
+    const y = center + radius * Math.sin(angle) - 20;
     
     tile.style.left = `${x}px`;
     tile.style.top = `${y}px`;
