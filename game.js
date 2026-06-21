@@ -2,8 +2,8 @@
 
 // --- SUPABASE CONFIGURATION ---
 // Please fill in your Supabase credentials here:
-const SUPABASE_URL = "YOUR_SUPABASE_URL";
-const SUPABASE_ANON_KEY = "YOUR_SUPABASE_ANON_KEY";
+const SUPABASE_URL = "https://bjXcbTnaiuhnCFaEoBsSXQ.supabase.co";
+const SUPABASE_ANON_KEY = "sb_publishable_bjXcbTnaiuhnCFaEoBsSXQ_BBFhYYqJ";
 
 let supabaseClient = null;
 if (typeof supabase !== 'undefined' && SUPABASE_URL && SUPABASE_URL !== 'YOUR_SUPABASE_URL') {
