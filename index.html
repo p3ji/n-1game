@@ -200,7 +200,7 @@
         </div>
 
         <p class="victory-cheer">Boxy is extremely proud of you! 📦💖</p>
-        <button id="btn-play-again" class="btn-craft btn-large btn-primary" onclick="document.getElementById('victory-modal').classList.add('hidden')">PLAY AGAIN</button>
+        <button id="btn-play-again" class="btn-craft btn-large btn-primary">PLAY AGAIN</button>
       </div>
     </div>
   </div>
@@ -213,8 +213,8 @@
         <h2>Reset Game?</h2>
         <p>Are you sure you want to reset your score and start back at Level 1 (7 letters)? This will clear your current progress!</p>
         <div class="reset-actions">
-          <button id="btn-confirm-reset" class="btn-craft btn-danger" onclick="document.getElementById('reset-modal').classList.add('hidden')">Yes, Reset</button>
-          <button id="btn-cancel-reset" class="btn-craft" onclick="document.getElementById('reset-modal').classList.add('hidden')">Cancel</button>
+          <button id="btn-confirm-reset" class="btn-craft btn-danger">Yes, Reset</button>
+          <button id="btn-cancel-reset" class="btn-craft">Cancel</button>
         </div>
       </div>
     </div>
@@ -223,9 +223,9 @@
   <!-- Particle / Confetti Canvas Layer -->
   <canvas id="confetti-canvas"></canvas>
 
-  <!-- Game Scripts (v=7 forces browser to bypass any stale HTTP cache) -->
-  <script src="words_data.js?v=7"></script>
-  <script src="game.js?v=7"></script>
+  <!-- Game Scripts (v=8) -->
+  <script src="words_data.js?v=8"></script>
+  <script src="game.js?v=8"></script>
   <script>
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
