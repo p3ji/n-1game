@@ -120,14 +120,28 @@ window.addEventListener('DOMContentLoaded', () => {
     // Dismiss any stale victory modal that might be underneath
     document.getElementById('victory-modal')?.classList.add('hidden');
 
-    // Reset timer to a fresh 2 minutes and (re)start the timer loop
+    // Reset all game state variables to start a completely new game session
+    gameState.totalScore = 0;
+    gameState.level = 4;
+    gameState.foundWords = [];
+    gameState.hintsRevealed = {};
+    gameState.hintsUsed = 0;
+    gameState.currentWordObj = null;
+    gameState.isLevelUnlocked = false;
     gameState.timeLeft = 120;
+    gameState.bonusCount = 0;
+    gameState.bonusClaimedCurrentLevel = false;
     gameState.isTransitioning = false;
     if (autoProceedTimeout) {
       clearTimeout(autoProceedTimeout);
       autoProceedTimeout = null;
     }
+
+    // Select a fresh Level 1 word (4 letters) and reset game UI
+    startNewLevel(4);
+
     updateTimerUI();
+    updateBonusUI();
     startTimerLoop();
     saveGameState();
   });
