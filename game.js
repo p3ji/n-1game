@@ -43,13 +43,20 @@ window.addEventListener('DOMContentLoaded', () => {
     hideSettingsDropdown();
   });
   document.getElementById('btn-reset').addEventListener('click', (e) => {
+    e.stopPropagation();
     showResetConfirm();
     hideSettingsDropdown();
   });
   
   document.getElementById('btn-close-help').addEventListener('click', hideHelp);
-  document.getElementById('btn-cancel-reset').addEventListener('click', hideResetConfirm);
-  document.getElementById('btn-confirm-reset').addEventListener('click', resetGame);
+  document.getElementById('btn-cancel-reset').addEventListener('click', (e) => {
+    e.stopPropagation();
+    hideResetConfirm();
+  });
+  document.getElementById('btn-confirm-reset').addEventListener('click', (e) => {
+    e.stopPropagation();
+    resetGame();
+  });
   document.getElementById('btn-clear').addEventListener('click', clearSpelledWord);
   document.getElementById('btn-shuffle').addEventListener('click', shuffleLetters);
   document.getElementById('btn-submit').addEventListener('click', submitSpelledWord);
@@ -1063,7 +1070,10 @@ function startMascotIdleChatter() {
 // --- MODALS ---
 function showHelp() {
   playTapSound();
-  document.getElementById('help-modal').classList.remove('hidden');
+  const modal = document.getElementById('help-modal');
+  modal.classList.remove('hidden');
+  // Clicking backdrop closes it
+  modal.onclick = (e) => { if (e.target === modal) hideHelp(); };
 }
 function hideHelp() {
   playTapSound();
@@ -1071,7 +1081,10 @@ function hideHelp() {
 }
 function showResetConfirm() {
   playTapSound();
-  document.getElementById('reset-modal').classList.remove('hidden');
+  const modal = document.getElementById('reset-modal');
+  modal.classList.remove('hidden');
+  // Clicking backdrop closes it
+  modal.onclick = (e) => { if (e.target === modal) hideResetConfirm(); };
 }
 function hideResetConfirm() {
   playTapSound();
