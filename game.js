@@ -28,7 +28,8 @@ let gameState = {
   timeLeft: 120,
   bonusCount: 0,
   bonusClaimedCurrentLevel: false,
-  isTransitioning: false
+  isTransitioning: false,
+  activeBoxWords: []
 };
 
 // Track the auto-proceed timeout so we can cancel stale ones
@@ -246,6 +247,8 @@ function loadGameState() {
       gameState.bonusClaimedCurrentLevel = parsed.bonusClaimedCurrentLevel === true;
       gameState.bonusWord = parsed.bonusWord || null;
       
+      gameState.activeBoxWords = parsed.activeBoxWords || [];
+      
       if (parsed.currentWord) {
         const wordsList = WORDS_DATA[gameState.level] || [];
         const match = wordsList.find(w => w.word === parsed.currentWord);
@@ -297,7 +300,8 @@ function saveGameState() {
     timeLeft: gameState.timeLeft,
     bonusCount: gameState.bonusCount,
     bonusClaimedCurrentLevel: gameState.bonusClaimedCurrentLevel,
-    bonusWord: gameState.bonusWord
+    bonusWord: gameState.bonusWord,
+    activeBoxWords: gameState.activeBoxWords
   };
   localStorage.setItem('n1_gameState', JSON.stringify(stateToSave));
 }
@@ -578,6 +582,14 @@ function startNewLevel(n) {
   const randIndex = Math.floor(Math.random() * candidates.length);
   gameState.currentWordObj = candidates[randIndex];
   
+  // Initialize activeBoxWords
+  const subwords = gameState.currentWordObj.subwords || [];
+  if (subwords.length <= 12) {
+    gameState.activeBoxWords = [...subwords];
+  } else {
+    gameState.activeBoxWords = Array(12).fill(null);
+  }
+
   // Select the bonus word for the level
   selectBonusWordForLevel();
   
@@ -622,6 +634,23 @@ function setupLevelUI() {
   const wordObj = gameState.currentWordObj;
   if (!wordObj) return;
 
+  // Ensure activeBoxWords is initialized
+  if (!gameState.activeBoxWords || gameState.activeBoxWords.length === 0) {
+    const subwords = wordObj.subwords || [];
+    if (subwords.length <= 12) {
+      gameState.activeBoxWords = [...subwords];
+    } else {
+      gameState.activeBoxWords = Array(12).fill(null);
+      let idx = 0;
+      gameState.foundWords.forEach(w => {
+        if (idx < 12) {
+          gameState.activeBoxWords[idx] = w;
+          idx++;
+        }
+      });
+    }
+  }
+
   const nextLevelBtn = document.getElementById('btn-next-level');
   if (nextLevelBtn) {
     nextLevelBtn.disabled = false;
@@ -636,15 +665,15 @@ function setupLevelUI() {
   const grid = document.getElementById('mini-boxes-grid');
   grid.innerHTML = '';
 
-  wordObj.subwords.forEach((subword, wordIdx) => {
-    const isFound = gameState.foundWords.includes(subword);
+  gameState.activeBoxWords.forEach((subword, wordIdx) => {
+    const isFound = subword ? gameState.foundWords.includes(subword) : false;
     const revealedIndices = gameState.hintsRevealed[wordIdx] || [];
     const hasHints = revealedIndices.length > 0;
     
     // Create mini-box item
     const boxItem = document.createElement('div');
     boxItem.className = 'mini-box-item';
-    boxItem.setAttribute('data-word', subword);
+    boxItem.setAttribute('data-word', subword || '');
     boxItem.setAttribute('data-index', wordIdx);
 
     if (isFound) {
@@ -664,7 +693,7 @@ function setupLevelUI() {
     
     if (isFound) {
       wordLabel.textContent = subword;
-    } else if (hasHints) {
+    } else if (hasHints && subword) {
       // Build length dashes with revealed hint letters: e.g. "T _ _ _"
       const lettersArr = [];
       for (let i = 0; i < subword.length; i++) {
@@ -832,6 +861,17 @@ function submitSpelledWord() {
     playCrinkleSound();
     shakeWheelCenter();
   } else if (isValid) {
+    // Dynamic capping: assign word to first empty slot if subwords count > 12
+    if (subwords.length > 12 && !gameState.activeBoxWords.includes(word)) {
+      const emptyIdx = gameState.activeBoxWords.indexOf(null);
+      if (emptyIdx !== -1) {
+        gameState.activeBoxWords[emptyIdx] = word;
+        const boxItem = document.querySelector(`.mini-box-item[data-index="${emptyIdx}"]`);
+        if (boxItem) {
+          boxItem.setAttribute('data-word', word);
+        }
+      }
+    }
     // Correct word! Animate flying text to Boxy's mouth
     animateEatingScrap(word);
   } else {
@@ -1004,6 +1044,7 @@ function revealMiniBox(word) {
 
 // --- KEYBOARD INPUTS ---
 function handleKeyboardInput(e) {
+  if (gameState.isTransitioning === true) return;
   const key = e.key.toLowerCase();
   
   if (!document.getElementById('help-modal').classList.contains('hidden') ||
@@ -1084,8 +1125,14 @@ function updateScoreUI() {
   document.getElementById('total-score').textContent = gameState.totalScore;
 }
 
+function getPlayableSubwordsCount() {
+  if (!gameState.currentWordObj) return 0;
+  const len = gameState.currentWordObj.subwords.length;
+  return len > 12 ? 12 : len;
+}
+
 function updateProgressUI() {
-  const W = gameState.currentWordObj.subwords.length;
+  const W = getPlayableSubwordsCount();
   const foundCount = gameState.foundWords.length;
   
   document.getElementById('words-found-count').textContent = `${foundCount} / ${W}`;
@@ -1094,7 +1141,7 @@ function updateProgressUI() {
   const progressBar = document.getElementById('words-progress-bar');
   progressBar.style.width = `${progressPercent}%`;
   
-  const goalCount = Math.max(1, W - 1);
+  const goalCount = gameState.easyMode ? Math.max(1, W - 2) : Math.max(1, W - 1);
   const goalPercent = (goalCount / W) * 100;
   
   const goalMarker = document.getElementById('goal-marker');
@@ -1113,7 +1160,7 @@ function purchaseNextLevel() {
   // Guard against re-entrant calls during transition
   if (gameState.isTransitioning) return;
 
-  const W = gameState.currentWordObj.subwords.length;
+  const W = getPlayableSubwordsCount();
   const goalCount = gameState.easyMode ? Math.max(1, W - 2) : Math.max(1, W - 1);
   if (gameState.foundWords.length < goalCount) {
     playCrinkleSound();
@@ -1149,17 +1196,32 @@ function purchaseNextLevel() {
 function checkAutoProceed() {
   if (gameState.isTransitioning) return;
 
-  const W = gameState.currentWordObj.subwords.length;
+  const W = getPlayableSubwordsCount();
   const found = gameState.foundWords.length;
-  
-  // Once they find W - 1 words, show the "GO TO NEXT LEVEL" button
-  if (found >= W - 1) {
-    document.getElementById('next-level-btn-container')?.classList.remove('hidden');
+  const goalCount = gameState.easyMode ? Math.max(1, W - 2) : Math.max(1, W - 1);
+
+  const nextLevelBtn = document.getElementById('btn-next-level');
+  if (nextLevelBtn) {
+    // If they completed the button animation previously, make sure it is enabled again
+    nextLevelBtn.disabled = false;
+    nextLevelBtn.classList.remove('disabled');
+    if (gameState.level === 7) {
+      nextLevelBtn.textContent = "CLAIM VICTORY ➔";
+    } else {
+      nextLevelBtn.textContent = "GO TO NEXT LEVEL ➔";
+    }
   }
 
-  // If they find ALL words (W), auto-proceed after 1500ms
-  if (found >= W) {
+  // Once they hit the goal, show the proceed button
+  if (found >= goalCount) {
+    document.getElementById('next-level-btn-container')?.classList.remove('hidden');
+  } else {
     document.getElementById('next-level-btn-container')?.classList.add('hidden');
+  }
+
+  // If they find ALL words, auto-proceed after 1.5 seconds since there are no more words to guess
+  const totalSubwordsCount = gameState.currentWordObj.subwords.length;
+  if (found >= totalSubwordsCount) {
     if (autoProceedTimeout) {
       clearTimeout(autoProceedTimeout);
       autoProceedTimeout = null;
@@ -1167,8 +1229,8 @@ function checkAutoProceed() {
 
     autoProceedTimeout = setTimeout(() => {
       autoProceedTimeout = null;
-      if (gameState.timeLeft > 0 && !gameState.isTransitioning && gameState.foundWords.length >= W) {
-        purchaseNextLevel();
+      if (gameState.timeLeft > 0 && !gameState.isTransitioning && gameState.foundWords.length >= totalSubwordsCount) {
+        handleProceedToNextLevel();
       }
     }, 1500);
   }
@@ -1258,114 +1320,154 @@ function purchaseHint() {
   }
 
   const subwords = gameState.currentWordObj.subwords;
-  const unfoundIndices = [];
-  subwords.forEach((word, wordIdx) => {
-    if (!gameState.foundWords.includes(word)) {
-      unfoundIndices.push(wordIdx);
-    }
-  });
+  
+  // Find words that are not found, and not already assigned to boxes
+  const eligibleWords = subwords.filter(word => 
+    !gameState.foundWords.includes(word) && 
+    !gameState.activeBoxWords.includes(word)
+  );
 
-  if (unfoundIndices.length === 0) {
-    boxySpeak("All words found!", 3500);
+  if (subwords.length > 12 && eligibleWords.length === 0) {
+    boxySpeak("All boxes occupied!", 3500);
     playCrinkleSound();
     return;
   }
 
-  const randWordIdx = unfoundIndices[Math.floor(Math.random() * unfoundIndices.length)];
-  const targetWord = subwords[randWordIdx];
+  let randWordIdx = -1;
+  let targetWord = "";
 
+  if (subwords.length <= 12) {
+    // Standard mapping: pick from unfound words
+    const unfoundIndices = [];
+    subwords.forEach((word, wordIdx) => {
+      if (!gameState.foundWords.includes(word)) {
+        unfoundIndices.push(wordIdx);
+      }
+    });
+    if (unfoundIndices.length === 0) {
+      boxySpeak("All words found!", 3500);
+      playCrinkleSound();
+      return;
+    }
+    randWordIdx = unfoundIndices[Math.floor(Math.random() * unfoundIndices.length)];
+    targetWord = subwords[randWordIdx];
+  } else {
+    // Dynamic mapping: assign a new eligible word to the first empty slot
+    const emptyIdx = gameState.activeBoxWords.indexOf(null);
+    if (emptyIdx === -1) {
+      boxySpeak("All boxes occupied!", 3500);
+      playCrinkleSound();
+      return;
+    }
+    targetWord = eligibleWords[Math.floor(Math.random() * eligibleWords.length)];
+    gameState.activeBoxWords[emptyIdx] = targetWord;
+    randWordIdx = emptyIdx;
+    
+    // Update the DOM data-word attribute immediately so that friend animation target can locate it
+    const boxItem = document.querySelector(`.mini-box-item[data-index="${emptyIdx}"]`);
+    if (boxItem) {
+      boxItem.setAttribute('data-word', targetWord);
+    }
+  }
+
+  // Populate hintsRevealed with all characters of targetWord
   gameState.hintsRevealed[randWordIdx] = [];
   for (let i = 0; i < targetWord.length; i++) {
     gameState.hintsRevealed[randWordIdx].push(i);
   }
 
-    const friendIds = ['friend-roxy', 'friend-toxy', 'friend-foxy', 'friend-boby', 'friend-cuppy', 'friend-papy'];
-    const currentFriendId = friendIds[gameState.hintsUsed || 0];
-    const friendEl = document.getElementById(currentFriendId);
-    const targetBox = document.querySelector(`.mini-box-item[data-index="${randWordIdx}"]`);
+  const friendIds = ['friend-roxy', 'friend-toxy', 'friend-foxy', 'friend-boby', 'friend-cuppy', 'friend-papy'];
+  const currentFriendIndex = Math.min(gameState.hintsUsed || 0, friendIds.length - 1);
+  const currentFriendId = friendIds[currentFriendIndex];
+  const friendEl = document.getElementById(currentFriendId);
+  const targetBox = document.querySelector(`.mini-box-item[data-index="${randWordIdx}"]`);
 
-    if (friendEl && targetBox) {
-      isHintAnimating = true;
-      playScribbleSound();
+  // Only animate if the friend element exists and is currently visible
+  const isFriendVisible = friendEl && friendEl.style.display !== 'none' && !friendEl.classList.contains('hidden-friend') && !friendEl.classList.contains('leaving');
 
-      // Disable hint button during animation
-      const btnHint = document.getElementById('btn-hint');
-      if (btnHint) {
-        btnHint.disabled = true;
-        btnHint.classList.add('disabled');
-      }
+  if (isFriendVisible && targetBox) {
+    isHintAnimating = true;
+    playScribbleSound();
 
-      // Get positions
-      const friendRect = friendEl.getBoundingClientRect();
-      const targetRect = targetBox.getBoundingClientRect();
+    // Disable hint button during animation
+    const btnHint = document.getElementById('btn-hint');
+    if (btnHint) {
+      btnHint.disabled = true;
+      btnHint.classList.add('disabled');
+    }
 
-      // Create flyer
-      const flyer = document.createElement('div');
-      flyer.className = 'flying-friend-flyer boxy-friend ' + currentFriendId.replace('friend-', '');
-      flyer.style.width = `${friendEl.offsetWidth}px`;
-      flyer.style.height = `${friendEl.offsetHeight}px`;
-      flyer.style.left = `${friendRect.left + window.scrollX}px`;
-      flyer.style.top = `${friendRect.top + window.scrollY}px`;
+    // Get positions
+    const friendRect = friendEl.getBoundingClientRect();
+    const targetRect = targetBox.getBoundingClientRect();
 
-      const bodyClone = friendEl.querySelector('.friend-body, .friend-body-diamond, .friend-body-cup, .friend-body-roll').cloneNode(true);
-      flyer.appendChild(bodyClone);
-      document.body.appendChild(flyer);
+    // Create flyer
+    const flyer = document.createElement('div');
+    flyer.className = 'flying-friend-flyer boxy-friend ' + currentFriendId.replace('friend-', '');
+    flyer.style.width = `${friendEl.offsetWidth}px`;
+    flyer.style.height = `${friendEl.offsetHeight}px`;
+    flyer.style.left = `${friendRect.left + window.scrollX}px`;
+    flyer.style.top = `${friendRect.top + window.scrollY}px`;
 
-      // Hide original friend immediately
-      friendEl.classList.add('leaving');
+    const bodyClone = friendEl.querySelector('.friend-body, .friend-body-diamond, .friend-body-cup, .friend-body-roll').cloneNode(true);
+    flyer.appendChild(bodyClone);
+    document.body.appendChild(flyer);
 
-      // Trigger CSS flyer transition
-      setTimeout(() => {
-        flyer.style.left = `${targetRect.left + window.scrollX + (targetBox.offsetWidth - friendEl.offsetWidth) / 2}px`;
-        flyer.style.top = `${targetRect.top + window.scrollY + (targetBox.offsetHeight - friendEl.offsetHeight) / 2}px`;
-        flyer.style.transform = 'scale(0.3) rotate(360deg)';
-        flyer.style.opacity = '0.3';
-      }, 20);
+    // Hide original friend immediately
+    friendEl.classList.add('leaving');
 
-      // Finish animation
-      const friends = [
-        "Roxy (the mailing tube)",
-        "Toxy (the diamond box)",
-        "Foxy (the flat pizza box)",
-        "Boby (the bubble envelope)",
-        "Cuppy (the paper cup)",
-        "Papy (the paper roll)"
-      ];
-      const helperFriend = friends[gameState.hintsUsed || 0] || "Roxy (the mailing tube)";
+    // Trigger CSS flyer transition
+    setTimeout(() => {
+      flyer.style.left = `${targetRect.left + window.scrollX + (targetBox.offsetWidth - friendEl.offsetWidth) / 2}px`;
+      flyer.style.top = `${targetRect.top + window.scrollY + (targetBox.offsetHeight - friendEl.offsetHeight) / 2}px`;
+      flyer.style.transform = 'scale(0.3) rotate(360deg)';
+      flyer.style.opacity = '0.3';
+    }, 20);
 
-      setTimeout(() => {
-        flyer.remove();
-        gameState.hintsUsed = (gameState.hintsUsed || 0) + 1;
+    // Finish animation
+    const friends = [
+      "Roxy (the mailing tube)",
+      "Toxy (the diamond box)",
+      "Foxy (the flat pizza box)",
+      "Boby (the bubble envelope)",
+      "Cuppy (the paper cup)",
+      "Papy (the paper roll)"
+    ];
+    const helperFriend = friends[currentFriendIndex] || "Roxy (the mailing tube)";
 
-        setupLevelUI();
-        saveGameState();
-
-        // Bounce and pop the box
-        const newTargetBox = document.querySelector(`.mini-box-item[data-index="${randWordIdx}"]`);
-        if (newTargetBox) {
-          newTargetBox.classList.add('has-hint');
-          newTargetBox.animate([
-            { transform: 'scale(1)' },
-            { transform: 'scale(1.25)', backgroundColor: 'var(--c-paper-yellow)' },
-            { transform: 'scale(1)' }
-          ], {
-            duration: 450,
-            easing: 'ease-out'
-          });
-        }
-
-        isHintAnimating = false;
-        triggerBoxyEmotion('happy');
-        boxySpeak(`${helperFriend} helped and revealed a full word!`, 4000);
-      }, 670);
-
-    } else {
-      // Fallback
+    setTimeout(() => {
+      flyer.remove();
       gameState.hintsUsed = (gameState.hintsUsed || 0) + 1;
+
       setupLevelUI();
       saveGameState();
+
+      // Bounce and pop the box
+      const newTargetBox = document.querySelector(`.mini-box-item[data-index="${randWordIdx}"]`);
+      if (newTargetBox) {
+        newTargetBox.classList.add('has-hint');
+        newTargetBox.animate([
+          { transform: 'scale(1)' },
+          { transform: 'scale(1.25)', backgroundColor: 'var(--c-paper-yellow)' },
+          { transform: 'scale(1)' }
+        ], {
+          duration: 450,
+          easing: 'ease-out'
+        });
+      }
+
+      isHintAnimating = false;
       triggerBoxyEmotion('happy');
-    }
+      boxySpeak(`${helperFriend} helped and revealed a full word!`, 4000);
+    }, 670);
+
+  } else {
+    // Fallback: reveal immediately without animation
+    gameState.hintsUsed = (gameState.hintsUsed || 0) + 1;
+    setupLevelUI();
+    saveGameState();
+    triggerBoxyEmotion('happy');
+    boxySpeak("Revealed a full word!", 3000);
+  }
 }
 
 // --- BOXY CHAT & EMOTIONS ---
@@ -1882,12 +1984,36 @@ function escapeHTML(str) {
 let timerInterval = null;
 
 function isGameActive() {
-  // Game is active if no modal overlay is visible (doesn't have hidden class)
-  const activeOverlay = document.querySelector('.modal-overlay:not(.hidden)');
-  // Also check the transition overlay (which uses a different class)
+  // Check if home screen is showing
+  const homeScreen = document.getElementById('home-screen');
+  if (homeScreen && !homeScreen.classList.contains('hidden')) return false;
+
+  // Check if victory modal is showing
+  const victoryModal = document.getElementById('victory-modal');
+  if (victoryModal && !victoryModal.classList.contains('hidden')) return false;
+
+  // Check if level transition overlay is showing
   const transitionOverlay = document.getElementById('level-transition-overlay');
   const isTransitioning = transitionOverlay && !transitionOverlay.classList.contains('hidden');
-  return !activeOverlay && !isTransitioning;
+  if (isTransitioning) return false;
+
+  // Check if reset modal is showing
+  const resetModal = document.getElementById('reset-modal');
+  if (resetModal && !resetModal.classList.contains('hidden')) return false;
+
+  // Check if help modal is showing
+  const helpModal = document.getElementById('help-modal');
+  if (helpModal && !helpModal.classList.contains('hidden')) return false;
+
+  // Check if leaderboard modal is showing
+  const leaderboardModal = document.getElementById('leaderboard-modal');
+  if (leaderboardModal && !leaderboardModal.classList.contains('hidden')) return false;
+
+  // Check if history modal is showing
+  const historyModal = document.getElementById('history-modal');
+  if (historyModal && !historyModal.classList.contains('hidden')) return false;
+
+  return true;
 }
 
 function startTimerLoop() {
@@ -1943,6 +2069,18 @@ function endGameSession(isTimeUp) {
   ['reset-modal', 'help-modal', 'history-modal', 'leaderboard-modal'].forEach(id => {
     document.getElementById(id)?.classList.add('hidden');
   });
+
+  // Hide the transition overlay as well so it doesn't get stuck blocking the view
+  const transOverlay = document.getElementById('level-transition-overlay');
+  if (transOverlay) {
+    transOverlay.classList.add('hidden');
+    transOverlay.classList.remove('animating');
+  }
+  gameState.isTransitioning = false;
+  if (transitionTimeout) {
+    clearTimeout(transitionTimeout);
+    transitionTimeout = null;
+  }
 
   // Populate final score
   const finalScore = gameState.totalScore;
@@ -2061,37 +2199,58 @@ function handleProceedToNextLevel() {
   nextLevelBtn.classList.add('disabled');
   playTapSound();
   
+  // Clear any pending autoProceed timeout
+  if (autoProceedTimeout) {
+    clearTimeout(autoProceedTimeout);
+    autoProceedTimeout = null;
+  }
+
   const subwords = gameState.currentWordObj.subwords || [];
-  const missingWord = subwords.find(w => !gameState.foundWords.includes(w));
+  const missingWords = subwords.filter(w => !gameState.foundWords.includes(w));
   
-  if (missingWord) {
-    // Reveal the missing word in red in the grid
-    const boxItem = document.querySelector(`.mini-box-item[data-word="${missingWord}"]`);
-    if (boxItem) {
-      boxItem.classList.add('revealed', 'missed');
-      const label = boxItem.querySelector('.found-word-label');
-      if (label) {
-        label.textContent = missingWord.toUpperCase();
+  if (missingWords.length > 0) {
+    // Reveal the missing words in red in the grid
+    missingWords.forEach(missingWord => {
+      let emptyIdx = gameState.activeBoxWords.indexOf(missingWord);
+      if (emptyIdx === -1) {
+        emptyIdx = gameState.activeBoxWords.indexOf(null);
+        if (emptyIdx !== -1) {
+          gameState.activeBoxWords[emptyIdx] = missingWord;
+        }
       }
-    }
+      
+      if (emptyIdx !== -1) {
+        const boxItem = document.querySelector(`.mini-box-item[data-index="${emptyIdx}"]`);
+        if (boxItem) {
+          boxItem.setAttribute('data-word', missingWord);
+          boxItem.classList.add('revealed', 'missed');
+          const label = boxItem.querySelector('.found-word-label');
+          if (label) {
+            label.textContent = missingWord.toUpperCase();
+          }
+        }
+      }
+    });
     
     // Create floating non-blocking notification banner in red
     const notification = document.createElement('div');
     notification.className = 'missing-word-notification';
-    notification.textContent = `MISSING WORD: ${missingWord.toUpperCase()}`;
+    notification.textContent = `MISSING WORD${missingWords.length > 1 ? 'S' : ''}: ${missingWords.map(w => w.toUpperCase()).join(', ')}`;
     document.body.appendChild(notification);
     
     // Play crinkle/feedback sound
     playCrinkleSound();
     
     // Wait exactly 2 seconds before proceeding
+    gameState.isTransitioning = true; // Set guard
     setTimeout(() => {
       notification.remove();
-      // Hide button container
+      gameState.isTransitioning = false; // Reset guard
       document.getElementById('next-level-btn-container')?.classList.add('hidden');
       purchaseNextLevel();
     }, 2000);
   } else {
+    document.getElementById('next-level-btn-container')?.classList.add('hidden');
     purchaseNextLevel();
   }
 }

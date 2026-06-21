@@ -8,7 +8,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@300..700&family=Patrick+Hand&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="style.css?v=29">
+  <link rel="stylesheet" href="style.css?v=30">
   <link rel="manifest" href="manifest.json">
   <meta name="theme-color" content="#d7a15c">
   <meta name="apple-mobile-web-app-capable" content="yes">
@@ -282,9 +282,9 @@
         <ol>
           <li>Spell words (3+ letters) using the cardboard wheel's letters.</li>
           <li>Typed/clicked letters appear in the <strong>center of the wheel</strong>.</li>
-          <li>Find all possible words <strong>except one</strong> to unlock the next level word package.</li>
+          <li>Find enough words to reach the goal line and <strong>automatically advance</strong> to the next level.</li>
           <li>When you submit a correct word, Boxy will <strong>eat it</strong> and one of the mini boxes above will pop open!</li>
-          <li><strong>Go to</strong> the next starter word package (which grows to 5, then 6, then <strong>7 letters</strong>).</li>
+          <li>You start with <strong>1 hint</strong>. Earn additional hints ONLY by finding the level's <strong>bonus word</strong> (the longest hidden subword)!</li>
           <li>Complete the 7-letter level to claim ultimate Victory!</li>
         </ol>
         <p class="modal-tips">
@@ -439,9 +439,9 @@
 
   <!-- Supabase Client CDN -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <!-- Game Scripts (v=29) -->
-  <script src="words_data.js?v=29"></script>
-  <script src="game.js?v=37"></script>
+  <!-- Game Scripts (v=30) -->
+  <script src="words_data.js?v=30"></script>
+  <script src="game.js?v=30"></script>
   <script>
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
