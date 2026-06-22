@@ -2161,6 +2161,9 @@ function endGameSession(isTimeUp) {
     timerInterval = null;
   }
   
+  // Clear saved active game session since it is ended
+  localStorage.removeItem('n1_gameState');
+  
   // Hide home screen and other modal overlays so they don't overlap/block victory modal
   document.getElementById('home-screen')?.classList.add('hidden');
   ['reset-modal', 'help-modal', 'history-modal', 'leaderboard-modal'].forEach(id => {
