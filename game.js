@@ -869,6 +869,7 @@ function renderLetterWheel() {
 }
 
 function handleTileClick(idx) {
+  if (!gameState.isPlaying) return;
   const char = gameState.wheelLetters[idx];
   
   const selectedIdx = gameState.selectedTileIndices.indexOf(idx);
@@ -905,6 +906,7 @@ function updateTypedDisplay() {
 }
 
 function clearSpelledWord() {
+  if (!gameState.isPlaying) return;
   playTapSound();
   gameState.spelledWord = '';
   gameState.selectedTileIndices = [];
@@ -913,6 +915,7 @@ function clearSpelledWord() {
 }
 
 function shuffleLetters() {
+  if (!gameState.isPlaying) return;
   playTapSound();
   gameState.spelledWord = '';
   gameState.selectedTileIndices = [];
@@ -935,6 +938,7 @@ function shuffleLetters() {
 
 // --- SUBMIT & EATING ANIMATION ---
 function submitSpelledWord() {
+  if (!gameState.isPlaying) return;
   const word = gameState.spelledWord.trim().toLowerCase();
   if (word.length < 3) {
     if (word.length > 0) {
@@ -1140,6 +1144,7 @@ function revealMiniBox(word) {
 
 // --- KEYBOARD INPUTS ---
 function handleKeyboardInput(e) {
+  if (!gameState.isPlaying) return;
   if (gameState.isTransitioning === true) return;
   const key = e.key.toLowerCase();
   
@@ -1281,6 +1286,7 @@ function purchaseNextLevel() {
   gameState.isLevelUnlocked = false;
 
   if (nextLevel > 7) {
+    gameState.level = nextLevel; // Set level to 8 to mark game completion
     gameState.isTransitioning = false;
     showVictoryModal();
   } else {
@@ -1401,6 +1407,7 @@ function updateFriendsUI() {
 let isHintAnimating = false;
 
 function purchaseHint() {
+  if (!gameState.isPlaying) return;
   if (isHintAnimating) return;
 
   const bonusCount = gameState.bonusCount || 0;
