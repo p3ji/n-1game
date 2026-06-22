@@ -241,9 +241,12 @@ body {
   box-shadow: 2px 3px 0 0 var(--marker-ink);
   animation: pop-up 0.15s cubic-bezier(0.175, 0.885, 0.32, 1.1);
 }
-.settings-dropdown-content button {
+.settings-dropdown-content button,
+.settings-dropdown-content a {
   width: 100%;
   text-align: center;
+  display: block;
+  text-decoration: none;
 }
 
 .btn-icon {
