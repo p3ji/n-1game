@@ -1071,11 +1071,17 @@ function animateEatingScrap(word) {
       }, 150);
     }, 150);
 
+    // Check if the word was revealed by a hint
+    const wordIdx = gameState.activeBoxWords.indexOf(typedWord);
+    const wasHinted = wordIdx !== -1 && gameState.hintsRevealed[wordIdx] && gameState.hintsRevealed[wordIdx].length > 0;
+
     // Save word
     gameState.foundWords.push(typedWord);
     
-    // Increment total words gotten
-    gameState.totalScore += 1;
+    // Increment total words gotten only if not hinted
+    if (!wasHinted) {
+      gameState.totalScore += 1;
+    }
     
     // Check if this is the chosen bonus word
     let isBonus = false;
@@ -1099,13 +1105,25 @@ function animateEatingScrap(word) {
       else if (gameState.bonusCount === 4) friendUnlockedName = "Cuppy (the paper cup)";
       else if (gameState.bonusCount === 5) friendUnlockedName = "Papy (the paper roll)";
       
-      if (friendUnlockedName) {
-        boxySpeak(`🌟 BONUS! Unlocked ${friendUnlockedName}! +1 Point & +1 Hint!`, 5000);
+      if (wasHinted) {
+        if (friendUnlockedName) {
+          boxySpeak(`🌟 BONUS! Unlocked ${friendUnlockedName}! +1 Hint!`, 5000);
+        } else {
+          boxySpeak(`🌟 BONUS! +1 Hint Friend unlocked!`, 5000);
+        }
       } else {
-        boxySpeak(`🌟 BONUS! +1 Point & +1 Hint Friend unlocked!`, 5000);
+        if (friendUnlockedName) {
+          boxySpeak(`🌟 BONUS! Unlocked ${friendUnlockedName}! +1 Point & +1 Hint!`, 5000);
+        } else {
+          boxySpeak(`🌟 BONUS! +1 Point & +1 Hint Friend unlocked!`, 5000);
+        }
       }
     } else {
-      boxySpeak(`${randComp} +1 point`, 3000);
+      if (wasHinted) {
+        boxySpeak(randComp, 3000);
+      } else {
+        boxySpeak(`${randComp} +1 point`, 3000);
+      }
     }
 
     // Reveal mini box
