@@ -47,6 +47,9 @@ let confettiAnimationId = null;
 // Mascot idle interval
 let mascotIdleTimer = null;
 
+// PWA Install Event Capturer
+let deferredPrompt = null;
+
 // --- INITIALIZATION ---
 window.addEventListener('DOMContentLoaded', () => {
   loadGameState();
@@ -214,6 +217,42 @@ window.addEventListener('DOMContentLoaded', () => {
     // Start mascot idle chatter
     startMascotIdleChatter();
   }
+
+  // PWA Install Prompt Handlers
+  const installBanner = document.getElementById('pwa-install-banner');
+  const btnPwaInstall = document.getElementById('btn-pwa-install');
+  const btnPwaDismiss = document.getElementById('btn-pwa-dismiss');
+
+  if (btnPwaInstall) {
+    btnPwaInstall.addEventListener('click', async () => {
+      if (!deferredPrompt) return;
+      playTapSound();
+      try {
+        deferredPrompt.prompt();
+        const { outcome } = await deferredPrompt.userChoice;
+        console.log(`User choice outcome: ${outcome}`);
+      } catch (err) {
+        console.warn("PWA prompt failed:", err);
+      }
+      deferredPrompt = null;
+      if (installBanner) {
+        installBanner.classList.add('hidden');
+      }
+    });
+  }
+
+  if (btnPwaDismiss) {
+    btnPwaDismiss.addEventListener('click', () => {
+      playTapSound();
+      localStorage.setItem('n1_pwa_dismissed', 'true');
+      if (installBanner) {
+        installBanner.classList.add('hidden');
+      }
+    });
+  }
+
+  // Check iOS custom PWA prompt
+  checkPWAInstallPrompt();
 });
 
 // --- SETTINGS DROPDOWN ---
@@ -2322,3 +2361,57 @@ function handleProceedToNextLevel() {
     purchaseNextLevel();
   }
 }
+
+// --- PWA HELPER FUNCTIONS & GLOBAL EVENT LISTENERS ---
+function checkPWAInstallPrompt() {
+  const dismissed = localStorage.getItem('n1_pwa_dismissed') === 'true';
+  const isStandalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone;
+  if (dismissed || isStandalone) return;
+
+  const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+  const isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
+  const banner = document.getElementById('pwa-install-banner');
+  const textEl = document.getElementById('pwa-install-text');
+  const installBtn = document.getElementById('btn-pwa-install');
+
+  if (isIOS && isSafari && banner) {
+    // Show iOS custom instructions
+    if (textEl) {
+      textEl.innerHTML = "📦 To play offline as a full-screen App: tap the Share button (📤) and select <strong>Add to Home Screen</strong>.";
+    }
+    if (installBtn) {
+      installBtn.style.display = 'none'; // Hide native install button since iOS requires manual Add to Home Screen
+    }
+    banner.classList.remove('hidden');
+  } else if (!isIOS && deferredPrompt && banner) {
+    // If deferredPrompt is already caught, make sure the banner is shown
+    banner.classList.remove('hidden');
+  }
+}
+
+// Global window event listener to catch beforeinstallprompt
+window.addEventListener('beforeinstallprompt', (e) => {
+  // Prevent Chrome 67 and earlier from automatically showing the prompt
+  e.preventDefault();
+  // Stash the event so it can be triggered later.
+  deferredPrompt = e;
+  
+  // Show PWA banner if not dismissed and not in standalone
+  const dismissed = localStorage.getItem('n1_pwa_dismissed') === 'true';
+  const isStandalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone;
+  if (!dismissed && !isStandalone) {
+    const banner = document.getElementById('pwa-install-banner');
+    if (banner) {
+      banner.classList.remove('hidden');
+    }
+  }
+});
+
+window.addEventListener('appinstalled', () => {
+  console.log('PWA was installed successfully');
+  deferredPrompt = null;
+  const banner = document.getElementById('pwa-install-banner');
+  if (banner) {
+    banner.classList.add('hidden');
+  }
+});

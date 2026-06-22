@@ -2079,3 +2079,46 @@ body {
   white-space: nowrap;
 }
 
+/* --- PWA INSTALL BANNER --- */
+.pwa-install-banner {
+  position: relative;
+  background-color: var(--cardboard-lighter);
+  border: 2px solid var(--cardboard-base);
+  box-shadow: 3px 3px 0 var(--cardboard-shadow);
+  border-radius: 6px;
+  padding: 10px 12px;
+  margin: 10px 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  text-align: center;
+  z-index: 15;
+}
+.tape-install {
+  top: -8px;
+  left: 15%;
+  width: 70px;
+  height: 16px;
+  transform: rotate(-3deg);
+  opacity: 0.85;
+}
+.pwa-install-text {
+  font-family: var(--font-fun);
+  font-size: 0.88rem;
+  color: var(--marker-ink);
+  margin: 0;
+  line-height: 1.35;
+}
+.pwa-install-actions {
+  display: flex;
+  gap: 8px;
+  justify-content: center;
+  width: 100%;
+}
+.pwa-install-actions button {
+  padding: 4px 12px;
+  font-size: 0.8rem;
+  font-family: var(--font-fun);
+  cursor: pointer;
+}

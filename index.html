@@ -8,7 +8,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@300..700&family=Patrick+Hand&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="style.css?v=31">
+  <link rel="stylesheet" href="style.css?v=32">
   <link rel="manifest" href="manifest.json">
   <meta name="theme-color" content="#d7a15c">
   <meta name="apple-mobile-web-app-capable" content="yes">
@@ -373,6 +373,16 @@
           <p class="rule-item">2. Find all the words but <span id="home-rule-count">1</span> to move to the next level.</p>
         </div>
 
+        <!-- PWA Install Banner -->
+        <div id="pwa-install-banner" class="pwa-install-banner hidden">
+          <div class="tape tape-install"></div>
+          <p id="pwa-install-text" class="pwa-install-text">📦 Play offline with full performance! Install N-1 Word Craft on your device.</p>
+          <div class="pwa-install-actions">
+            <button id="btn-pwa-install" class="btn-craft btn-small btn-primary">INSTALL</button>
+            <button id="btn-pwa-dismiss" class="btn-craft btn-small">DISMISS</button>
+          </div>
+        </div>
+
         <!-- Action Controls -->
         <div class="home-actions">
           <button id="home-btn-difficulty" class="btn-craft btn-medium">Easy Mode: OFF</button>
@@ -440,8 +450,8 @@
   <!-- Supabase Client CDN -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <!-- Game Scripts (v=30) -->
-  <script src="words_data.js?v=31"></script>
-  <script src="game.js?v=31"></script>
+  <script src="words_data.js?v=32"></script>
+  <script src="game.js?v=32"></script>
   <script>
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
