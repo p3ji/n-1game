@@ -1642,7 +1642,7 @@ function hideResetConfirm() {
   document.getElementById('reset-modal').classList.add('hidden');
 }
 function forceUpdate() {
-  saveGameState();
+  localStorage.removeItem('n1_gameState'); // Clear active session to avoid code collisions on reload
   boxySpeak('Refreshing cardboard...', 3000);
   if ('serviceWorker' in navigator) {
     navigator.serviceWorker.getRegistrations().then(regs => {
