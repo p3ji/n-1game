@@ -1,6 +1,6 @@
 // Curated word data for the N-1 Cardboard Word Game
 // Source: seven_letter_words.xlsx + ENABLE + commonWords
-// Generated on 2026-06-21T18:49:14.202298
+// Generated on 2026-06-22T10:04:51.524394
 const WORDS_DATA = {
   "4": [
     {
@@ -4472,6 +4472,7 @@ const WORDS_DATA = {
       "subwords": [
         "ill",
         "bill",
+        "ills",
         "sill"
       ]
     },
@@ -8695,7 +8696,9 @@ const WORDS_DATA = {
         "his",
         "ill",
         "hill",
-        "sill"
+        "ills",
+        "sill",
+        "shill"
       ]
     },
     {
@@ -9137,6 +9140,7 @@ const WORDS_DATA = {
         "ilk",
         "ill",
         "ski",
+        "ills",
         "kill",
         "silk",
         "sill",
@@ -10316,6 +10320,7 @@ const WORDS_DATA = {
       "word": "mills",
       "subwords": [
         "ill",
+        "ills",
         "mill",
         "sill",
         "slim"
@@ -11579,6 +11584,7 @@ const WORDS_DATA = {
         "ill",
         "lip",
         "sip",
+        "ills",
         "lips",
         "lisp",
         "pill",
@@ -13768,6 +13774,7 @@ const WORDS_DATA = {
         "ilk",
         "ill",
         "ski",
+        "ills",
         "kill",
         "silk",
         "sill",
@@ -14609,6 +14616,7 @@ const WORDS_DATA = {
         "sit",
         "til",
         "tis",
+        "ills",
         "lilt",
         "list",
         "sill",
@@ -17967,6 +17975,7 @@ const WORDS_DATA = {
         "lie",
         "sea",
         "ails",
+        "ills",
         "isle",
         "leis",
         "lies",
@@ -25007,6 +25016,7 @@ const WORDS_DATA = {
         "rot",
         "toe",
         "top",
+        "expo",
         "poet",
         "pore",
         "port",
@@ -25024,9 +25034,11 @@ const WORDS_DATA = {
         "see",
         "sex",
         "exes",
+        "expo",
         "pees",
         "pose",
-        "seep"
+        "seep",
+        "expos"
       ]
     },
     {
@@ -26599,7 +26611,8 @@ const WORDS_DATA = {
         "fins",
         "info",
         "ions",
-        "onus"
+        "onus",
+        "infos"
       ]
     },
     {
@@ -38985,6 +38998,7 @@ const WORDS_DATA = {
         "ill",
         "sis",
         "ski",
+        "ills",
         "kill",
         "kiss",
         "silk",
@@ -39200,9 +39214,11 @@ const WORDS_DATA = {
         "rec",
         "roe",
         "core",
+        "croc",
         "orcs",
         "rose",
         "sore",
+        "crocs",
         "score"
       ]
     },
@@ -50769,6 +50785,7 @@ const WORDS_DATA = {
         "chin",
         "coin",
         "corn",
+        "croc",
         "horn",
         "icon",
         "inch",
@@ -51990,6 +52007,7 @@ const WORDS_DATA = {
         "pox",
         "come",
         "cope",
+        "expo",
         "lope",
         "mole",
         "poem",
@@ -52075,6 +52093,7 @@ const WORDS_DATA = {
         "cone",
         "core",
         "corn",
+        "croc",
         "neon",
         "none",
         "once"
@@ -52102,6 +52121,7 @@ const WORDS_DATA = {
         "cone",
         "core",
         "corn",
+        "croc",
         "note",
         "once",
         "rent",
@@ -52129,6 +52149,7 @@ const WORDS_DATA = {
         "coco",
         "cord",
         "corn",
+        "croc",
         "door",
         "odor",
         "condo",
@@ -57738,6 +57759,7 @@ const WORDS_DATA = {
         "pro",
         "rep",
         "roe",
+        "expo",
         "leer",
         "lope",
         "lore",
@@ -57770,6 +57792,7 @@ const WORDS_DATA = {
         "sex",
         "toe",
         "top",
+        "expo",
         "opts",
         "pest",
         "pets",
@@ -57794,6 +57817,7 @@ const WORDS_DATA = {
         "toes",
         "tops",
         "tore",
+        "expos",
         "poets",
         "pores",
         "ports",
@@ -57824,6 +57848,7 @@ const WORDS_DATA = {
         "dope",
         "dose",
         "exes",
+        "expo",
         "odes",
         "peed",
         "pees",
@@ -57832,6 +57857,7 @@ const WORDS_DATA = {
         "seed",
         "seep",
         "dopes",
+        "expos",
         "posed",
         "speed",
         "depose",
@@ -58373,7 +58399,8 @@ const WORDS_DATA = {
         "ions",
         "oafs",
         "shin",
-        "sofa"
+        "sofa",
+        "infos"
       ]
     },
     {
@@ -62563,6 +62590,7 @@ const WORDS_DATA = {
         "nil",
         "sin",
         "sis",
+        "ills",
         "isle",
         "leis",
         "lens",
@@ -63227,6 +63255,7 @@ const WORDS_DATA = {
         "tis",
         "ails",
         "ants",
+        "ills",
         "lain",
         "last",
         "lilt",
@@ -69874,6 +69903,7 @@ const WORDS_DATA = {
         "pie",
         "pin",
         "pox",
+        "expo",
         "hone",
         "hope",
         "nope",
@@ -76591,6 +76621,7 @@ const WORDS_DATA = {
         "gill",
         "gins",
         "glen",
+        "ills",
         "isle",
         "legs",
         "leis",
@@ -78015,6 +78046,7 @@ const WORDS_DATA = {
         "disk",
         "elks",
         "idle",
+        "ills",
         "isle",
         "kids",
         "kill",
