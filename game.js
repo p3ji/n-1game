@@ -1642,6 +1642,7 @@ function hideResetConfirm() {
   document.getElementById('reset-modal').classList.add('hidden');
 }
 function forceUpdate() {
+  saveGameState();
   boxySpeak('Refreshing cardboard...', 3000);
   if ('serviceWorker' in navigator) {
     navigator.serviceWorker.getRegistrations().then(regs => {
