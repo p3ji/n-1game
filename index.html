@@ -8,7 +8,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@300..700&family=Patrick+Hand&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="style.css?v=38">
+  <link rel="stylesheet" href="style.css?v=40">
   <link rel="manifest" href="manifest.json">
   <meta name="theme-color" content="#d7a15c">
   <meta name="apple-mobile-web-app-capable" content="yes">
@@ -69,40 +69,7 @@
       <section class="mascot-and-boxes-panel">
         <div class="tape tape-top"></div>
         
-        <!-- Boxy Mascot Shelf Area -->
-        <div class="mascot-container-compact">
-          <div id="boxy-mascot" class="boxy-mascot idle">
-            <div class="boxy-arm arm-left"></div>
-            <div class="boxy-body">
-              <div class="box-face">
-                <div class="box-eyes">
-                  <div class="box-eye eye-left">
-                    <div class="pupil"></div>
-                    <div class="spiral hidden">@</div>
-                  </div>
-                  <div class="box-eye eye-right">
-                    <div class="pupil"></div>
-                    <div class="spiral hidden">@</div>
-                  </div>
-                </div>
-                <div class="box-mouth smile"></div>
-                <div class="box-cheeks"></div>
-              </div>
-              <div class="box-flap flap-left"></div>
-              <div class="box-flap flap-right"></div>
-            </div>
-            <div class="boxy-arm arm-right"></div>
-            <div class="boxy-legs">
-              <div class="boxy-leg leg-left"></div>
-              <div class="boxy-leg leg-right"></div>
-            </div>
-            <!-- Speech Bubble -->
-            <div id="boxy-bubble" class="boxy-bubble hidden">
-              <span id="boxy-bubble-text">Craft words!</span>
-            </div>
-          </div>
-          <div class="shelf-wood-compact"></div>
-        </div>
+
 
         <!-- Mini Cardboard Boxes display (words to find) -->
         <div class="mini-boxes-panel">
@@ -131,12 +98,42 @@
 
       <!-- Middle Section: Spelled Word in Wheel Center -->
       <section class="wheel-panel-compact">
-        <!-- Hints layout: GET HINT button on the left, friends on the right -->
         <div class="hints-row-above-wheel">
-          <button id="btn-hint" class="btn-craft btn-medium btn-accent">
-            <span>GET HINT</span>
-          </button>
           <div class="hints-friends-container">
+            <!-- Boxy Mascot Container -->
+            <div id="boxy-mascot-container" class="boxy-mascot-container">
+              <div id="boxy-mascot" class="boxy-mascot idle">
+                <div class="boxy-arm arm-left"></div>
+                <div class="boxy-body">
+                  <div class="box-face">
+                    <div class="box-eyes">
+                      <div class="box-eye eye-left">
+                        <div class="pupil"></div>
+                        <div class="spiral hidden">@</div>
+                      </div>
+                      <div class="box-eye eye-right">
+                        <div class="pupil"></div>
+                        <div class="spiral hidden">@</div>
+                      </div>
+                    </div>
+                    <div class="box-mouth smile"></div>
+                    <div class="box-cheeks"></div>
+                  </div>
+                  <div class="box-flap flap-left"></div>
+                  <div class="box-flap flap-right"></div>
+                </div>
+                <div class="boxy-arm arm-right"></div>
+                <div class="boxy-legs">
+                  <div class="boxy-leg leg-left"></div>
+                  <div class="boxy-leg leg-right"></div>
+                </div>
+                <!-- Speech Bubble -->
+                <div id="boxy-bubble" class="boxy-bubble hidden">
+                  <span id="boxy-bubble-text">Craft words!</span>
+                </div>
+              </div>
+            </div>
+
             <!-- Boxy's Friends (Roxy, Toxy, Foxy) -->
             <div id="friend-roxy" class="boxy-friend roxy" title="Roxy (the mailing tube)">
               <div class="friend-body">
@@ -209,6 +206,9 @@
               <span class="friend-label">Papy</span>
             </div>
           </div>
+          <button id="btn-hint" class="btn-craft btn-medium btn-accent">
+            <span>GET HINT</span>
+          </button>
         </div>
 
         <div class="wheel-outer-container">
@@ -371,6 +371,7 @@
         <div class="home-rules">
           <p class="rule-item">1. Find as many words as you can using the letters of the starter word.</p>
           <p class="rule-item">2. Find all the words but <span id="home-rule-count">1</span> to move to the next level.</p>
+          <p class="rule-item">3. Find all the words to get the highest score!</p>
         </div>
 
         <!-- PWA Install Banner -->
@@ -449,9 +450,8 @@
 
   <!-- Supabase Client CDN -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <!-- Game Scripts (v=30) -->
-  <script src="words_data.js?v=38"></script>
-  <script src="game.js?v=38"></script>
+  <script src="words_data.js?v=40"></script>
+  <script src="game.js?v=40"></script>
   <script>
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {

@@ -2410,23 +2410,43 @@ function checkPWAInstallPrompt() {
   if (dismissed || isStandalone) return;
 
   const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
-  const isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
+  const isMac = /Macintosh/.test(navigator.userAgent);
+  const isSafari = /^((?!chrome|android|crios|fxios|edg).)*safari/i.test(navigator.userAgent);
+
+  // Detect iPadOS Safari in "Request Desktop Website" mode
+  const isIPadOSDesktop = isMac && isSafari && navigator.maxTouchPoints > 1;
+  const isMacOSDesktopSafari = isMac && isSafari && !isIPadOSDesktop;
+
   const banner = document.getElementById('pwa-install-banner');
   const textEl = document.getElementById('pwa-install-text');
   const installBtn = document.getElementById('btn-pwa-install');
 
-  if (isIOS && isSafari && banner) {
-    // Show iOS custom instructions
-    if (textEl) {
-      textEl.innerHTML = "📦 To play offline as a full-screen App: tap the Share button (📤) and select <strong>Add to Home Screen</strong>.";
+  if (banner) {
+    if (isIOS || isIPadOSDesktop) {
+      // Show iOS/iPadOS custom instructions
+      if (textEl) {
+        textEl.innerHTML = "📦 To play offline as a full-screen App: tap the Share button (📤) and select <strong>Add to Home Screen</strong>.";
+      }
+      if (installBtn) {
+        installBtn.style.display = 'none'; // Hide native install button since iOS/iPadOS requires manual Add to Home Screen
+      }
+      banner.classList.remove('hidden');
+    } else if (isMacOSDesktopSafari) {
+      // Show macOS Safari custom instructions (Sonoma supports Add to Dock)
+      if (textEl) {
+        textEl.innerHTML = "📦 To play offline as a standalone App: open Safari's menu and select <strong>File > Add to Dock</strong>.";
+      }
+      if (installBtn) {
+        installBtn.style.display = 'none'; // Hide native install button since macOS Safari requires manual Add to Dock
+      }
+      banner.classList.remove('hidden');
+    } else if (!isIOS && deferredPrompt) {
+      if (installBtn) {
+        installBtn.style.display = ''; // Ensure the install button is shown
+      }
+      // If deferredPrompt is already caught, make sure the banner is shown
+      banner.classList.remove('hidden');
     }
-    if (installBtn) {
-      installBtn.style.display = 'none'; // Hide native install button since iOS requires manual Add to Home Screen
-    }
-    banner.classList.remove('hidden');
-  } else if (!isIOS && deferredPrompt && banner) {
-    // If deferredPrompt is already caught, make sure the banner is shown
-    banner.classList.remove('hidden');
   }
 }
 
