@@ -29,7 +29,8 @@ let gameState = {
   bonusCount: 0,
   bonusClaimedCurrentLevel: false,
   isTransitioning: false,
-  activeBoxWords: []
+  activeBoxWords: [],
+  isPlaying: false
 };
 
 // Track the auto-proceed timeout so we can cancel stale ones
@@ -64,7 +65,7 @@ window.addEventListener('DOMContentLoaded', () => {
   
   // If there is an active saved game, don't show the home screen overlay
   const savedStateExists = localStorage.getItem('n1_gameState') !== null;
-  if (savedStateExists && gameState.timeLeft > 0) {
+  if (savedStateExists && gameState.isPlaying && gameState.timeLeft > 0) {
     document.getElementById('home-screen')?.classList.add('hidden');
   } else {
     document.getElementById('home-screen')?.classList.remove('hidden');
@@ -144,6 +145,7 @@ window.addEventListener('DOMContentLoaded', () => {
     gameState.bonusCount = 0;
     gameState.bonusClaimedCurrentLevel = false;
     gameState.isTransitioning = false;
+    gameState.isPlaying = true;
     if (autoProceedTimeout) {
       clearTimeout(autoProceedTimeout);
       autoProceedTimeout = null;
@@ -294,6 +296,7 @@ function loadGameState() {
       gameState.bonusWord = parsed.bonusWord || null;
       
       gameState.activeBoxWords = parsed.activeBoxWords || [];
+      gameState.isPlaying = parsed.isPlaying === true;
       
       if (parsed.currentWord) {
         const wordsList = WORDS_DATA[gameState.level] || [];
@@ -333,6 +336,12 @@ function loadGameState() {
 }
 
 function saveGameState() {
+  // If the welcome screen is visible, do not save state to localStorage because the user hasn't started playing yet!
+  const homeScreen = document.getElementById('home-screen');
+  if (homeScreen && !homeScreen.classList.contains('hidden')) {
+    return;
+  }
+
   const stateToSave = {
     totalScore: gameState.totalScore,
     level: gameState.level,
@@ -347,7 +356,8 @@ function saveGameState() {
     bonusCount: gameState.bonusCount,
     bonusClaimedCurrentLevel: gameState.bonusClaimedCurrentLevel,
     bonusWord: gameState.bonusWord,
-    activeBoxWords: gameState.activeBoxWords
+    activeBoxWords: gameState.activeBoxWords,
+    isPlaying: gameState.isPlaying
   };
   localStorage.setItem('n1_gameState', JSON.stringify(stateToSave));
 }
@@ -1689,6 +1699,7 @@ function resetGame() {
   gameState.timeLeft = 120;
   gameState.bonusCount = 0;
   gameState.bonusClaimedCurrentLevel = false;
+  gameState.isPlaying = true;
   
   startNewLevel(4);
   triggerBoxyEmotion('idle');
@@ -2164,6 +2175,7 @@ function endGameSession(isTimeUp) {
   
   // Clear saved active game session since it is ended
   localStorage.removeItem('n1_gameState');
+  gameState.isPlaying = false;
   
   // Hide home screen and other modal overlays so they don't overlap/block victory modal
   document.getElementById('home-screen')?.classList.add('hidden');
