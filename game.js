@@ -950,6 +950,16 @@ function submitSpelledWord() {
   }
 
   const subwords = gameState.currentWordObj.subwords;
+  const starterWord = gameState.currentWordObj.word.toLowerCase();
+
+  if (word === starterWord) {
+    triggerBoxyEmotion('sad');
+    boxySpeak("That's the starter word!", 2500);
+    playCrinkleSound();
+    clearSpelledWord();
+    return;
+  }
+
   const isFound = gameState.foundWords.includes(word);
   const isValid = subwords.includes(word);
 
