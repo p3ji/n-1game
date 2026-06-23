@@ -19,7 +19,7 @@ function canMake(starterFreq, candidateFreq) {
   return true;
 }
 
-// --- Load ENABLE (MW-equivalent) ---
+// --- Load dictionaries ---
 console.log('Loading ENABLE dictionary...');
 const enableRaw = fs.readFileSync(enablePath, 'utf8');
 const enableSet = new Set(
@@ -27,12 +27,35 @@ const enableSet = new Set(
 );
 console.log(`  → ${enableSet.size} valid words (length 3-7)`);
 
-// Precompute frequencies for all ENABLE words
-const enableEntries = [...enableSet].map(w => ({ word: w, freq: getFreq(w) }));
+console.log('Loading common words list...');
+const commonWordsJson = require('./node_modules/@skedwards88/word_lists/compiled/commonWords.json');
+const commonSet = new Set(commonWordsJson.map(w => w.toLowerCase()).filter(w => w.length >= 3 && w.length <= 7));
+console.log(`  → ${commonSet.size} common words (length 3-7)`);
 
-// Starter candidates: any ENABLE word of length 4-7
-const starterCandidates = [...enableSet].filter(w => w.length >= 4 && w.length <= 7);
+// --- Whitelist: words in ENABLE that are legitimate but missing from commonWords ---
+// Add words here when players report a valid word being rejected.
+const whitelist = new Set([
+  'shill', 'ills', 'mast', 'mats', 'tsar', 'tsars', 'ids', 'dis',
+]);
+
+// Valid subword pool: (ENABLE ∩ commonWords) ∪ whitelist
+// This keeps common recognisable words and excludes obscure Scrabble-only entries
+// like "nae", "gae", "ras", "uta", etc.
+function isValidSubword(word) {
+  if (!enableSet.has(word)) return false;
+  return commonSet.has(word) || whitelist.has(word);
+}
+
+// Starter candidates: common words that are also in ENABLE, length 4-7
+const starterCandidates = [...commonSet].filter(w =>
+  enableSet.has(w) && w.length >= 4 && w.length <= 7
+);
 console.log(`  → ${starterCandidates.length} starter candidates`);
+
+// Precompute valid subword entries
+const subwordPool = [...enableSet].filter(isValidSubword);
+const subwordEntries = subwordPool.map(w => ({ word: w, freq: getFreq(w) }));
+console.log(`  → ${subwordPool.length} valid subwords in pool`);
 
 // Thresholds for number of subwords per level (max 13 to fit on mobile screen)
 const thresholds = {
@@ -42,7 +65,6 @@ const thresholds = {
   4: { min: 4,  max: 13 }
 };
 
-// Shuffle helper
 function shuffle(arr) {
   for (let i = arr.length - 1; i > 0; i--) {
     const j = Math.floor(Math.random() * (i + 1));
@@ -62,8 +84,8 @@ for (const starter of starterCandidates) {
   const sf = getFreq(starter);
   const subwords = [];
 
-  for (const { word, freq } of enableEntries) {
-    // Subword: length 3 to len, can be made from starter letters, NOT the starter itself
+  for (const { word, freq } of subwordEntries) {
+    // Subword: valid word, length 3..len, drawable from starter, NOT the starter itself
     if (word !== starter && word.length >= 3 && word.length <= len && canMake(sf, freq)) {
       subwords.push(word);
     }
@@ -88,7 +110,7 @@ for (const len of [4, 5, 6, 7]) {
 
 // --- Write output ---
 const output = `// Word data for the N-1 Cardboard Word Game
-// Dictionary: ENABLE (Merriam-Webster equivalent)
+// Dictionary: ENABLE ∩ commonWords + whitelist (excludes obscure Scrabble-only words)
 // Starter word is excluded from each entry's subword list (cannot be submitted)
 // Generated on ${new Date().toISOString()}
 const WORDS_DATA = ${JSON.stringify(selectedData, null, 2)};
