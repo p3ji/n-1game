@@ -1,10 +1,10 @@
-const CACHE_NAME = 'n1-word-craft-v44';
+const CACHE_NAME = 'n1-word-craft-v45';
 const ASSETS = [
   './',
   './index.html',
-  './style.css?v=44',
-  './game.js?v=44',
-  './words_data.js?v=44',
+  './style.css?v=45',
+  './game.js?v=45',
+  './words_data.js?v=45',
   './manifest.json',
   './icon.svg'
 ];

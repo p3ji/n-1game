@@ -2004,8 +2004,9 @@ async function loadLeaderboard(timeframe) {
   try {
     let query = supabaseClient
       .from('high_scores')
-      .select('*');
-      
+      .select('*')
+      .eq('app', 'n1game');
+
     if (timeframe === 'today') {
       // Scores from the last 24 hours
       const yesterday = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString();
@@ -2083,7 +2084,8 @@ async function submitHighScore() {
         {
           player_name: name,
           score: gameState.totalScore,
-          easy_mode: gameState.easyMode === true
+          easy_mode: gameState.easyMode === true,
+          app: 'n1game'
         }
       ]);
       
