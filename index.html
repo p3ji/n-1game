@@ -8,7 +8,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@300..700&family=Patrick+Hand&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="style.css?v=45">
+  <link rel="stylesheet" href="style.css?v=46">
   <link rel="manifest" href="manifest.json">
   <meta name="theme-color" content="#d7a15c">
   <meta name="apple-mobile-web-app-capable" content="yes">
@@ -301,13 +301,17 @@
     <div class="modal-cardboard victory-cardboard">
       <div class="tape tape-victory"></div>
       <div class="victory-content">
-        <h2 class="victory-title">🎉 VICTORY! 🎉</h2>
-        <p>You have successfully completed the N-1 Word Craft challenge!</p>
-        
+        <h2 class="victory-title">⏰ TIME'S UP! ⏰</h2>
+        <p id="victory-subtitle">Great effort stitching cardboard words!</p>
+
         <div class="victory-stats">
           <div class="vic-stat">
             <span class="vic-stat-label">Total Words</span>
             <span id="vic-final-score" class="vic-stat-val">0</span>
+          </div>
+          <div class="vic-stat">
+            <span class="vic-stat-label">Round Reached</span>
+            <span id="vic-round-reached" class="vic-stat-val">1</span>
           </div>
         </div>
 
@@ -451,8 +455,9 @@
 
   <!-- Supabase Client CDN -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="words_data.js?v=45"></script>
-  <script src="game.js?v=45"></script>
+  <script src="words_data.js?v=46"></script>
+  <script src="enable_words.js?v=46"></script>
+  <script src="game.js?v=46"></script>
   <script>
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {

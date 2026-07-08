@@ -17,6 +17,7 @@ let gameState = {
   currentWordObj: null, // { word: 'weather', subwords: [...] }
   wheelLetters: [], // current letters on the wheel (shuffled version of starter word)
   foundWords: [], // List of found words
+  extraWordsFound: [], // Real ENABLE words found that aren't in this puzzle's displayed subword list
   spelledWord: '',
   selectedTileIndices: [], // Indices of letter tiles currently selected
   soundEnabled: true,
@@ -30,7 +31,8 @@ let gameState = {
   bonusClaimedCurrentLevel: false,
   isTransitioning: false,
   activeBoxWords: [],
-  isPlaying: false
+  isPlaying: false,
+  round: 1
 };
 
 // Track the auto-proceed timeout so we can cancel stale ones
@@ -146,6 +148,7 @@ window.addEventListener('DOMContentLoaded', () => {
     gameState.bonusClaimedCurrentLevel = false;
     gameState.isTransitioning = false;
     gameState.isPlaying = true;
+    gameState.round = 1;
     if (autoProceedTimeout) {
       clearTimeout(autoProceedTimeout);
       autoProceedTimeout = null;
@@ -279,6 +282,7 @@ function loadGameState() {
       gameState.totalScore = parsed.totalScore || 0;
       gameState.level = parsed.level || 4;
       gameState.foundWords = parsed.foundWords || [];
+      gameState.extraWordsFound = parsed.extraWordsFound || [];
       
       // Migration check: If they loaded a level 7 state with no found words,
       // reset them to start at Level 4 (4-letter starter) since we inverted progression
@@ -297,6 +301,7 @@ function loadGameState() {
       
       gameState.activeBoxWords = parsed.activeBoxWords || [];
       gameState.isPlaying = parsed.isPlaying === true;
+      gameState.round = parsed.round || 1;
       
       if (parsed.currentWord) {
         const wordsList = WORDS_DATA[gameState.level] || [];
@@ -348,6 +353,7 @@ function saveGameState() {
     currentWord: gameState.currentWordObj ? gameState.currentWordObj.word : null,
     wheelLetters: gameState.wheelLetters,
     foundWords: gameState.foundWords,
+    extraWordsFound: gameState.extraWordsFound,
     hintsRevealed: gameState.hintsRevealed,
     soundEnabled: gameState.soundEnabled,
     hintsUsed: gameState.hintsUsed,
@@ -357,7 +363,8 @@ function saveGameState() {
     bonusClaimedCurrentLevel: gameState.bonusClaimedCurrentLevel,
     bonusWord: gameState.bonusWord,
     activeBoxWords: gameState.activeBoxWords,
-    isPlaying: gameState.isPlaying
+    isPlaying: gameState.isPlaying,
+    round: gameState.round
   };
   localStorage.setItem('n1_gameState', JSON.stringify(stateToSave));
 }
@@ -660,6 +667,7 @@ function updateSoundButtonUI() {
 function startNewLevel(n) {
   gameState.level = n;
   gameState.foundWords = [];
+  gameState.extraWordsFound = [];
   gameState.hintsRevealed = {};
   gameState.spelledWord = '';
   gameState.selectedTileIndices = [];
@@ -960,8 +968,9 @@ function submitSpelledWord() {
     return;
   }
 
-  const isFound = gameState.foundWords.includes(word);
+  const isFound = gameState.foundWords.includes(word) || gameState.extraWordsFound.includes(word);
   const isValid = subwords.includes(word);
+  const isExtra = !isValid && typeof ENABLE_WORDS !== 'undefined' && ENABLE_WORDS.has(word);
 
   if (isFound) {
     triggerBoxyEmotion('dizzy');
@@ -982,6 +991,9 @@ function submitSpelledWord() {
     }
     // Correct word! Animate flying text to Boxy's mouth
     animateEatingScrap(word);
+  } else if (isExtra) {
+    // A real word that just isn't one of this puzzle's displayed subwords
+    animateEatingScrapExtra(word);
   } else {
     // Invalid word
     triggerBoxyEmotion('sad');
@@ -990,7 +1002,20 @@ function submitSpelledWord() {
     boxySpeak(randComment, 2500);
     playCrinkleSound();
     shakeWheelCenter();
+    logRejectedWord(word, starterWord);
   }
+}
+
+// Fire-and-forget telemetry for words rejected by both the puzzle list and the ENABLE
+// fallback, so genuinely missing words can be reviewed and whitelisted later.
+function logRejectedWord(word, starterWord) {
+  if (!supabaseClient) return;
+  supabaseClient
+    .from('rejected_words')
+    .insert([{ word, starter: starterWord, app: 'n1game' }])
+    .then(({ error }) => {
+      if (error) console.warn('Rejection log failed:', error.message);
+    });
 }
 
 function shakeWheelCenter() {
@@ -1015,14 +1040,9 @@ style.textContent = `
 `;
 document.head.appendChild(style);
 
-function animateEatingScrap(word) {
-  const typedWord = word;
-  gameState.spelledWord = '';
-  gameState.selectedTileIndices = [];
-  updateTileSelectionUI();
-  updateTypedDisplay();
-
-  // Get coordinates
+// Shared flight animation: word scrap flies from the wheel to Boxy's mouth.
+// onComplete runs after the gulp/squash reaction, so callers can apply their own scoring.
+function flyWordToMouth(word, onComplete) {
   const wheelCenter = document.getElementById('wheel-center-input');
   const wheelRect = wheelCenter.getBoundingClientRect();
   const startX = wheelRect.left + wheelRect.width / 2;
@@ -1033,10 +1053,9 @@ function animateEatingScrap(word) {
   const endX = mouthRect.left + mouthRect.width / 2;
   const endY = mouthRect.top + mouthRect.height / 2;
 
-  // Create flying scrap element
   const scrap = document.createElement('div');
   scrap.className = 'flying-word-scrap';
-  scrap.textContent = typedWord;
+  scrap.textContent = word;
   scrap.style.left = `${startX}px`;
   scrap.style.top = `${startY}px`;
   scrap.style.transform = 'translate(-50%, -50%)';
@@ -1047,7 +1066,6 @@ function animateEatingScrap(word) {
   const mouthEl = document.querySelector('#boxy-mascot .box-mouth');
   mouthEl.className = 'box-mouth o-mouth';
 
-  // Fly animation
   const animation = scrap.animate([
     {
       left: `${startX}px`,
@@ -1070,7 +1088,7 @@ function animateEatingScrap(word) {
     // Boxy gulps
     playGulpSound();
     triggerBoxyEmotion('happy');
-    
+
     // Squash/stretch
     const body = document.querySelector('#boxy-mascot .boxy-body');
     body.style.transform = 'scale(1.2, 0.8)';
@@ -1081,18 +1099,32 @@ function animateEatingScrap(word) {
       }, 150);
     }, 150);
 
+    triggerConfettiBurst();
+
+    onComplete();
+  };
+}
+
+function animateEatingScrap(word) {
+  const typedWord = word;
+  gameState.spelledWord = '';
+  gameState.selectedTileIndices = [];
+  updateTileSelectionUI();
+  updateTypedDisplay();
+
+  flyWordToMouth(typedWord, () => {
     // Check if the word was revealed by a hint
     const wordIdx = gameState.activeBoxWords.indexOf(typedWord);
     const wasHinted = wordIdx !== -1 && gameState.hintsRevealed[wordIdx] && gameState.hintsRevealed[wordIdx].length > 0;
 
     // Save word
     gameState.foundWords.push(typedWord);
-    
+
     // Increment total words gotten only if not hinted
     if (!wasHinted) {
       gameState.totalScore += 1;
     }
-    
+
     // Check if this is the chosen bonus word
     let isBonus = false;
     if (gameState.bonusWord && typedWord === gameState.bonusWord && !gameState.bonusClaimedCurrentLevel) {
@@ -1100,10 +1132,10 @@ function animateEatingScrap(word) {
       gameState.bonusCount = (gameState.bonusCount || 0) + 1;
       isBonus = true;
     }
-    
+
     const compliments = ["Yum! Splendid!", "Gulp! Delicious!", "Tasty spelling!", "Crunchy word!", "Perfect!", "Ate it!"];
     const randComp = compliments[Math.floor(Math.random() * compliments.length)];
-    
+
     if (isBonus) {
       updateBonusUI();
       updateHintButtonUI();
@@ -1114,7 +1146,7 @@ function animateEatingScrap(word) {
       else if (gameState.bonusCount === 3) friendUnlockedName = "Boby (the bubble envelope)";
       else if (gameState.bonusCount === 4) friendUnlockedName = "Cuppy (the paper cup)";
       else if (gameState.bonusCount === 5) friendUnlockedName = "Papy (the paper roll)";
-      
+
       if (wasHinted) {
         if (friendUnlockedName) {
           boxySpeak(`🌟 BONUS! Unlocked ${friendUnlockedName}! +1 Hint!`, 5000);
@@ -1139,16 +1171,34 @@ function animateEatingScrap(word) {
     // Reveal mini box
     revealMiniBox(typedWord);
 
-    // Confetti burst
-    triggerConfettiBurst();
-
     updateScoreUI();
     updateProgressUI();
     saveGameState();
- 
+
     // Check level completed
     checkAutoProceed();
-  };
+  });
+}
+
+// A word that's a real (ENABLE dictionary) word but not one of this puzzle's displayed
+// subwords. Awarded as a bonus find so a player is never told a real word "isn't a word" —
+// it does not fill a box or count toward level-completion progress.
+function animateEatingScrapExtra(word) {
+  const typedWord = word;
+  gameState.spelledWord = '';
+  gameState.selectedTileIndices = [];
+  updateTileSelectionUI();
+  updateTypedDisplay();
+
+  flyWordToMouth(typedWord, () => {
+    gameState.extraWordsFound.push(typedWord);
+    gameState.totalScore += 1;
+
+    boxySpeak(`"${typedWord.toUpperCase()}" is a real word! +1 🌟`, 3000);
+
+    updateScoreUI();
+    saveGameState();
+  });
 }
 
 function revealMiniBox(word) {
@@ -1309,18 +1359,19 @@ function purchaseNextLevel() {
   recordCurrentAttempt();
 
   playLevelUpSound();
-  
-  const nextLevel = gameState.level + 1;
+
+  let nextLevel = gameState.level + 1;
   gameState.isLevelUnlocked = false;
 
+  // The game never "finishes" — after the 7-letter level, loop back to a
+  // fresh 4-letter puzzle and start a new round. Only the timer ends a run.
   if (nextLevel > 7) {
-    gameState.level = nextLevel; // Set level to 8 to mark game completion
-    gameState.isTransitioning = false;
-    showVictoryModal();
-  } else {
-    triggerBoxyEmotion('happy');
-    showLevelTransition(nextLevel);
+    nextLevel = 4;
+    gameState.round = (gameState.round || 1) + 1;
   }
+
+  triggerBoxyEmotion('happy');
+  showLevelTransition(nextLevel);
 }
 
 function checkAutoProceed() {
@@ -1336,7 +1387,7 @@ function checkAutoProceed() {
     nextLevelBtn.disabled = false;
     nextLevelBtn.classList.remove('disabled');
     if (gameState.level === 7) {
-      nextLevelBtn.textContent = "CLAIM VICTORY ➔";
+      nextLevelBtn.textContent = "COMPLETE ROUND ➔";
     } else {
       nextLevelBtn.textContent = "GO TO NEXT LEVEL ➔";
     }
@@ -1735,7 +1786,8 @@ function resetGame() {
   gameState.bonusCount = 0;
   gameState.bonusClaimedCurrentLevel = false;
   gameState.isPlaying = true;
-  
+  gameState.round = 1;
+
   startNewLevel(4);
   triggerBoxyEmotion('idle');
   boxySpeak("Started fresh cardboard! Level 1!", 4000);
@@ -1750,9 +1802,6 @@ function restartFromScratch() {
   playLevelUpSound();
   document.getElementById('victory-modal').classList.add('hidden');
   resetGame();
-}
-function showVictoryModal() {
-  endGameSession(false);
 }
 
 // --- PARTICLE CONFETTI ---
@@ -1966,11 +2015,9 @@ function hideLeaderboardModal() {
   playTapSound();
   document.getElementById('leaderboard-modal').classList.add('hidden');
   
-  // If the game session was completed (victory or timeout), show the victory modal again so the player has the Play Again option
+  // If the game session was completed (time ran out), show the results modal again so the player has the Play Again option
   const victoryModal = document.getElementById('victory-modal');
-  const isTimeUp = gameState.timeLeft <= 0;
-  const isVictory = gameState.level > 7;
-  if (isTimeUp || isVictory) {
+  if (!gameState.isPlaying) {
     victoryModal.classList.remove('hidden');
   }
 }
@@ -2235,11 +2282,19 @@ function endGameSession(isTimeUp) {
   // Populate final score
   const finalScore = gameState.totalScore;
   document.getElementById('vic-final-score').textContent = finalScore;
+  const roundEl = document.getElementById('vic-round-reached');
+  if (roundEl) roundEl.textContent = gameState.round || 1;
 
   // Change victory modal title dynamically
   const titleEl = document.querySelector('.victory-title');
   if (titleEl) {
     titleEl.textContent = isTimeUp ? "⏰ TIME'S UP! ⏰" : "🎉 VICTORY! 🎉";
+  }
+  const subtitleEl = document.getElementById('victory-subtitle');
+  if (subtitleEl) {
+    subtitleEl.textContent = isTimeUp
+      ? "Great effort stitching cardboard words!"
+      : "You have successfully completed the N-1 Word Craft challenge!";
   }
 
   // Reset leaderboard submission UI
@@ -2292,16 +2347,16 @@ function showLevelTransition(nextLevel) {
     return;
   }
   
-  // Add +2 minutes
-  gameState.timeLeft += 120;
+  // Time bonus per level cleared — enough to sustain a run, not enough to make it endless
+  gameState.timeLeft += 20;
   saveGameState();
   updateTimerUI();
-  
+
   // Set text on the sign
   const levelNum = nextLevel - 3;
   const signText = document.getElementById('transition-sign-text');
   if (signText) {
-    signText.textContent = `LEVEL ${levelNum}`;
+    signText.textContent = gameState.round > 1 ? `ROUND ${gameState.round} · LEVEL ${levelNum}` : `LEVEL ${levelNum}`;
   }
   
   // Play transition sound (crinkle)

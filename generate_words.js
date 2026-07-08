@@ -34,8 +34,12 @@ console.log(`  → ${commonSet.size} common words (length 3-7)`);
 
 // --- Whitelist: words in ENABLE that are legitimate but missing from commonWords ---
 // Add words here when players report a valid word being rejected.
+// The block below was hand-reviewed from a frequency-corpus audit (see AGENTS.md);
+// candidates dominated by proper nouns/profanity were rejected, these were not.
 const whitelist = new Set([
   'shill', 'ills', 'mast', 'mats', 'tsar', 'tsars', 'ids', 'dis',
+  'disc', 'grenade', 'rifles', 'kilos', 'severed', 'slowing', 'blares',
+  'nova', 'vicar', 'psst', 'cant', 'meth', 'banged', 'feds',
 ]);
 
 // Valid subword pool: (ENABLE ∩ commonWords) ∪ whitelist
@@ -122,3 +126,14 @@ for (const len of [4, 5, 6, 7]) {
   const total = selectedData[len].reduce((s, e) => s + e.subwords.length, 0);
   console.log(`  ${len}-letter: ${selectedData[len].length} starters, ${total} total subwords`);
 }
+
+// --- Write the full ENABLE dictionary as a runtime fallback ---
+// A player who types any real (Scrabble-standard) word is always accepted, even if that
+// word isn't one of the curated subwords displayed for the current puzzle.
+const enableWordsPath = path.join(__dirname, 'enable_words.js');
+const enableOutput = `// Full ENABLE dictionary (3-7 letters) — runtime fallback so a real word is never rejected
+// Generated on ${new Date().toISOString()}
+const ENABLE_WORDS = new Set(${JSON.stringify([...enableSet])});
+`;
+fs.writeFileSync(enableWordsPath, enableOutput, 'utf8');
+console.log(`✅ Generated ${enableWordsPath} (${enableSet.size} words)`);
