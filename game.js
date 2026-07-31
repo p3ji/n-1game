@@ -17,7 +17,8 @@ let gameState = {
   currentWordObj: null, // { word: 'weather', subwords: [...] }
   wheelLetters: [], // current letters on the wheel (shuffled version of starter word)
   foundWords: [], // List of found words
-  extraWordsFound: [], // Real ENABLE words found that aren't in this puzzle's displayed subword list
+  extraWordsFound: [], // Real ENABLE words found this level that aren't in the displayed subword list
+  extraWordsCount: 0, // Run-total of extra finds — tracked separately from totalScore on purpose
   spelledWord: '',
   selectedTileIndices: [], // Indices of letter tiles currently selected
   soundEnabled: true,
@@ -149,6 +150,7 @@ window.addEventListener('DOMContentLoaded', () => {
     gameState.isTransitioning = false;
     gameState.isPlaying = true;
     gameState.round = 1;
+    gameState.extraWordsCount = 0;
     if (autoProceedTimeout) {
       clearTimeout(autoProceedTimeout);
       autoProceedTimeout = null;
@@ -159,6 +161,7 @@ window.addEventListener('DOMContentLoaded', () => {
 
     updateTimerUI();
     updateBonusUI();
+    updateExtraUI();
     startTimerLoop();
     saveGameState();
   });
@@ -203,6 +206,7 @@ window.addEventListener('DOMContentLoaded', () => {
   startTimerLoop();
   updateTimerUI();
   updateBonusUI();
+  updateExtraUI();
 
   if (gameState.timeLeft <= 0) {
     // If the session has already expired on load, don't auto-end —
@@ -296,6 +300,7 @@ function loadGameState() {
       gameState.easyMode = parsed.easyMode === true;
       gameState.timeLeft = typeof parsed.timeLeft !== 'undefined' ? parsed.timeLeft : 120;
       gameState.bonusCount = parsed.bonusCount || 0;
+      gameState.extraWordsCount = parsed.extraWordsCount || 0;
       gameState.bonusClaimedCurrentLevel = parsed.bonusClaimedCurrentLevel === true;
       gameState.bonusWord = parsed.bonusWord || null;
       
@@ -330,6 +335,7 @@ function loadGameState() {
       updateSoundButtonUI();
       updateDifficultyButtonUI();
       updateBonusUI();
+      updateExtraUI();
       if (gameState.currentWordObj) {
         updateFriendsUI();
         updateHintButtonUI();
@@ -360,6 +366,7 @@ function saveGameState() {
     easyMode: gameState.easyMode,
     timeLeft: gameState.timeLeft,
     bonusCount: gameState.bonusCount,
+    extraWordsCount: gameState.extraWordsCount,
     bonusClaimedCurrentLevel: gameState.bonusClaimedCurrentLevel,
     bonusWord: gameState.bonusWord,
     activeBoxWords: gameState.activeBoxWords,
@@ -1192,11 +1199,15 @@ function animateEatingScrapExtra(word) {
 
   flyWordToMouth(typedWord, () => {
     gameState.extraWordsFound.push(typedWord);
-    gameState.totalScore += 1;
+    // Deliberately NOT added to totalScore. The bonus pool is dictionary-wide and often
+    // larger than the puzzle's own subword list (and ~80% of it is 3-4 letter words), so
+    // scoring it would let obscure-word recall outweigh actual puzzle solving on the
+    // leaderboard. Tracked separately instead — same approach Wordscapes takes.
+    gameState.extraWordsCount = (gameState.extraWordsCount || 0) + 1;
 
-    boxySpeak(`"${typedWord.toUpperCase()}" is a real word! +1 🌟`, 3000);
+    boxySpeak(`"${typedWord.toUpperCase()}" is a real word! ⭐ Extra find!`, 3000);
 
-    updateScoreUI();
+    updateExtraUI();
     saveGameState();
   });
 }
@@ -1787,6 +1798,7 @@ function resetGame() {
   gameState.bonusClaimedCurrentLevel = false;
   gameState.isPlaying = true;
   gameState.round = 1;
+  gameState.extraWordsCount = 0;
 
   startNewLevel(4);
   triggerBoxyEmotion('idle');
@@ -1796,6 +1808,7 @@ function resetGame() {
   startTimerLoop();
   updateTimerUI();
   updateBonusUI();
+  updateExtraUI();
   saveGameState();
 }
 function restartFromScratch() {
@@ -2284,6 +2297,8 @@ function endGameSession(isTimeUp) {
   document.getElementById('vic-final-score').textContent = finalScore;
   const roundEl = document.getElementById('vic-round-reached');
   if (roundEl) roundEl.textContent = gameState.round || 1;
+  const extraEl = document.getElementById('vic-extra-finds');
+  if (extraEl) extraEl.textContent = gameState.extraWordsCount || 0;
 
   // Change victory modal title dynamically
   const titleEl = document.querySelector('.victory-title');
@@ -2334,6 +2349,13 @@ function updateBonusUI() {
   const bonusCounter = document.getElementById('bonus-counter');
   if (bonusCounter) {
     bonusCounter.textContent = gameState.bonusCount || 0;
+  }
+}
+
+function updateExtraUI() {
+  const extraCounter = document.getElementById('extra-counter');
+  if (extraCounter) {
+    extraCounter.textContent = gameState.extraWordsCount || 0;
   }
 }
 
